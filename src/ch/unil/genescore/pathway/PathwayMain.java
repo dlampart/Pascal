@@ -26,24 +26,18 @@ THE SOFTWARE.
 package ch.unil.genescore.pathway;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GeneAnnotation;
-import ch.unil.genescore.gene.Genome;
 import ch.unil.genescore.main.FileParser;
 import ch.unil.genescore.main.Main;
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.main.Utils;
-import ch.unil.genescore.projection.SnpWeightCreator;
-import ch.unil.genescore.vegas.GenewiseSnpWeights;
 import ch.unil.genescore.vegas.GenomeWideScoring;
-import ch.unil.genescore.vegas.MetaGenewiseSnpWeights;
 import ch.unil.genescore.vegas.ReferencePopulation;
 
 

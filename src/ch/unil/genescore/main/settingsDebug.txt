@@ -147,7 +147,7 @@ codingSnpsFile = resources/gwas/snps/cdsmut_and_gene.ensembl.EUR.txt
 # MAX VEGAS PARAMETERS
 
 # MAX solution to Vegas 
-useMaxVegas = 1
+useMaxVegas = 0
 # using the effective number of test approximation
 useMaxEffVegas = 0
 # pruning of correl matrix in maxvegas approach
@@ -157,7 +157,7 @@ maxPruningCutoff = 0.99
 # ANALYTIC VEGAS PARAMETERS
 
 # Analytic solution to Vegas (uses all SNPs in the gene window regardless of testStatisticNumSnps_)
-useAnalyticVegas = 0
+useAnalyticVegas = 1
 
 # The cutoff that the sum of eigenvalues has to reach.
 eigenValueFractionCut = 10000
@@ -209,9 +209,6 @@ numSamplesGreaterCutoff = 100
 
 
 # ========================================================================
-
-# amount of regularization by adding a diagonal of following size (given as fraction)
-conditionFraction = 0.01
 
 # Use only GWAS snps
 useOnlyGwasSnps = 1
@@ -332,21 +329,6 @@ writeSignificanceThreshold = 1
 # Set true to write gene and meta-gene scores to a file */
 writeGeneScores = 1
 
-# ########################################################################
-# EQTL ANALYSIS
-# Set true to run EqtlOverlap analysis
-runEqtlAnalysis = 0
-onlyTopOverlappedEqtl = 0
-
-# path to eqtl file (format: )
-#eqtlFile = resources/eqtl/processedEqtlChr22RankConform.txt
-#eqtlFile = resources/eqtl/processedEqtlRankConform.txt
-##eqtlFile = resources/eqtl/Tcells/topSnps.txt
-##eqtlFile = resources/eqtl/Tcells/topSnpsMono.txt
-##eqtlFile = resources/eqtl/Tcells/allSnpsMono.txt
-eqtlFile = resources/eqtl/Tcells/topSnpsBloodFused.txt
-##eqtlFile = resources/eqtl/Tcells/topSnpsCD4.txt
-#eqtlFile = resources/eqtl/Tcells/topSnpsLcl.txt
 
 # ########################################################################
 # PRIORITIZATION ANALYSIS
