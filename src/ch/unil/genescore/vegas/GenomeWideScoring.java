@@ -32,10 +32,6 @@ public class GenomeWideScoring {
 	protected ReferencePopulation refpop_ = null;
 		
 	
-	/**  for each gene contains  relevant snp_ids and weights used in Projection matrix*/
-	//private  HashMap<String, SnpWeightMap> snpWeightsForEachGene_ = null;
-	/**  for each gene contains  relevant snp_ids and weights used in Projection matrix*/
-	private  AccessGenewiseSnpWeights snpWeightsForEachGene_ = null;
 	
 	/** The genes for which the number of snps was above the limit */	
 	private GeneResultsSnpsOutOfBounds GeneResultsSnpsOutOfBounds_ =  null;
@@ -57,9 +53,6 @@ public class GenomeWideScoring {
 	
 		GeneResultsSnpsOutOfBounds_ =  new GeneResultsSnpsOutOfBounds();
 		noScores_ = new GeneResultsNoScore();
-		if (Settings.weightFileFormat_=="genewise"){
-			snpWeightsForEachGene_ = new GenewiseSnpWeights();
-		}				
 		if(Settings.useFakeSignal_){
 			ReferencePopulationFakeSignal fakeSignalGenerator = new ReferencePopulationFakeSignal();
 			fakeSignalGenerator.runFakeSignal();

@@ -117,8 +117,6 @@ weightFileFormat = genewise
 # Window size up and down-stream of genes
 geneWindowUpstream = 50000
 geneWindowDownstream = 50000
-# geneWindowUpstream = 110000
-# geneWindowDownstream = 40000
 
 
 useFakePhenotype=0

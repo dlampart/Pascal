@@ -561,7 +561,6 @@ public class Settings {
 		gencodeAnnotationFile_ = getSetting("genecodeAnnotationFile");
 		ucscAnnotationFile_ = getSetting("ucscAnnotationFile");
 		bedAnnotationFile_ = getSetting("bedAnnotationFile");
-		geneWiseSnpWeightsFile_ = getSetting("geneWiseSnpWeightsFile");
 		weightFileFormat_= getSetting("weightFileFormat");
 		//identifyGenesByIdOrSymbol_ = getSetting("identifyGenesByIdOrSymbol");
 		loadOnlyProteinCodingGenes_ = getSettingBoolean("loadOnlyProteinCodingGenes");
