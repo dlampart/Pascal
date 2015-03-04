@@ -131,28 +131,7 @@ public class GeneScoreOptionParser extends Settings {
 			useMaxVegas_ = true;
 		if (options.has("maxeffvegas"))
 		useMaxEffVegas_ = true;
-//		if (options.has("bedfilepath"))
-//			bedFilePath_  = (String) options.valueOf("bedfilepath");
-//		if (options.has("bedweight"))
-//			bedWeight_  = (Double) options.valueOf("bedweight");
-//		if (options.has("filteronbed"))
-//			filterOnBed_  = true;
-//		if (options.has("bedbackgroundweight"))
-//			bedBackgroundWeight_  = (Double) options.valueOf("bedbackgroundweight");
-//		if (options.has("bedbackgroundextension"))
-//		bedBackgroundExtension_  = (Integer) options.valueOf("bedbackgroundextension");
-//		if (options.has("useonlygwassnps"))
-//			useOnlyGwasSnps_ = true;
-//		if (options.has("conditionfraction"))
-//			conditionFraction_ = (Double) options.valueOf("conditionfraction");
-//		if (options.has("conditionfractioncross"))
-//			conditionFraction_ = (Double) options.valueOf("conditionfractioncross");
-//		if (options.has("explainedfraction"))			
-//			fractionToBeExplained_ = (Double) options.valueOf("explainedfraction");
-//		if (options.has("maxpruningcutoff"))			
-//			maxPruningCutoff_ = (Double) options.valueOf("maxpruningcutoff");
-//		if (options.has("projectionmafcutoff"))
-//			useMafCutoffForProjection_ = (Double) options.valueOf("projectionmafcutoff");
+
 		if (options.has("withzscore"))
 			withZScore_ = true;
 		if (options.has("prunelist"))
