@@ -32,7 +32,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
-import java.util.Scanner;
 
 import org.apache.commons.math3.random.Well19937c;
 
@@ -44,8 +43,6 @@ import ch.unil.genescore.vegas.AnalyticVegas;
 import ch.unil.genescore.vegas.GeneScoreEvaluator;
 import ch.unil.genescore.vegas.MaxEffVegas;
 import ch.unil.genescore.vegas.MaxSimulAndAnalyticVegas;
-import ch.unil.genescore.vegas.OrthogonalStat;
-import ch.unil.genescore.vegas.OrthogonalStatSum;
 
 
 /** 
@@ -152,34 +149,15 @@ public class Settings {
 	static public boolean useMaxEffVegas_ = false;
 	/** Original version of Vegas with Monte Carlo simulation */
 	static public boolean useSimulationVegas_ = false;
-	/** Using order statistics of orthoganal space */
-	static public boolean useOrthoOrder_ = false;
-	static public boolean useOrthoSum_ = false;
-	/** Projection Vegas approach */
-	static public boolean useProjectionVegas_ = false;
-	/** all snps onto which we project have to have maf above this cutoff */
-	static public double useMafCutoffForProjection_ = 0;
 	
-	/** amount of regularization by adding a diagonal of following size (given as fraction)*/
-	static public double conditionFraction_ = 0;
-	/** amount of regularization by shrinking the crossCovariance*/
-	//TODO:
-	/**this might be a bullshit option. its dead in the code remove it again.*/
-	static public double conditionFractionCross_ = 0;
-	/** amount of regularization by removing smallest eigenDimension. 
-		(the eigenDimension that are kept explain at leat this fraction of the variability) */ 
-	static public double fractionToBeExplained_ = 1;
+	/**
+	
+//	/** all snps onto which we project have to have maf above this cutoff */
+
 	static public double eigenValueFractionCut_ = 1e4; 
 	/** Use only GWAS snps */
 	static public boolean useOnlyGwasSnps_ = true;
-	/** bedFilePath */
-	static public String bedFilePath_ = "";
-	static public double bedWeight_;
-	static public boolean filterOnBed_;
-	/** bedBackgroundWeight */
-	static public double bedBackgroundWeight_;
-	static public int  bedBackgroundExtension_ = 0;
-	
+
 	
 	/** The requested absolute precision (used for Imhof and Farebrother methods) */
 	static public double requestedAbsolutePrecision_ = -1;
@@ -318,7 +296,7 @@ public class Settings {
 	public static double chanceOfSignal_=0.0;
 	public static int multipleOfPhenotype_=0;
 	
-	public static double varExplained_;
+
 	private static Object randSeed_;
 	public static double deflationRate_;
 	public static int deflationDist_;
@@ -374,30 +352,13 @@ public class Settings {
 			
 		
 		} else if (Settings.useMaxVegas_) {
-			//TODO: weighting to including imputation quality????
-			//IMPORTANT			
+		
 			evaluator = new MaxSimulAndAnalyticVegas();
 			
 		} else if (Settings.useMaxEffVegas_) {
-					//TODO: weighting to including imputation quality????
-					//IMPORTANT			
-					evaluator = new MaxEffVegas();
 			
-
-		} else if (Settings.useOrthoOrder_){
-			if (!Settings.withZScore_)
-				throw new RuntimeException("Ortho order not implemented without z-scores");			
-			// TODO do as for delta parameter above (add corresponding param to settings...)
-			evaluator = new OrthogonalStat();			
-			//int[] myNrComponents = {1, 2,3};
-			//evaluator = new OrthogonalStatWrapped(snpScores, corr, myNrComponents);
-		
+					evaluator = new MaxEffVegas();
 		}
-        else if (Settings.useOrthoSum_){
-            if (!Settings.withZScore_)
-                throw new RuntimeException("Ortho sum not implemented without z-scores");
-            evaluator = new OrthogonalStatSum();
-        } 
         else {
 			throw new RuntimeException("No gene scoring method selected");
 		}
@@ -577,10 +538,6 @@ public class Settings {
 		useMaxVegas_ = getSettingBoolean("useMaxVegas");
 		useMaxEffVegas_ = getSettingBoolean("useMaxEffVegas");
 		useSimulationVegas_ = getSettingBoolean("useSimultationVegas");
-		useOrthoOrder_  = getSettingBoolean("useOrthoOrder");
-		useOrthoSum_  = getSettingBoolean("useOrthoSum");
-		useProjectionVegas_  = getSettingBoolean("useProjectionVegas");
-		varExplained_ = getSettingDouble("varExplained");
 		
 		maxPruningCutoff_=getSettingDouble("maxPruningCutoff");
 		useFakePhenotype_=getSettingBoolean("useFakePhenotype");
@@ -589,18 +546,9 @@ public class Settings {
 		multipleOfPhenotype_=getSettingInt("multipleOfPhenotype");
 		
 		
-		useMafCutoffForProjection_ = getSettingDouble("useMafCutoffForProjection");
-		conditionFraction_ = getSettingDouble("conditionFraction");
-		conditionFractionCross_ = getSettingDouble("conditionFractionCross");
-		fractionToBeExplained_ = getSettingDouble("fractionToBeExplained");
+
 		eigenValueFractionCut_ = getSettingDouble("eigenValueFractionCut");
-		useOnlyGwasSnps_ = getSettingBoolean("useOnlyGwasSnps");
-		bedFilePath_ = getSetting("bedFilePath");
-		bedWeight_ = getSettingDouble("bedWeight");	
-		filterOnBed_ = getSettingBoolean("filterOnBed");	
-		
-		bedBackgroundWeight_ = getSettingDouble("bedBackgroundWeight");		
-		bedBackgroundExtension_  = getSettingInt("bedBackgroundExtension");
+
 		requestedAbsolutePrecision_ = getSettingDouble("requestedAbsolutePrecision");
 		requestedRelativePrecision_ = getSettingDouble("requestedRelativePrecision");
 		gslIntegrationLimit_ = getSettingInt("gslIntegrationLimit");
@@ -812,13 +760,12 @@ public class Settings {
 		return set.getProperty(name).split(",");
 	}
 	public static void checkOptions(){
-		
+
 		int int1 = (useAnalyticVegas_) ? 1 : 0;
-		int int2 = (useOrthoOrder_) ? 1 : 0;
-		int int3 = (useOrthoSum_) ? 1 : 0;
-		//TODO:
-		//int int4 = (useProjectionVegas_) ? 1 : 0;
-		int tot = int1 + int2 + int3;// + int4;
+		int int2 = (useMaxVegas_) ? 1 : 0;
+		int int3 = (useMaxEffVegas_) ? 1 : 0;
+		int int4 = (useSimulationVegas_) ? 1 : 0;
+		int tot = int1 + int2 + int3 + int4;
 		if (tot>1){
 			throw new RuntimeException("error: more than 1 vegas option active");
 		}

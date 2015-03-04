@@ -155,19 +155,7 @@ public class GenomeWideScoring {
 	// ----------------------------------------------------------------------------
 	private GeneData setupGeneData(GeneWithItsSnps gene){
 		GeneData currentGeneData = null;
-		if (Settings.useProjectionVegas_){
-			
-			if (!Settings.withZScore_)
-				throw new RuntimeException("Projection-vegas not implemented without z-scores");
-			String currentGeneId= gene.getGeneId();
-			LinkedList<Snp> currentSnpsWithGenotypes=refpop_.getSnpsWithGenotypes();
-			SnpWeightPairs SnpsAndWeights = snpWeightsForEachGene_.getOverlappedSnpsWithWeights(currentGeneId,currentSnpsWithGenotypes);
-			
-			if (SnpsAndWeights==null)
-				return null;
-				currentGeneData = new GeneDataProjection(gene.getSnpList(), currentSnpsWithGenotypes,SnpsAndWeights);			
-			}
-			else if (Settings.useFakePhenotype_){				
+		if (Settings.useFakePhenotype_){				
 				currentGeneData = new GeneDataFakePhenotype(gene.getSnpList(), fakeSignal_);
 			}
 			else{
@@ -261,16 +249,8 @@ public class GenomeWideScoring {
 			else
 				Main.println("- Test statistic: using all SNPs within gene windows");
 		
-		} else if (Settings.useOrthoOrder_) {
-			Main.println("TBD print ortho order params");
+		} 
 		
-		}
-        else if (Settings.useOrthoSum_) {
-            Main.println("TBD print ortho sum params");
-        }
-        else if (Settings.useProjectionVegas_) {
-            Main.println("TBD print projection vegas params");
-        }  
         else if (Settings.useMaxVegas_) {
             Main.println("TBD print max vegas params");
         } 
@@ -294,13 +274,7 @@ public class GenomeWideScoring {
 		if (Settings.useAnalyticVegas_)
 			Main.println("Format: gene_id, symbol, #snps, runtime, [warnings]");
 		else if (Settings.useSimulationVegas_)
-			Main.println("Format: gene_id, symbol, #snps, #simulations, runtime, [warnings]");
-		else if (Settings.useOrthoOrder_)
-			Main.println("TBD");
-        else if (Settings.useOrthoSum_)
-            Main.println("TBD");
-        else if (Settings.useProjectionVegas_)
-            Main.println("TBD");
+			Main.println("Format: gene_id, symbol, #snps, #simulations, runtime, [warnings]");		            
         else if (Settings.useMaxVegas_)
             Main.println("TBD");
         else if (Settings.useMaxEffVegas_) {
