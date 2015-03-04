@@ -1,0 +1,95 @@
+package ch.unil.genescore.vegas;
+
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import org.apache.commons.math3.distribution.NormalDistribution;
+
+public class DistributionMethods {
+	
+
+private static ChiSquaredDistribution chiSquared1df_ = new ChiSquaredDistribution(1);
+private static NormalDistribution normalDist_ = new NormalDistribution();
+
+	
+	public static double chiSquared1dfCumulativeProbabilityUpperTail(double q){
+		double p;
+		if (q > 50){
+			double q2 = Math.sqrt(q);
+			p=normalCumulativeProbabilityUpperTailApprox(q2)*2;
+		}	
+		else{
+			p=1-chiSquared1df_.cumulativeProbability(q);
+		}	
+		return(p);
+	}
+
+	public static double chiSquared1dfInverseCumulativeProbabilityUpperTail(double p){
+		
+		double p2=p/2;
+		double q;				
+		if (p2 < 1E-14){	
+			double upper=normalInversionUpperTailApprox(p2);
+			q=Math.pow(upper,2);
+			
+		}
+		else{			
+			q=chiSquared1df_.inverseCumulativeProbability(1-p);			
+		}
+		return(q);
+		
+
+	}
+
+	
+	public static double normalCumulativeProbability(double q){
+		double p;
+		if (q < -8){	
+			double upper=normalCumulativeProbabilityUpperTailApprox(q);
+			p=upper;
+			
+		}
+		else{
+			p=normalDist_.cumulativeProbability(q);			
+		}
+		return(p);
+	}
+
+	public static double normalCumulativeProbabilityUpperTailApprox(double q){
+	
+		
+		q=Math.abs(q);
+		double aa=-(q*q)/2-Math.log(q)-0.5*Math.log(2*Math.PI);
+		return(Math.exp(aa));
+	}
+		
+public static double normalInverseCumulativeProbability(double p){
+		double q;
+		if (p < 10E-14){	
+			double upper=normalInversionUpperTailApprox(p);
+			q=(-1)*upper;
+			
+		}
+		else{
+			q=normalDist_.inverseCumulativeProbability(p);			
+		}
+		return(q);
+	}
+	
+	
+	public static double normalInversionUpperTailApprox(double p){
+		// approximates tail integral of normal distribution function:: only use for very low values; below 10^-14
+		double lp = Math.log(p);
+		double diff=1;
+		double a1=1;
+		double a=1;
+			while(diff>0.001){
+			
+				
+				a=Math.sqrt((-lp-Math.log(Math.sqrt(2*Math.PI))-Math.log(a1))*2);
+						diff=Math.abs(a-a1);	
+					a1=a;
+				
+			}
+		return(a);
+	}
+
+}
