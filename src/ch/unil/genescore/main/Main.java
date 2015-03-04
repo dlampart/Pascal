@@ -27,26 +27,16 @@ package ch.unil.genescore.main;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.TreeSet;
 
 import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.eqtlOverlap.EqtlOverlapMain;
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GeneAnnotation;
 import ch.unil.genescore.pathway.PathwayMain;
 import ch.unil.genescore.prioritization.PrioritizationMain;
-import ch.unil.genescore.projection.SnpWeightCreator;
 import ch.unil.genescore.topLdSnps.TopLdSnpsMain;
-import ch.unil.genescore.vegas.AllOverlappedElements;
-import ch.unil.genescore.vegas.BedFileStream;
-import ch.unil.genescore.vegas.GenewiseSnpWeights;
 import ch.unil.genescore.vegas.GenomeWideScoring;
-import ch.unil.genescore.vegas.OverlappedCollectionStream;
-import ch.unil.genescore.vegas.OverlappedGenomicElement;
 import ch.unil.genescore.vegas.ReferencePopulation;
-import ch.unil.genescore.vegas.SnpPositionStream;
 
 
 /**
@@ -149,8 +139,6 @@ public class Main {
 			concatenateChromosomeResults();
 		else if (Settings.runPathwayAnalysis_)
 			runPathwayAnalysis();				
-		else if (Settings.runEqtlAnalysis_)
-			runEqtlAnalysis();
 		else if (Settings.runPrioritizationAnalysis_)
 			runPrioritizationAnalysis();
 		else
@@ -173,15 +161,12 @@ public class Main {
 		// Load genes
 		LinkedList<Gene> genes = GeneAnnotation.createAnnotationInstance().loadAnnotation(Settings.genesToBeLoadedFile_);
 		// Load snps
-		GenewiseSnpWeights finalStruct;
-//new GenewiseSnpWeights();
+
 		geneScore.setGenes(genes);
 		ReferencePopulation myRefPop=new ReferencePopulation();				
 		myRefPop.loadGwasAndRelevantSnps();
 		geneScore.setReferencePopulation(myRefPop);
-	//	SnpWeightCreator WeightInstance = new SnpWeightCreator(myRefPop,genes);
-	//	finalStruct = WeightInstance.getWeights();
-	//	geneScore.loadGwasAndRelevantSnps(myRefPop, finalStruct);
+	
 		
 				
 		// Print info
@@ -215,12 +200,6 @@ public class Main {
 		prioritize.run();
 	}
 
-	/** Run pathway / gene set enrichment analysis */
-	public void runEqtlAnalysis() {
-
-		EqtlOverlapMain eqtl = new EqtlOverlapMain();	
-		eqtl.run();
-	}
 	public void runTopLdSnps(){
 
 		TopLdSnpsMain topLd = new TopLdSnpsMain();
@@ -245,6 +224,7 @@ public class Main {
 		FileExport fl = new FileExport(Settings.writeUsedSettings_, false);
 		Class cls = null;
 		try {
+			
 			cls = Class.forName("ch.unil.genescore.main.Settings");
 		
 	        System.out.println("Class found = " + cls.getName());

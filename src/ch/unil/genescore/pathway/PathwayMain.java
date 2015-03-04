@@ -33,8 +33,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-import ch.unil.genescore.eqtlOverlap.EqtlOverlapMain;
-import ch.unil.genescore.eqtlOverlap.EqtlScorer;
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GeneAnnotation;
 import ch.unil.genescore.gene.Genome;
@@ -87,19 +85,8 @@ public class PathwayMain {
 		
 		geneScorer_.setGenes(genes_.values());	
 		geneScorer_.setReferencePopulation(myRefPop);
-		//GenewiseSnpWeights finalStruct;
-		//SnpWeightCreator WeightInstance = new SnpWeightCreator(myRefPop,genes_);
-		//finalStruct = WeightInstance.getWeights();
-		//geneScorer_.loadGwasAndRelevantSnps(myRefPop, finalStruct);	
 		
-		
-		if (Settings.runEqtlAnalysis_){
-			EqtlOverlapMain eqtlMain = new EqtlOverlapMain();
-			eqtlMain.fillEqtlScorer();
-			eqtlMain.fillEqtlResults();
-			geneScorer_ = eqtlMain.getGeneScorer();
-			 
-		}
+
 	}
 
 	

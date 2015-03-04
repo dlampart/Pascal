@@ -262,13 +262,6 @@ public class Settings {
 	/** Set true to write gene and meta-gene scores to a file */ 
 	static public boolean writeGeneScores_ = false;
 
-	// EQTL-Analysis
-	/** Set true to run eqtl analysis */
-	static public boolean runEqtlAnalysis_ = false;
-	static public String eqtlFile_ = null;
-	public static boolean onlyTopOverlappedEqtl_ = false;
-	public static boolean runEqtlProjection_ = true
-			;
 	
 	
 	//TopLdSnp
@@ -615,10 +608,6 @@ public class Settings {
 		writeSignificanceThreshold_ = getSettingDouble("writeSignificanceThreshold");
 		writeGeneScores_ = getSettingBoolean("writeGeneScores");
 		writeUsedSettings_ = getSetting("writeUsedSettings");
-		
-		eqtlFile_ = getSetting("eqtlFile");
-		runEqtlAnalysis_ = getSettingBoolean("runEqtlAnalysis");
-		onlyTopOverlappedEqtl_ = getSettingBoolean("onlyTopOverlappedEqtl");
 		
 		//prioritizationAnalysis
 		runPrioritizationAnalysis_ = getSettingBoolean("runPrioritizationAnalysis");

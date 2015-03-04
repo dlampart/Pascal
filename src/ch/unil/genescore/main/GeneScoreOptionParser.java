@@ -186,13 +186,7 @@ public class GeneScoreOptionParser extends Settings {
 		if (options.has("rewritesettings"))
 		writeUsedSettings_ = (String) options.valueOf("scores");
 		//path to pathway
-		if (options.has("eqtlfile"))
-			eqtlFile_ = (String) options.valueOf("eqtlfile");
-		if (options.has("runeqtl"))
-		runEqtlAnalysis_ = true;
-		if (options.has("topeqtl"))
-		onlyTopOverlappedEqtl_ = true;
-				
+
 		//prioritization
 		if(options.has("netpath"))
 			netPath_ = (String) options.valueOf("netpath");

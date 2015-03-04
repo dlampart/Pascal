@@ -257,9 +257,7 @@ public class GenomeWideScoring {
         else if (Settings.useMaxEffVegas_) {
             Main.println("TBD print maxeff vegas params");
         } 
-        else if (Settings.runEqtlAnalysis_) {
-            Main.println("TBD print max vegas params");
-        } 
+ 
         else {
 			throw new RuntimeException("No gene scoring method selected");
 		}
@@ -280,8 +278,7 @@ public class GenomeWideScoring {
         else if (Settings.useMaxEffVegas_) {
             Main.println("TBD");
         } 
-        else if (Settings.runEqtlAnalysis_)
-            Main.println("TBD");
+   
 		else
 			throw new RuntimeException("No gene scoring method selected");
 
