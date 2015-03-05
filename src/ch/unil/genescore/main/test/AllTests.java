@@ -13,12 +13,8 @@ import ch.unil.genescore.vegas.test.AnalyticVegasTest;
 import ch.unil.genescore.vegas.test.DistributionMethodsTest;
 import ch.unil.genescore.vegas.test.FarebrotherTest;
 import ch.unil.genescore.vegas.test.FileParserTest;
-import ch.unil.genescore.vegas.test.GeneDataProjectionTest;
 import ch.unil.genescore.vegas.test.GeneResultsNoScoreTest;
 import ch.unil.genescore.vegas.test.GeneResultsSnpsOutOfBoundsTest;
-import ch.unil.genescore.vegas.test.GenomeWideScoringTest;
-import ch.unil.genescore.vegas.test.LdMatTest;
-import ch.unil.genescore.vegas.test.LinkageDisequilibriumTest;
 import ch.unil.genescore.vegas.test.MTJConvenienceMethodsTest;
 import ch.unil.genescore.vegas.test.MaxVegasTest;
 import ch.unil.genescore.vegas.test.OverlappedCollectionStreamTest;
@@ -47,10 +43,6 @@ import ch.unil.genescore.vegas.test.SnpTest;
 	AnalyticVegasTest.class,
 	DistributionMethodsTest.class,
 	
-	GeneDataProjectionTest.class,
-	GenomeWideScoringTest.class,
-	LdMatTest.class,
-	LinkageDisequilibriumTest.class,
 	MaxVegasTest.class,
 	MTJConvenienceMethodsTest.class,
 	OverlappedCollectionStreamTest.class,

@@ -7,14 +7,6 @@ import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.vegas.OverlappedGenomicElement;
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -22,13 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import ch.unil.genescore.gene.Gene;
-import ch.unil.genescore.gene.GenomicElement;
-import ch.unil.genescore.vegas.AllOverlappedElements;
-import ch.unil.genescore.vegas.GenewiseSnpWeights;
 import ch.unil.genescore.vegas.OverlappedCollectionStream;
-import ch.unil.genescore.vegas.OverlappedGenomicElement;
-import ch.unil.genescore.vegas.Snp;
 
 
 
