@@ -31,8 +31,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import javax.management.RuntimeErrorException;
-
 import ch.unil.genescore.main.Settings;
 
 

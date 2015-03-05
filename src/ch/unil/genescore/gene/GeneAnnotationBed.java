@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import ch.unil.genescore.main.FileParser;
-import ch.unil.genescore.main.Main;
 import ch.unil.genescore.main.Settings;
 
 /**

@@ -35,9 +35,6 @@ import java.util.Random;
 import org.apache.commons.math3.random.Well19937c;
 
 import cern.jet.random.tdouble.engine.MersenneTwister64;
-import ch.unil.genescore.prioritization.ConnectionTreeGetter;
-import ch.unil.genescore.prioritization.NetFromSets;
-import ch.unil.genescore.prioritization.SparseNet;
 import ch.unil.genescore.vegas.AnalyticVegas;
 import ch.unil.genescore.vegas.GeneScoreEvaluator;
 import ch.unil.genescore.vegas.MaxEffVegas;
@@ -283,7 +280,6 @@ public class Settings {
 	public static int multipleOfPhenotype_=0;
 	
 
-	private static Object randSeed_;
 	public static double deflationRate_;
 	public static int deflationDist_;
 	public static Boolean onlyPathwayGenesAsBackground_;	
@@ -294,8 +290,7 @@ public class Settings {
 	public static String chromFileExtension_;	
 	
 	private static  GeneScoreEvaluator GeneScoreEvaluatorInstance_ = null;
-	private static  ConnectionTreeGetter  ConnectionGetterInstance_ = null;
-	
+
 	// ============================================================================
 	// PUBLIC METHODS
 	
@@ -310,21 +305,9 @@ public class Settings {
 		gwasName_ = Utils.extractBasicFilename(Settings.snpPvalFile_, false);
 		chromFileExtension_ = Settings.chromosome_.equals("") ? "" : "." + Settings.chromosome_;
 		setGenescoreEvaluatorInstance();		
-		setConnectionGetterInstance();
-	}
 	
-	private void setConnectionGetterInstance(){
-		if (Settings.useSparseNet_){
-			SparseNet mySparseNet = new SparseNet();
-			mySparseNet.setParser(netPath_);
-			ConnectionGetterInstance_  = mySparseNet;
-		}
-			else if (Settings.useGeneSets_){
-				netPath_ = geneSetFile_;
-			ConnectionGetterInstance_ = new NetFromSets();
-			
-		}
 	}
+
 	
 	private void setGenescoreEvaluatorInstance(){
 		
@@ -772,8 +755,5 @@ public static void warnOptions(){
 	}
 public static GeneScoreEvaluator getGeneScoreEvaluator(){
 	return GeneScoreEvaluatorInstance_;
-}
-public static ConnectionTreeGetter getConnectionGetter(){
-	return ConnectionGetterInstance_;
 }
 }

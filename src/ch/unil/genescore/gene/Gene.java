@@ -32,7 +32,6 @@ import java.util.Collections;
 
 
 import java.util.HashSet;
-import java.util.TreeSet;
 
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.vegas.Snp;

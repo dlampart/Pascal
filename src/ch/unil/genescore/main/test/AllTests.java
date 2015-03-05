@@ -7,8 +7,6 @@ import org.junit.runners.Suite.SuiteClasses;
 import ch.unil.genescore.gene.test.GenomicElementTest;
 import ch.unil.genescore.pathway.test.RankSumTestTest;
 import ch.unil.genescore.pathway.test.geneSetLibraryTest;
-import ch.unil.genescore.prioritization.test.PrunedConnectionTreGetterTest;
-import ch.unil.genescore.prioritization.test.SparseNetTest;
 import ch.unil.genescore.vegas.test.AnalyticVegasTest;
 import ch.unil.genescore.vegas.test.DistributionMethodsTest;
 import ch.unil.genescore.vegas.test.FarebrotherTest;
@@ -25,13 +23,7 @@ import ch.unil.genescore.vegas.test.SnpTest;
 @SuiteClasses({
 	//TODO: classes not properly covered:
 	//Main, PathwayMain,SnpWeightCreator, 
-	
-	//prioritizationTests
-	PrunedConnectionTreGetterTest.class,
-	SparseNetTest.class,
-	
-	
-	
+		
 
 	//gene/test
 	GenomicElementTest.class,

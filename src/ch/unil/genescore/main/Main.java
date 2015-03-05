@@ -33,7 +33,6 @@ import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GeneAnnotation;
 import ch.unil.genescore.pathway.PathwayMain;
-import ch.unil.genescore.prioritization.PrioritizationMain;
 import ch.unil.genescore.vegas.GenomeWideScoring;
 import ch.unil.genescore.vegas.ReferencePopulation;
 
@@ -137,8 +136,6 @@ public class Main {
 			concatenateChromosomeResults();
 		else if (Settings.runPathwayAnalysis_)
 			runPathwayAnalysis();				
-		else if (Settings.runPrioritizationAnalysis_)
-			runPrioritizationAnalysis();
 		else
 			computeGeneScores();			
 		System.out.println("Success!");
@@ -192,11 +189,7 @@ public class Main {
 		pathways.run();
 	}
 	
-	public void runPrioritizationAnalysis() {
-
-		PrioritizationMain prioritize = new PrioritizationMain();
-		prioritize.run();
-	}
+	
 
 
 	// ----------------------------------------------------------------------------
