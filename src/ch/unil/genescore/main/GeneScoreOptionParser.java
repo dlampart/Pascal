@@ -187,12 +187,7 @@ public class GeneScoreOptionParser extends Settings {
 		writeUsedSettings_ = (String) options.valueOf("scores");
 		//path to pathway
 
-		//prioritization
-		if(options.has("netpath"))
-			netPath_ = (String) options.valueOf("netpath");
-			
-			
-
+	
 
 		// TODO, write a method that checks consistency / if everything has been defined that we need
 		checkOptions();
