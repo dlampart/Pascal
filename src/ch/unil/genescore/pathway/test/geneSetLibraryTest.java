@@ -3,7 +3,6 @@ package ch.unil.genescore.pathway.test;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -11,31 +10,18 @@ import org.junit.Test;
 
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.pathway.Damper;
-import ch.unil.genescore.pathway.GeneScoreList;
+
 import ch.unil.genescore.pathway.GeneSet;
 import ch.unil.genescore.pathway.GeneSetLibrary;
 import ch.unil.genescore.pathway.MetaGene;
-import ch.unil.genescore.pathway.PathwayMain;
-import ch.unil.genescore.vegas.Snp;
-import ch.unil.genescore.vegas.SnpWeightMap;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.TreeSet;
 
-import ch.unil.genescore.gene.Gene;
-import ch.unil.genescore.main.FileExport;
-import ch.unil.genescore.main.Main;
-
-import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 public class geneSetLibraryTest extends GeneSetLibrary {
 
-	//./static ArrayList<Gene> genesForSimulationToInject= new ArrayList<Gene>();
-	private static Random rand = new Random();
+	
 	static GeneSet  geneSet_= new GeneSet("test");
 	//static GeneSetLibrary geneSetLib = new GeneSetLibrary();
 	//setGenesForSimulation(ArrayList<Gene> genesForSimulation)
