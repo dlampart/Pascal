@@ -263,12 +263,6 @@ public class Settings {
 
 	
 	
-	//TopLdSnp
-	static public boolean runTopLdSnp_ = false;
-	static public String firstList_ = "resources/eqtl/BrainDownloads/snpList.txt";
-	static public String secondList_ = "resources/gwas/dbgap/EUR.IBDGenetics.CD.txt";
-	static public String topLdSnpOutFile_ = "resources/eqtl/BrainDownloads/snpListLdPartners.txt";
-	
 	
 	//prioritizationAnalysis
 	static public boolean runPrioritizationAnalysis_ = true;

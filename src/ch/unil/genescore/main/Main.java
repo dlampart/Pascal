@@ -34,7 +34,6 @@ import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GeneAnnotation;
 import ch.unil.genescore.pathway.PathwayMain;
 import ch.unil.genescore.prioritization.PrioritizationMain;
-import ch.unil.genescore.topLdSnps.TopLdSnpsMain;
 import ch.unil.genescore.vegas.GenomeWideScoring;
 import ch.unil.genescore.vegas.ReferencePopulation;
 
@@ -133,9 +132,8 @@ public class Main {
 		if (!Settings.writeUsedSettings_.equals("")){
 			writeUsedSettings();
 		}
-		if (Settings.runTopLdSnp_)
-			runTopLdSnps();
-		else if (Settings.runConcatenateChromosomeResults_)
+	
+		if (Settings.runConcatenateChromosomeResults_)
 			concatenateChromosomeResults();
 		else if (Settings.runPathwayAnalysis_)
 			runPathwayAnalysis();				
@@ -198,12 +196,6 @@ public class Main {
 
 		PrioritizationMain prioritize = new PrioritizationMain();
 		prioritize.run();
-	}
-
-	public void runTopLdSnps(){
-
-		TopLdSnpsMain topLd = new TopLdSnpsMain();
-		topLd.run();
 	}
 
 
