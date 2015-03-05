@@ -40,7 +40,6 @@ import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.vegas.AnalyticVegas;
-import ch.unil.genescore.vegas.ProjectionVegas;
 import ch.unil.genescore.vegas.Snp;
 
 

@@ -41,7 +41,6 @@ import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.vegas.AnalyticVegas;
 import ch.unil.genescore.vegas.MaxVegas;
 import ch.unil.genescore.vegas.MaxVegasWithoutPruning;
-import ch.unil.genescore.vegas.ProjectionVegas;
 import ch.unil.genescore.vegas.Snp;
 
 /**
