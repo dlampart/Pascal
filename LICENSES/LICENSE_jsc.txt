@@ -1,0 +1,21 @@
+Disclaimer
+
+The author accepts no legal responsibility whatsoever for the use of the JSC library, or any other free software on this site, by other parties; and makes no guarantees, expressed or implied, about its quality, reliability, or any other characteristic. The software is provided "as is" and its author makes no guarantees that the software is without bugs, or that it will run on any particular platform.
+
+The JSC library is incomplete and still under construction. The author reserves the right to restructure JSC; change, withdraw or rename any of its classes or interfaces as he sees fit, without notice.
+
+The JSC library, or any other software on this site, is not designed or intended for use in on-line control of aircraft, air traffic, aircraft navigation or aircraft communications; or in the design, construction, operation or maintenance of any nuclear facility; or for any other safety-critical application. You must not use or redistribute the software for such purposes.
+
+Although the site invites emailed questions, comments, bug reports, requests etc., the author does not guarantee to always respond to such communications.
+
+The author makes reasonable efforts to protect the integrity of his computer files. However, there is always a risk attached to downloading files from the Internet. Please ensure that anything downloaded is virus-checked. The author accepts no liability for any loss or damage caused by the downloading of files from this site or their use. You assume all risk for any damage to your computer system or loss of data that results from obtaining any content or software from this website, including any damages resulting from computer viruses.
+
+The author cannot guarantee that this website's links to other resources on the Internet are always current or working. The author is not responsible for the content of external sites and provision of a link should not be taken as endorsement of any kind. The inclusion of any company's name within this website's pages should not be construed as an endorsement of that company's products and/or services.
+
+Intellectual property rights
+
+This site and all the software it provides are copyright © Andrew James Bertie, 2004, unless otherwise indicated. You must not remove or modify any copyright or trademark notice, or other notice of ownership, from the software. Acknowledgement of A. J. Bertie's copyright, authorship and permission must appear with any permitted reuse of this site's content or software. This includes any applications you develop using the JSC library, or extensions of it.
+
+The JSC library, applets or any other software downloaded for free from this site cannot be leased, sold or otherwise used for commercial gain without the express permission of the author. This prohibition includes large scale or fee paying educational use.
+
+You are permitted to extend and reuse the JSC library through the usual Java object-orientated mechanisms of inheritance, composition and access provided to classes, interfaces, packages etc. by the JSC application programming interface which is documented on this site at API. However, you must not modify, take apart, decompile, or reverse engineer the original JSC library. The author is willing, however, to consider making useful modifications to the JSC API if requested.

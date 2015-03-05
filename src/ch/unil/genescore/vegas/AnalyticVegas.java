@@ -1,28 +1,13 @@
-/*
-Copyright (c) 2013 Daniel Marbach
-
-We release this software open source under an MIT license (see below). If this
-software was useful for your scientific work, please cite our paper available at:
-http://networkinference.org
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
- */
+/*******************************************************************************
+ * Copyright (c) 2015 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package ch.unil.genescore.vegas;
 
 import java.util.ArrayList;
@@ -33,9 +18,6 @@ import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.SymmDenseEVD;
 import no.uib.cipr.matrix.UpperSymmDenseMatrix;
-import cern.colt.matrix.tdouble.DoubleFactory1D;
-import cern.colt.matrix.tdouble.DoubleFactory2D;
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import ch.unil.genescore.main.Main;
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.main.Utils;
@@ -146,6 +128,7 @@ public class AnalyticVegas extends Vegas {
 	public boolean computeScore() {
 		checkWeights();
 		constructMatToDecomposeMTJ();	
+		//constructMatToDecomposeMTJ();
 		// Initialize
 		reinitialize();				
 		// Compute the test statistic for the real p-values and the phenotype permutations if available
@@ -350,15 +333,15 @@ public class AnalyticVegas extends Vegas {
 		public void constructMatToDecomposeMTJNew() {
 			matToDecomposeMTJ_ = new UpperSymmDenseMatrix(covariance_);
 		}
-//TODO in release version: remove this and replace with much simpler above.		
+		
+
+
 	public void constructMatToDecomposeMTJ() {
 		
-		// constructWeightMat
-		DoubleFactory1D factory1d = DoubleFactory1D.dense;
-		DoubleFactory2D factory2d = DoubleFactory2D.dense;
-		DoubleMatrix2D weightMat = factory2d.diagonal(factory1d.make(weights_));	
-		DenseMatrix weightMatMTJ = new DenseMatrix(weightMat.toArray());
-		//TODO: change back: just for debugging.
+	
+		DenseMatrix weightMatMTJ = MTJConvenienceMethods.diagMTJ(weights_);
+			
+
 		DenseMatrix tmp = new DenseMatrix(covariance_);
 		
 		UpperSymmDenseMatrix mtjMat = new UpperSymmDenseMatrix(MTJConvenienceMethods.regularizeMat(tmp,0.0));
@@ -387,8 +370,7 @@ public class AnalyticVegas extends Vegas {
 
 	
 	// ----------------------------------------------------------------------------
-//TODO: Hack to use zscores to calculate chi-square stat if availabe 
-	//TODO:: problem here::do we get snpScores as zscores or pvals or chisquare
+
 	/** Compute test statistics with weights */
 	protected double computeTestStatisticRealSubclass() {
 		double myTest=0;

@@ -1,28 +1,13 @@
-/*
-Copyright (c) 2013 Daniel Marbach
-
-We release this software open source under an MIT license (see below). If this
-software was useful for your scientific work, please cite our paper available at:
-http://networkinference.org
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
- */
+/*******************************************************************************
+ * Copyright (c) 2015 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package ch.unil.genescore.pathway;
 
 import java.util.ArrayList;
@@ -42,11 +27,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javastat.inference.nonparametric.RankSumTest;
-import jdistlib.Binomial;
-import jdistlib.Exponential;
-import jdistlib.Gamma;
-import jdistlib.Uniform;
-import jdistlib.rng.MersenneTwister;
 import jsc.independentsamples.MannWhitneyTest;
 import jsc.tests.H1;
 import no.uib.cipr.matrix.DenseMatrix;
@@ -55,8 +35,6 @@ import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.distribution.HypergeometricDistribution;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
-import org.apache.commons.math3.stat.ranking.NaturalRanking;
-
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.main.FileExport;
 import ch.unil.genescore.main.FileParser;
@@ -95,7 +73,6 @@ public class GeneSetLibrary {
 	private int numSignificantSets_ = -1;
 	/** key: gene_ids ; values: all pws that contain this gene (or metagene containing that gene.)  */
 	private HashMap<String, HashSet<GeneSet>> samplingWeightHelper_ = null;
-	private static MersenneTwister myMersenne = new MersenneTwister();
 	
 	// ============================================================================
 	// PUBLIC METHODS
@@ -267,18 +244,8 @@ public class GeneSetLibrary {
 					fillUpGenesForSimulationArray(set);
 					if (Settings.useChi2_)
 						computeChi2Pvalue(set);
-					if(Settings.useGamma_)					
-						computeGammaPvalues(set);
-					if(Settings.useExpHyp_)					
-						computeExpHypPvalues(set);	
-					//	computeExpHypSimulatedPvalues(set);	
 				}		
-			//	if (Settings.useGamma_) {
-			//		rankGeneScoresAndMapToUniform();				
-			//		fillUpGenesForSimulationArray(set);
-			//		computeGammaPvalues(set);
-					
-			//	}		
+	
 				returnChiSqToPreviousVal(allChiSqValsCopy);
 			}
 		//}		
@@ -733,171 +700,6 @@ private void computeRankSumPvalue(GeneSet set) {
 //		set.setDepletion(depletion);
 	}
 	
-	/** Compute enrichment for the given set using chi2 distribution */
-	private void computeGammaPvalues(GeneSet set) {
-
-		double[] shapes = Settings.gammaShapeParameters_;
-		double[] pvals = new double[shapes.length];		
-		HashSet<Gene> pathwayGenes = set.getGenes();
-		if (pathwayGenes.size() == 0)
-			for (int i=0;i<shapes.length;i++){
-				pvals[i]=1;
-			}	
-			
-		for (int i=0 ; i<shapes.length; i++){
-					Gamma geneweiseGamma = new Gamma(shapes[i],2);								
-					// Sum the gamma stats
-		double q = 0;
-		for (Gene g : pathwayGenes)
-			q += geneweiseGamma.quantile(g.getNormalizedScore(), false,false);			
-		
-		
-		double pathwayShapeParam = shapes[i]*pathwayGenes.size();
-		Gamma pathwayGamma = new Gamma(pathwayShapeParam, 2);
-		// P(X > q) -- enrichment of genes with low p-values
-		pvals[i] = pathwayGamma.cumulative(q,false,false);
-		}
-		set.setGammaPvalues(pvals);
-//		set.setDepletion(depletion);
-	}
-	
-	/** Compute enrichment for the given set using chi2 distribution */
-	private void computeExpHypPvalues(GeneSet set) {
-
-		double[] shapes = Settings.expHypParameters_;
-		double[] pvals = new double[shapes.length];		
-		HashSet<Gene> pathwayGenes = set.getGenes();
-		if (pathwayGenes.size() == 0)
-			for (int i=0;i<shapes.length;i++){
-				pvals[i]=1;
-			}	
-			
-		
-		Exponential genewiseExp = new Exponential(1);
-		for (int i=0 ; i<shapes.length; i++){
-			Binomial mixingBin = new Binomial(pathwayGenes.size(),(1-shapes[i]));
-			
-			double expQantileAtBoundary=genewiseExp.quantile(shapes[i]);			
-			double a=expQantileAtBoundary;
-			double meanValOfBoundary=1-Math.exp(-a)-a*Math.exp(-a);
-			double c=meanValOfBoundary;
-			double n=pathwayGenes.size();
-			
-			c=0;
-			
-			double q = 0;
-			for (Gene g : pathwayGenes){
-				double myExpVal=genewiseExp.quantile(1-g.getNormalizedScore(),true, false);
-				if(myExpVal>a){
-					q += myExpVal;
-					//q += genewiseExp.quantile(1-g.getNormalizedScore(), true,false);
-				}
-
-				else{q += c;}
-				
-			}
-			if(q==0){
-				pvals[i]=1;
-				continue;
-			}
-			double q2=0;
-		//	System.out.println("bbsd");
-			for(int j=0; j<(n+1);j++){
-				//System.out.println("asvks");
-			//	System.out.println(mixingBin.density(j, false));
-		//	System.out.println(Gamma.cumulative((q-j*a-(n-j)*c), j, 1,true,false));
-				//System.out.println((n-j)*c);
-				//System.out.println(q-j*a);
-				q2 += mixingBin.density(j, false)*Gamma.cumulative((q-j*a-(n-j)*c), j, 1,true,false);			
-			}
-			pvals[i] = 1-q2;
-		}
-		set.setExpHypPvalues(pvals);
-//		set.setDepletion(depletion);
-	}
-	
-	/** Compute enrichment for the given set using chi2 distribution */
-	private void computeExpHypSimulatedPvalues(GeneSet set) {
-
-		//MersenneTwister myMersenne = new MersenneTwister();
-		double nrOfRuns=10000;
-		double[] shapes = Settings.expHypParameters_;
-		double[] pvals = new double[shapes.length];		
-		HashSet<Gene> pathwayGenes = set.getGenes();
-		if (pathwayGenes.size() == 0)
-			for (int i=0;i<shapes.length;i++){
-				pvals[i]=1;
-			}	
-			
-		
-		Exponential genewiseExp = new Exponential(1);
-		for (int i=0 ; i<shapes.length; i++){
-			double expQantileAtBoundary=genewiseExp.quantile(shapes[i]);
-			double a=expQantileAtBoundary;
-			double meanValOfBoundary=1-Math.exp(-a)-a*Math.exp(-a);
-			double c=meanValOfBoundary;
-			double q = 0;
-			double vals=0;
-			for (Gene g : pathwayGenes){
-				if((1-g.getNormalizedScore())>shapes[i]){
-				//	q += genewiseExp.quantile(g.getNormalizedScore(), false,false)-expQantileAtBoundary;
-				//}
-					q += genewiseExp.quantile(g.getNormalizedScore(), false,false);
-				}
-
-					else{q +=c;}
-			}
-			for(int j=0;j<nrOfRuns;j++){
-				double[] myRand = Uniform.random(pathwayGenes.size(), 0,1,myMersenne);
-				double qrand=0;
-				for (double rand: myRand){
-					if((1-rand)>shapes[i]){
-						qrand += genewiseExp.quantile(rand,false,false);
-					}										
-					else{qrand +=c;}
-				}
-				if (qrand>q)
-					vals += 1;								
-			}
-			pvals[i]=vals/nrOfRuns;
-		}
-		set.setExpHypPvalues(pvals);
-	}
-		
-	
-
-	/** Compute enrichment for the given set using chi2 distribution */
-	private void computeGammaPvaluesFromChi(GeneSet set) {
-
-		ChiSquaredDistribution chi2 = new ChiSquaredDistribution(1);
-		double[] shapes = Settings.gammaShapeParameters_;
-		double[] pvals = new double[shapes.length];		
-		HashSet<Gene> pathwayGenes = set.getGenes();
-		if (pathwayGenes.size() == 0)
-			for (int i=0;i<shapes.length;i++){
-				pvals[i]=1;
-			}	
-			
-		for (int i=0 ; i<shapes.length; i++){
-					Gamma geneweiseGamma = new Gamma(shapes[i],2);								
-					// Sum the gamma stats
-		double q = 0;
-		for (Gene g : pathwayGenes){
-			double cur = 1-chi2.cumulativeProbability(g.getChi2Stat());
-			q += geneweiseGamma.quantile(cur, false,false);			
-		}
-		
-		double pathwayShapeParam = shapes[i]*pathwayGenes.size();
-		Gamma pathwayGamma = new Gamma(pathwayShapeParam, 2);
-		// P(X > q) -- enrichment of genes with low p-values
-		pvals[i] = pathwayGamma.cumulative(q,false,false);
-		}
-		set.setGammaPvalues(pvals);
-//		set.setDepletion(depletion);
-	}
-
-
-
 	// ----------------------------------------------------------------------------
 
 	/** Load gene set library, only genes that have scores are included */

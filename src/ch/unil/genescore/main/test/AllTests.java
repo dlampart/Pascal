@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package ch.unil.genescore.main.test;
 
 import org.junit.runner.RunWith;
@@ -21,14 +31,10 @@ import ch.unil.genescore.vegas.test.SnpTest;
 @RunWith(Suite.class)
 //@SuiteClasses({ GenomicElementTest.class, SnpTest.class, AnalyticVegasTest.class, PathwayMainTest.class,MTJConvenienceMethodsTest.class})
 @SuiteClasses({
-	//TODO: classes not properly covered:
-	//Main, PathwayMain,SnpWeightCreator, 
-		
-
-	//gene/test
+	
 	GenomicElementTest.class,
 	
-	//pathway/test/
+	
 	RankSumTestTest.class,
 	geneSetLibraryTest.class,
 	FarebrotherTest.class,
@@ -40,7 +46,6 @@ import ch.unil.genescore.vegas.test.SnpTest;
 	OverlappedCollectionStreamTest.class,
 	OverlappedGenomicElementTest.class,
 	
-	//ReferencePopulationTest.class, isn't proper unit test
 	SnpTest.class,
 	GeneResultsSnpsOutOfBoundsTest.class,
 	GeneResultsNoScoreTest.class,

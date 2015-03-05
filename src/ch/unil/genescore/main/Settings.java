@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package ch.unil.genescore.main;
 
 import java.io.File;
@@ -10,7 +20,7 @@ import java.util.Random;
 
 import org.apache.commons.math3.random.Well19937c;
 
-import cern.jet.random.tdouble.engine.MersenneTwister64;
+
 import ch.unil.genescore.vegas.AnalyticVegas;
 import ch.unil.genescore.vegas.GeneScoreEvaluator;
 import ch.unil.genescore.vegas.MaxEffVegas;
@@ -30,8 +40,8 @@ public class Settings {
 	/** The properties (settings file) */
 	static private Properties set_ = null;
 	
-	/** Colt Mersenne Twister random engine (should be used by all other random number generators) */
-	static public MersenneTwister64 mersenneTwisterRng_ = null;
+
+
 	/** Apache Commons random engine */
 	static public Well19937c wellRng_ = null;
 	/** Java random engine */
@@ -413,11 +423,9 @@ public class Settings {
 		System.out.println("random seed:");
 		System.out.println(Integer.toString(randomSeed_));
 		if (randomSeed_ == -1) {
-			mersenneTwisterRng_ = new MersenneTwister64(new java.util.Date());
 			wellRng_ = new Well19937c();
 			jdkRng_ = new Random();
 		} else {
-			mersenneTwisterRng_ = new MersenneTwister64(randomSeed_);
 			wellRng_ = new Well19937c(randomSeed_);
 			jdkRng_ = new Random(randomSeed_);
 		}
