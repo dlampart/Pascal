@@ -1,12 +1,23 @@
 /*******************************************************************************
- * Copyright (c) 2015 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2015 David Lamparter, Daniel Marbach
  *
- * Contributors:
- *     IBM Corporation - initial API and implementation
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
@@ -32,7 +43,7 @@ public class MaxVegas extends AnalyticVegas {
 	protected enum Status {CONVERGED, FAIL, NOT_RUN, TOO_MANY_SNPS, NOT_POSDEF, EFF_NR_OF_TEST_ADJ};
 	Status status_ = null;
 	
-	//static MvnPack INSTANCE = (MvnPack) Native.loadLibrary("mvtpack", MvnPack.class);;
+	static MvnPack INSTANCE = (MvnPack) Native.loadLibrary("mvtpack", MvnPack.class);
 	//
 	//MvnPackDirectMapping INSTANCEDirect = new MvnPackDirectMapping();
 	protected double[] upper_ = null;
@@ -109,7 +120,7 @@ public class MaxVegas extends AnalyticVegas {
 		System.setProperty("jna.debug_load", "true");	
 		//INSTANCE = (MvnPack) Native.loadLibrary("/Users/dlampart/Documents/workspace/genescore/fortranlibs/libmvtpack.dlyb", MvnPack.class);
 		//INSTANCE = (MvnPack) Native.loadLibrary("fortranlibs/libmvtpack.dlyb", MvnPack.class);
-		//INSTANCE = (MvnPack) Native.loadLibrary("fortranlibs/mvtpack", MvnPack.class);
+		INSTANCE = (MvnPack) Native.loadLibrary("fortranlibs/mvtpack", MvnPack.class);
 				
 	}
 	
@@ -241,7 +252,7 @@ public class MaxVegas extends AnalyticVegas {
 			delta[i]=0;
 			lower[i]=(-1)*upper_[i];
 		}
-		
+
 		int maxpts = 1000;
 		double abseps=1e-15;
 		double releps=1e-3;
@@ -251,30 +262,44 @@ public class MaxVegas extends AnalyticVegas {
 		DoubleByReference error = new DoubleByReference(0);
 		DoubleByReference value = new DoubleByReference(0);
 		IntByReference inform = new IntByReference(0);
-		
+
 		double[] correlflat = new double[n*(n-1)/2];
 		for( int i = 0; i < n; i++ ) {
 			for( int j = 0; j < i; j++ ) {
 				correlflat[(j+1) + (i-1)*i/2 - 1] = correl_.get(i, j);
 			}
-		}		
-			
-		
+		}					
+
 		if (upper_.length<1000){
-		long t0 = System.currentTimeMillis();
-		MvnPackDirectMapping.mvtdst_(new IntByReference(n), new IntByReference(0), lower, upper_, infin, correlflat, delta, maxpts_ref, abseps_ref, releps_ref, error, value, inform);
-		long t1 = System.currentTimeMillis();
-		long timeDiff=t1-t0;
-		geneScore_=(1-value.getValue());
-	
-		double err = error.getValue();		
-		status_ = evaluateMvtdstStatus(inform.getValue());
-		
-		if(geneScore_==0){			
+			long t0 = System.currentTimeMillis();
+			MvnPackDirectMapping.mvtdst_(new IntByReference(n), new IntByReference(0), lower, upper_, infin, correlflat, delta, maxpts_ref, abseps_ref, releps_ref, error, value, inform);
+			long t1 = System.currentTimeMillis();
+			long timeDiff=t1-t0;
+			geneScore_=(1-value.getValue());
+
+			double err = error.getValue();		
+			status_ = evaluateMvtdstStatus(inform.getValue());
+			///do checks for errors.
+			if(Settings.externalConvergenceCheck_){
+				for(int i = 0; i< 8; i++){
+					if(err*3 < geneScore_ && status_==Status.CONVERGED){
+						break;
+					}
+
+					t0 = System.currentTimeMillis();
+					MvnPackDirectMapping.mvtdst_(new IntByReference(n), new IntByReference(0), lower, upper_, infin, correlflat, delta, maxpts_ref, abseps_ref, releps_ref, error, value, inform);
+					t1 = System.currentTimeMillis();
+					timeDiff=t1-t0;
+
+					geneScore_=(1-value.getValue());		
+					err = error.getValue();
+					status_ = evaluateMvtdstStatus(inform.getValue());
+				}
+			}
+			if(geneScore_==0){			
 				geneScore_=computeEffectivePval();	
 				status_=Status.EFF_NR_OF_TEST_ADJ;
-		}
-			
+			}
 		}
 		else{
 			geneScore_=1;
@@ -283,7 +308,7 @@ public class MaxVegas extends AnalyticVegas {
 			//status_=Status.TOO_MANY_SNPS;			
 		}
 	}
-	
+
 	protected double  computeEffectivePval(){
 		int effTest = computeEffectiveNrOfTests();
 		double maxStat = 0;

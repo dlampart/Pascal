@@ -33,6 +33,7 @@ verbose = 1
 # Directory with the reference population files (must be named 'refPopFilePrefix.chrXX.refPopFileExtension')
 refPopDirectory = resources/1kg
 #refPopDirectory = resources/colaus
+#refPopDirectory = resources/1kgCommon
 # Prefix of reference population files (e.g. EUR or some arbitrary name)
 refPopFilePrefix = EUR
 #refPopFilePrefix = Test
@@ -145,7 +146,7 @@ codingSnpsFile = resources/gwas/snps/cdsmut_and_gene.ensembl.EUR.txt
 # MAX VEGAS PARAMETERS
 
 # MAX solution to Vegas 
-useMaxVegas = 0
+useMaxVegas = 1
 # using the effective number of test approximation
 useMaxEffVegas = 0
 # pruning of correl matrix in maxvegas approach
@@ -155,7 +156,7 @@ maxPruningCutoff = 0.99
 # ANALYTIC VEGAS PARAMETERS
 
 # Analytic solution to Vegas (uses all SNPs in the gene window regardless of testStatisticNumSnps_)
-useAnalyticVegas = 1
+useAnalyticVegas = 0
 
 # The cutoff that the sum of eigenvalues has to reach.
 eigenValueFractionCut = 10000
@@ -238,7 +239,7 @@ writeUsedSettings = output/settingsOut.txt
 # PATHWAY ANALYSIS
 
 # Set true to run pathway analysis
-runPathwayAnalysis = 1
+runPathwayAnalysis = 0
 
 #output/EUR.wtccc2_ms.pvals_permut1--c2.all.v4.0.entrez.genescores.txt
 # The gene set library file (.gmt format used by GSEA)

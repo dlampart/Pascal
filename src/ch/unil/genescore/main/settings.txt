@@ -169,6 +169,8 @@ codingSnpsFile = resources/gwas/snps/cdsmut_and_gene.ensembl.EUR.txt
 useMaxVegas = 1
 # pruning of correl matrix in maxvegas approach
 maxPruningCutoff = 0.99
+# check converge of Max vegas externally 
+externalConvergenceCheck = 1
 
 # ========================================================================
 # ANALYTIC VEGAS PARAMETERS
