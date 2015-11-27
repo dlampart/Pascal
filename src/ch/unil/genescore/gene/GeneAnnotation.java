@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 
 import ch.unil.genescore.main.FileExport;
 import ch.unil.genescore.main.FileParser;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 
@@ -108,7 +108,7 @@ abstract public class GeneAnnotation {
 				if (!entry.getValue())
 					genesNotFound += entry.getKey() + " ";
 
-			Main.println("   - " + numNotFound + " genes were not found in the annotation: " + genesNotFound);
+			Pascal.println("   - " + numNotFound + " genes were not found in the annotation: " + genesNotFound);
 		}
 		//Don't need the hashmap put into list
 		LinkedList<Gene> genes = new LinkedList<Gene>();
@@ -171,7 +171,7 @@ abstract public class GeneAnnotation {
 			}
 			
 			if (gene.start_ < prevStart)
-				Main.error("Genes are not ordered by genomic position");
+				Pascal.error("Genes are not ordered by genomic position");
 			
 			String nextLine = gene.id_ + "\t" + gene.symbol_ + "\t" + 
 					gene.chr_ + "\t" + gene.start_ + "\t" + gene.end_ + "\t" + 
@@ -229,7 +229,7 @@ abstract public class GeneAnnotation {
 		// Parse header
 		String[] header = parser.readLine();
 		if (!header[0].equals("gene_id"))
-			Main.error("Expected header line with first field 'gene_id' (tab-separated)");
+			Pascal.error("Expected header line with first field 'gene_id' (tab-separated)");
 		
 		// First line
 		while (true) {

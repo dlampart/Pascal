@@ -79,7 +79,7 @@ public class FileParser {
 				reader_ = new BufferedReader(new FileReader(filename));
 			}
 		} catch (Exception e) {
-			Main.error(e);
+			Pascal.error(e);
 		}
 		readFirstLine();
 		
@@ -115,7 +115,7 @@ public class FileParser {
 			lineCounter_++;
 			nextLine_ = reader_.readLine();
 		} catch (IOException e) {
-			Main.error(e);
+			Pascal.error(e);
 		}
 		
 		//if (currentLine_ == null)
@@ -141,7 +141,7 @@ public class FileParser {
 				data.add(nextLine_.split(separator_));
 			}
 		} catch (IOException e) {
-			Main.error(e);
+			Pascal.error(e);
 		}
 		
 		return data;
@@ -160,7 +160,7 @@ public class FileParser {
 		try {
 			reader_.close();
 		} catch (IOException e) {
-			Main.error(e);
+			Pascal.error(e);
 		}
 	}
 	  
@@ -174,7 +174,7 @@ public class FileParser {
 			for (int i=0; i<N; i++)
 				reader_.readLine();
 		} catch (IOException e) {
-			Main.error(e);
+			Pascal.error(e);
 		}
 	}
 

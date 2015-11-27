@@ -30,7 +30,7 @@ import java.io.FileOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 public class StreamMethods {
@@ -38,7 +38,7 @@ public class StreamMethods {
 	
 	public static DataOutputStream openDataOutputStream(String filename , String binaryFileVersionID)  {
 
-		Main.println("Writing file: " + filename);
+		Pascal.println("Writing file: " + filename);
 
 		try {
 			FileOutputStream outfile = new FileOutputStream(filename);
@@ -60,7 +60,7 @@ public class StreamMethods {
 	public static DataInputStream openDataInputStream(String filename,  String binaryFileVersionID)  {
 		
 		if (Settings.verbose_)
-			Main.println("Reading file: " + filename);
+			Pascal.println("Reading file: " + filename);
 
 		try {
 			FileInputStream infile = new FileInputStream(filename);

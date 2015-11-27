@@ -24,7 +24,7 @@ package ch.unil.genescore.vegas;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 
 public class SnpSerializedPositionStream {
 
@@ -47,7 +47,7 @@ public class SnpSerializedPositionStream {
 			inStream = StreamMethods.openDataInputStream(filename, binaryFileVersionID);
 			}
 			catch(Exception e){
-				Main.error(e, "Error loading SNP position (try deleting the binary reference population files)");
+				Pascal.error(e, "Error loading SNP position (try deleting the binary reference population files)");
 			}	
 		inStream_ = inStream;
 		streamOpen_= true;
@@ -80,7 +80,7 @@ public class SnpSerializedPositionStream {
 				try {
 					inStream_.close();
 				} catch (IOException e) {
-					Main.error(e);
+					Pascal.error(e);
 				}
 				return null;
 			}		
@@ -89,10 +89,10 @@ public class SnpSerializedPositionStream {
 			try {
 				currentSnp.readPosAndMinorAllele(inStream_);
 			} catch (IOException e) {
-				Main.error(e, "Error loading SNP position (try deleting the binary reference population files)");				
+				Pascal.error(e, "Error loading SNP position (try deleting the binary reference population files)");				
 			} 
 			catch (DataInconsistencyException e) {
-				Main.error(e);
+				Pascal.error(e);
 			 }
 			return(currentSnp);
 		}

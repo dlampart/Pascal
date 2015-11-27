@@ -24,7 +24,7 @@ package ch.unil.genescore.gene;
 import java.util.LinkedHashMap;
 
 import ch.unil.genescore.main.FileParser;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 
@@ -164,7 +164,7 @@ public class GeneAnnotationGencode extends GeneAnnotation {
 		
 		int start = keyValueList.indexOf(key + " \"");
 		if (start == -1)
-			Main.error("Key not found: '" + key + "\"");
+			Pascal.error("Key not found: '" + key + "\"");
 		
 		start = start + key.length() + 2;
 		int end = keyValueList.indexOf("\"", start);

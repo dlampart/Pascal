@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import ch.unil.genescore.gene.Gene;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.main.Utils;
 
@@ -78,11 +78,11 @@ public class GeneWithItsSnps {
 			GeneResultsZeroOrAboveLimit_.addToMap(this);
 					
 			if (Settings.verbose_) {
-				Main.print("\t" + Utils.padRight("0h 0min 0s 0ms", 22));
+				Pascal.print("\t" + Utils.padRight("0h 0min 0s 0ms", 22));
 				if (getNrOfSnps() == 0)
-					Main.print("Gene has no SNPs\n");
+					Pascal.print("Gene has no SNPs\n");
 				else
-					Main.print("Gene exceeds max number of SNPs defined in settings file\n");			
+					Pascal.print("Gene exceeds max number of SNPs defined in settings file\n");			
 			
 			}
 			return false;
@@ -92,8 +92,8 @@ public class GeneWithItsSnps {
 	
 	public void printGeneNameAndNrOfSnps(){
 		String symb = Utils.padRight(((gene_.symbol_ == null) ? "NA" : gene_.symbol_), 16);
-		Main.print(Utils.padRight(gene_.id_, 18) + symb);
-		Main.print(String.format("%6d", snpList_.size()));
+		Pascal.print(Utils.padRight(gene_.id_, 18) + symb);
+		Pascal.print(String.format("%6d", snpList_.size()));
 	}
 }
 

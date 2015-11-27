@@ -30,7 +30,7 @@ import no.uib.cipr.matrix.AbstractMatrix;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.UpperSymmDenseMatrix;
 import ch.unil.genescore.main.FileExport;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.main.Utils;
 
@@ -266,7 +266,7 @@ public abstract class Vegas extends GeneScoreEvaluator {
             writer.println(line);
         }
         writer.close();
-        Main.println("");
+        Pascal.println("");
     }
     
     //public double[] getZscores(){

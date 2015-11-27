@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.main.FileExport;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 
@@ -46,7 +46,7 @@ public class GeneResultsSnpsOutOfBounds {
 		if (getZeroSnpsOrAboveSnpLimit().size() == 0)
 			return;
 		
-		Main.warning("Writing genes without SNPs or exceeding the maximum number of SNPs");
+		Pascal.warning("Writing genes without SNPs or exceeding the maximum number of SNPs");
 		setExporter(additionalOutputFileSuffix);
 		
 		String header = "gene_id\tsymbol\tSNPs";
@@ -58,7 +58,7 @@ public class GeneResultsSnpsOutOfBounds {
 			exporter_.println(line);
 		}
 		exporter_.close();
-		Main.println("");
+		Pascal.println("");
 	}
 	
 	public LinkedHashMap<Gene, Integer> getZeroSnpsOrAboveSnpLimit() {

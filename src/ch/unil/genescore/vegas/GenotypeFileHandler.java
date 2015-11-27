@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.zip.GZIPOutputStream;
 
 import ch.unil.genescore.main.FileParser;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 public class GenotypeFileHandler {
@@ -61,7 +61,7 @@ public class GenotypeFileHandler {
 
 			// Print info to console
 			if (!missingBinaryFilesCreated_) {
-				Main.println("Creating missing binary reference population files. Hang on, it has only to be done this one time...");
+				Pascal.println("Creating missing binary reference population files. Hang on, it has only to be done this one time...");
 				missingBinaryFilesCreated_ = true;
 			}
 			
@@ -198,11 +198,11 @@ public class GenotypeFileHandler {
 				} else {			
 					
 					if (Snp.getGenotypeLength() != snp.getGenotypes().length)
-						Main.error("error during file-Parsing: not same number of genotypes");
+						Pascal.error("error during file-Parsing: not same number of genotypes");
 					if (curChr != snp.getChrInt())
-						Main.error("error during file-Parsing: not constant chromosome");
+						Pascal.error("error during file-Parsing: not constant chromosome");
 					if (snp.start_ < prevSnpPos)
-						Main.error("error during file-Parsing: SNPs must be ordered by position");
+						Pascal.error("error during file-Parsing: SNPs must be ordered by position");
 				}
 				prevSnpPos = snp.start_;
 
@@ -223,7 +223,7 @@ public class GenotypeFileHandler {
 			parser.close();
 
 		} catch (IOException e) {
-			Main.error(e, "IO error converting text to binary file");
+			Pascal.error(e, "IO error converting text to binary file");
 		}
 	}
 	
@@ -259,7 +259,7 @@ public class GenotypeFileHandler {
 	 /** Open the data output stream for the given chromosome */
 		public DataOutputStream openDataOutputStream(String filename)  {
 
-			Main.println("Writing file: " + filename);
+			Pascal.println("Writing file: " + filename);
 
 			try {
 				FileOutputStream outfile = new FileOutputStream(filename);

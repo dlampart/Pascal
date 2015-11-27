@@ -21,7 +21,7 @@
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 
@@ -90,7 +90,7 @@ public class EmpiricalPvalue {
 
 		// Note, the correct (unbiased) estimate of a p-value from monte carlo sampling is not r/n, but (r+1)/(n+1)
 		if (numSamples_ <= 0)
-			Main.error("Number of samples <= 0, stop() may not have been called");
+			Pascal.error("Number of samples <= 0, stop() may not have been called");
 		
 		return (numSamplesGreater_ + 1.0) / (numSamples_ + 1.0);
 	}

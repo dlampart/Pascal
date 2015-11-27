@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 
@@ -61,7 +61,7 @@ public class ReferencePopulationFakeSignal  {
 			}
 			
 		} catch (IOException e) {
-			Main.error(e, "Error reading genotype length");
+			Pascal.error(e, "Error reading genotype length");
 		}
 		if (Snp.getGenotypeIsPhased()==true){
 			
@@ -100,7 +100,7 @@ public class ReferencePopulationFakeSignal  {
 			currentSnp_ = new Snp(snpId);
 			currentSnp_.readGenotype(refpop_.getInStream());					
 		} catch (Exception e) {
-			Main.error(e, "Error loading genotypes");
+			Pascal.error(e, "Error loading genotypes");
 		}		
 	}
 	

@@ -215,6 +215,7 @@ public class GeneSetLibrary {
 		
 		//if (Settings.useSimulation_){
 			double p;
+			// TODO @David delete?
 			double[] ps= null;
 			for (GeneSet set : geneSets_){
 				System.out.println(set.getId());

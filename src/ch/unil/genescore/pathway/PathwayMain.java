@@ -30,7 +30,7 @@ import java.util.LinkedHashMap;
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GeneAnnotation;
 import ch.unil.genescore.main.FileParser;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.main.Utils;
 import ch.unil.genescore.vegas.GenomeWideScoring;
@@ -43,6 +43,9 @@ import ch.unil.genescore.vegas.ReferencePopulation;
  */
 public class PathwayMain {
 
+	/** Reference to Pascal */
+	private Pascal pascal;
+	
 	/** The name, used for output files (default, extracted from gwas and gene set filenames) */
 	protected String name_ = null; 
 	/** The library of gene sets */
@@ -56,13 +59,15 @@ public class PathwayMain {
 	// PUBLIC METHODS
 	
 	/** Constructor */
-	public PathwayMain() {
+	public PathwayMain(Pascal pascal) {
+		
+		this.pascal = pascal;
 		
 		// Prefix used for output files
 		name_ = extractName(Settings.snpPvalFile_, Settings.geneSetFile_);
 		
-		Main.println("LOADING INPUT FILES");
-		Main.println("-------------------\n");		
+		Pascal.println("LOADING INPUT FILES");
+		Pascal.println("-------------------\n");		
 
 		// Load gene sets and genes, optionally with scores
 		genes_ = loadGenes();
@@ -83,12 +88,11 @@ public class PathwayMain {
 	// ----------------------------------------------------------------------------
 
 	/** Run enrichment analysis */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void run() {
 
 		
-			Main.println("COMPUTING GENE SCORES");
-			Main.println("---------------------\n");		
+			Pascal.println("COMPUTING GENE SCORES");
+			Pascal.println("---------------------\n");		
 
 			// Sort genes by position 	
 			if (!Settings.loadScoresFromFiles_){
@@ -100,27 +104,27 @@ public class PathwayMain {
 				geneScorer_.computeScores();
 			}
 			else {
-				Main.println("Loading genescores form files:");
-				Main.println(Settings.geneScoreFile_);
-				Main.println(Settings.metaGeneScoreFile_);
+				Pascal.println("Loading genescores form files:");
+				Pascal.println(Settings.geneScoreFile_);
+				Pascal.println(Settings.metaGeneScoreFile_);
 				genes_=loadScoresFromFile(Settings.geneScoreFile_);
 				
 			}
 			geneSetLib_ = new GeneSetLibrary(Settings.geneSetFile_, genes_);
 			
 			// Print info on gene overlap
-			Main.println();
-			Main.println("Loaded:");
-			Main.println("- " + geneSetLib_.getGeneSets().size() + " gene sets");
-			Main.println("- " + geneSetLib_.getGenes().size() + " genes with pathway / gene set annotation");			
-			Main.println("Ignored:");
-			Main.println("- " + geneSetLib_.getNotFoundInGenomeAnnot().size() + " genes not found in loaded genome annotation (" + GeneAnnotation.getAnnotationName() + ")");			
-			Main.println();	
+			Pascal.println();
+			Pascal.println("Loaded:");
+			Pascal.println("- " + geneSetLib_.getGeneSets().size() + " gene sets");
+			Pascal.println("- " + geneSetLib_.getGenes().size() + " genes with pathway / gene set annotation");			
+			Pascal.println("Ignored:");
+			Pascal.println("- " + geneSetLib_.getNotFoundInGenomeAnnot().size() + " genes not found in loaded genome annotation (" + GeneAnnotation.getAnnotationName() + ")");			
+			Pascal.println();	
 		
 		if (!(Settings.mergeGenesDistance_ < 0)) {
-			Main.println("CREATING META-GENES");
-			Main.println("-------------------\n");	
-			Main.println("Merging genes of the same pathway that are <" + Settings.mergeGenesDistance_ + "mb apart:");
+			Pascal.println("CREATING META-GENES");
+			Pascal.println("-------------------\n");	
+			Pascal.println("Merging genes of the same pathway that are <" + Settings.mergeGenesDistance_ + "mb apart:");
 		
 			// Merge neighboring genes in meta-genes
 			geneSetLib_.createMetaGenes();
@@ -128,10 +132,10 @@ public class PathwayMain {
 			// Output info
 			int[] minMaxTot = geneSetLib_.countMergedGenes();
 			int numMeta = geneSetLib_.getMetaGenes().size();
-			Main.println("- " + numMeta + " meta-genes created");
-			Main.println("- " + minMaxTot[2]/(double)numMeta + " genes per meta-gene on average (min=" + minMaxTot[0] + ", max=" + minMaxTot[1] + ")");
-			Main.println();
-			Main.println("Computing gene scores for meta-genes ...");
+			Pascal.println("- " + numMeta + " meta-genes created");
+			Pascal.println("- " + minMaxTot[2]/(double)numMeta + " genes per meta-gene on average (min=" + minMaxTot[0] + ", max=" + minMaxTot[1] + ")");
+			Pascal.println();
+			Pascal.println("Computing gene scores for meta-genes ...");
 
 			// Sort meta-genes by position
 			ArrayList<Gene> metagenes = new ArrayList<Gene>(geneSetLib_.getMetaGenes());
@@ -155,9 +159,9 @@ public class PathwayMain {
 				
 			}
 		}		
-		Main.println("COMPUTING GENE SET ENRICHMENT");
-		Main.println("-----------------------------\n");		
-		Main.println("Computing enrichment p-values for " + geneSetLib_.getGeneSets().size() + " gene sets ...");
+		Pascal.println("COMPUTING GENE SET ENRICHMENT");
+		Pascal.println("-----------------------------\n");		
+		Pascal.println("Computing enrichment p-values for " + geneSetLib_.getGeneSets().size() + " gene sets ...");
 		
 		// Remove genes without scores
 		geneSetLib_.removeMetaGenesWithoutScore();
@@ -177,9 +181,9 @@ public class PathwayMain {
 		long t1 = System.currentTimeMillis();
 				
 		
-		Main.println("- Runtime: " + Utils.chronometer(t1-t0));
-		Main.println("- " + geneSetLib_.countNumSignificantSets() + " gene sets with p-value < " + Settings.writeSignificanceThreshold_);
-		Main.println();
+		Pascal.println("- Runtime: " + Utils.chronometer(t1-t0));
+		Pascal.println("- " + geneSetLib_.countNumSignificantSets() + " gene sets with p-value < " + Settings.writeSignificanceThreshold_);
+		Pascal.println();
 		
 		// Write result
 		String filename = Settings.outputDirectory_ + "/" + name_ + ".txt";
@@ -247,7 +251,7 @@ public class PathwayMain {
 		
 	}
 	
-	protected LinkedHashMap loadGenes() {
+	protected LinkedHashMap<String, Gene> loadGenes() {
 		
 		// The genes from the genome annotation
 		LinkedHashMap<String, Gene> genes;		
@@ -257,7 +261,7 @@ public class PathwayMain {
 			// Remove excluded genes (this updates genes_)
 			if (!Settings.excludedGenesFile_.equals("")) {
 				int numRemoved = annot.removeGenes(Settings.excludedGenesFile_);
-				Main.println("- " + numRemoved + " genes removed because they are in the excluded genes file");
+				Pascal.println("- " + numRemoved + " genes removed because they are in the excluded genes file");
 			}
 
 		
@@ -280,7 +284,7 @@ public class PathwayMain {
 		if (!Settings.outputSuffix_.equals("")){
 			condDot=".";
 		}
-		return gwasName + ".PathwaySet--" + functName + "--" + Settings.outputSuffix_ + condDot + Settings.getGeneScoreEvaluator().getTypeString() + Settings.chromFileExtension_;
+		return gwasName + ".PathwaySet--" + functName + "--" + Settings.outputSuffix_ + condDot + pascal.getGenomeWideScoring().getEvaluator().getTypeString() + Settings.chromFileExtension_;
 	}
 	
 	

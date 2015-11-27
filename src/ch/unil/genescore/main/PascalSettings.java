@@ -42,7 +42,7 @@ import ch.unil.genescore.vegas.MaxSimulAndAnalyticVegas;
  * Offers global parameters (settings) and functions used by all classes of the
  * Main package.
  */
-public class Settings {	
+public class PascalSettings {	
 	
 	/** The configuration file with the settings (leave empty for default settings) */
 	static public String settingsFile_ = null;
@@ -545,8 +545,8 @@ public class Settings {
 		concatenateChromosomeResultsDir_ = getSetting("concatenateChromosomeResultsDir");
 		deleteOriginals_ = getSettingBoolean("deleteOriginals");
 		
-		gwasName_ = Utils.extractBasicFilename(Settings.snpPvalFile_, false);
-		chromFileExtension_ = Settings.chromosome_.equals("") ? "" : "." + Settings.chromosome_;
+		gwasName_ = Utils.extractBasicFilename(PascalSettings.snpPvalFile_, false);
+		chromFileExtension_ = PascalSettings.chromosome_.equals("") ? "" : "." + PascalSettings.chromosome_;
 	}
 	
 	

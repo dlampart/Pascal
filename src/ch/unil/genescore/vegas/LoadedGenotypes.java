@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import ch.unil.genescore.gene.GenomicElement;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 public class LoadedGenotypes {

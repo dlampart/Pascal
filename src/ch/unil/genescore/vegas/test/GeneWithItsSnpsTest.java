@@ -30,7 +30,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.unil.genescore.gene.Gene;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.main.Utils;
 import ch.unil.genescore.vegas.GeneWithItsSnps;

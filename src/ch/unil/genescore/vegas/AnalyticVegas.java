@@ -29,7 +29,7 @@ import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.SymmDenseEVD;
 import no.uib.cipr.matrix.UpperSymmDenseMatrix;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.main.Utils;
 
@@ -360,7 +360,7 @@ public class AnalyticVegas extends Vegas {
 		try {
 			evd = SymmDenseEVD.factorize(mtjMat);
 		} catch (NotConvergedException e) {
-			Main.println("Error: Eigendecomposition failed to converge");
+			Pascal.println("Error: Eigendecomposition failed to converge");
 		}
 		DenseMatrix eigenVects = evd.getEigenvectors();	
 		double[] eigenVals = evd.getEigenvalues();
@@ -427,7 +427,7 @@ public class AnalyticVegas extends Vegas {
 		try {
 			evd = SymmDenseEVD.factorize(matToDecomposeMTJ_);
 		} catch (NotConvergedException e) {
-			Main.println("Error: Eigendecomposition failed to converge");
+			Pascal.println("Error: Eigendecomposition failed to converge");
 		}
 		double[] ev = evd.getEigenvalues();
 

@@ -24,7 +24,7 @@ package ch.unil.genescore.vegas;
 import java.util.ArrayList;
 
 import ch.unil.genescore.main.FileExport;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 public class GeneResultsNoScore {
@@ -55,14 +55,14 @@ public void writeResultsToFile(String additionalOutputFileSuffix){
 		if (noScore_.size() == 0)
 			return;
 		
-		Main.warning("Gene score computation did not converge at specified precision for some genes");
+		Pascal.warning("Gene score computation did not converge at specified precision for some genes");
 		setExporter(additionalOutputFileSuffix);
 		String header = "chromosome\tstart\tend\tstrand\tgene_id\tsymbol\tScore\tStatus";		
 		exporter_.println(header);		
 		for (String line : noScore_)
 			exporter_.println(line);
 		exporter_.close();
-		Main.println("");
+		Pascal.println("");
 	}
 	
 }

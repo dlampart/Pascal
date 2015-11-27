@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import ch.unil.genescore.main.FileParser;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 
@@ -142,9 +142,9 @@ public class GeneAnnotationUcsc extends GeneAnnotation {
 
 		// Currently this happens only for 48 and 51 genes respectively...
 		if (inconsistentEntries.size() > 100)
-			Main.warning(inconsistentEntries.size() + " genes with multiple entries at different genomic positions were skipped");
+			Pascal.warning(inconsistentEntries.size() + " genes with multiple entries at different genomic positions were skipped");
 		if (inconsistentStrand.size() > 100)
-			Main.warning(inconsistentStrand.size() + " genes with inconsistent strands");
+			Pascal.warning(inconsistentStrand.size() + " genes with inconsistent strands");
 		
 		// Sort the genes
 		Genome genome = new Genome(genes_.values());

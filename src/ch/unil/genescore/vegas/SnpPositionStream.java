@@ -24,7 +24,7 @@ package ch.unil.genescore.vegas;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 
 public class SnpPositionStream
 	extends OverlappedGenomicElementFileStream
@@ -43,7 +43,7 @@ public class SnpPositionStream
 			inStream = StreamMethods.openDataInputStream(filename, binaryFileVersionID);
 			}
 			catch(Exception e){
-				Main.error(e, "Error loading SNP position (try deleting the binary reference population files)");
+				Pascal.error(e, "Error loading SNP position (try deleting the binary reference population files)");
 			}	
 		inStream_ = inStream;
 		streamOpen_= true;
@@ -105,7 +105,7 @@ public class SnpPositionStream
 			inStream = StreamMethods.openDataInputStream(filename_, binaryFileVersionID_);
 			}
 			catch(Exception e){
-				Main.error(e, "Error loading SNP position (try deleting the binary reference population files)");
+				Pascal.error(e, "Error loading SNP position (try deleting the binary reference population files)");
 			}	
 		inStream_ = inStream;
 		streamOpen_= true;

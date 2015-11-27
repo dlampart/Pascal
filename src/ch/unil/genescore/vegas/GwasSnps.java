@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 
 import ch.unil.genescore.gene.GeneAnnotationGencode;
 import ch.unil.genescore.main.FileParser;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 public class GwasSnps {
@@ -76,13 +76,13 @@ public class GwasSnps {
 				zval = Double.parseDouble(nextLine[4]);
 				if (Double.isNaN(zval)){					
 					String msg = "snp " + nextLine[0] + " couldn't be processed properly. (Maybe it's a NaN with additional white-spaces?)";
-					Main.warning(msg);
+					Pascal.warning(msg);
 					nextLine = parser.readLine();
 					continue;
 				}
 				if (Double.isInfinite(zval)){					
 					String msg = "snp " + nextLine[0] + " was read as infinity. Whas removed set to reasonable value yourself";
-					Main.warning(msg);
+					Pascal.warning(msg);
 					nextLine = parser.readLine();
 					continue;
 				}
@@ -90,7 +90,7 @@ public class GwasSnps {
 				
 			}catch(NumberFormatException e){
 				String msg = "snp " + nextLine[0] + " has no valid z-value (use NA or NaN for omitted values).";
-				Main.warning(msg);
+				Pascal.warning(msg);
 				nextLine = parser.readLine();
 				continue;				
 			}        
@@ -99,13 +99,13 @@ public class GwasSnps {
 				pval = Double.parseDouble(nextLine[5]);
 			}catch(NumberFormatException e){
 				String msg = "snp " + nextLine[0] + " has no valid p-value (use NA or NaN for omitted values).";
-				Main.warning(msg);
+				Pascal.warning(msg);
 				nextLine = parser.readLine();
 				continue;				
 			}            
             if (Double.isNaN(pval)){					
 				String msg = "snp " + nextLine[0] + " couldn't be processed properly. (Maybe it's a NaN with additional white-spaces?)";
-				Main.warning(msg);
+				Pascal.warning(msg);
 				nextLine = parser.readLine();
 				continue;
 			}
@@ -125,7 +125,7 @@ public class GwasSnps {
         }
         parser.close();
         if (numNA > 0)
-			Main.println("   - " + numNA + " SNPs were ignored because they have 'NA', 'NaN' or '' as p-value");
+			Pascal.println("   - " + numNA + " SNPs were ignored because they have 'NA', 'NaN' or '' as p-value");
 	
         snpsInList_ = snps;
     }	
@@ -176,13 +176,13 @@ public class GwasSnps {
 			}catch(NumberFormatException e){
 				String msg = "snp " + nextLine[0] + "has no valid p-value (use NA or NaN for omitted values).";
 				nextLine = parser.readLine();
-				Main.warning(msg);
+				Pascal.warning(msg);
 				continue;
 				
 			}
 			 if (Double.isNaN(pvals)){					
 					String msg = "snp" + nextLine[0] + "couldn't be processed properly. (Maybe it's a NaN with additional white-spaces?)";
-					Main.warning(msg);
+					Pascal.warning(msg);
 					continue;
 			 }
 			// Check that p-value is in [0,1]
@@ -191,7 +191,7 @@ public class GwasSnps {
 			// Some p-values become zero because they are smaller than the min double value
 			if (pvals < 1e-300) {
 				String msg = "snp " + nextLine[0] + "has p-value below 1E-300. Set to 1E-300.";
-				Main.warning(msg);
+				Pascal.warning(msg);
 				pvals = 1e-300;
 				numBelowMin++;
 			}
@@ -220,11 +220,11 @@ public class GwasSnps {
 		parser.close();
 		
 		if (multiSnps.size() > 0)
-			Main.warning(multiSnps.size() + " SNPs were removed because they are listed multiple times in the p-value file");
+			Pascal.warning(multiSnps.size() + " SNPs were removed because they are listed multiple times in the p-value file");
 		if (numNA > 0)
-			Main.println("   - " + numNA + " SNPs were ignored because they have 'NA', 'NaN' or '' as p-value");
+			Pascal.println("   - " + numNA + " SNPs were ignored because they have 'NA', 'NaN' or '' as p-value");
 		if (numBelowMin > 0)
-			Main.println("   - " + numBelowMin + " SNPs were set to the minimum allowed p-value (1e-300)");
+			Pascal.println("   - " + numBelowMin + " SNPs were set to the minimum allowed p-value (1e-300)");
 		
 		// Sort the list
 		//Collections.sort(list_);

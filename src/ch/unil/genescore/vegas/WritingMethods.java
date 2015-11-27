@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.Matrix;
 import ch.unil.genescore.main.FileExport;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 public class WritingMethods {
@@ -58,7 +58,7 @@ public class WritingMethods {
 			writer.println(line);
 		}
 		writer.close();
-		Main.println("");
+		Pascal.println("");
 	}
 
 	public static void writeGenotypeToFile(ArrayList<Snp> snpList, String fileName, String additonalDirectory) {
@@ -151,7 +151,7 @@ public class WritingMethods {
 			writer.println(line);
 		}
 		writer.close();
-		Main.println("");
+		Pascal.println("");
 	}
 
 	public static void writeLdMTJ(DenseMatrix cor, String geneName, String additonalDirectory) {
@@ -179,7 +179,7 @@ public class WritingMethods {
 			writer.println(line);
 		}
 		writer.close();
-		Main.println("");
+		Pascal.println("");
 	}
 
 }

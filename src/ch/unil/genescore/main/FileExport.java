@@ -74,7 +74,7 @@ public class FileExport {
 			}
 			
 		} catch (Exception e) {
-			Main.error(e);
+			Pascal.error(e);
 		}
 	}
 	
@@ -96,7 +96,7 @@ public class FileExport {
 		try {
 			writer_.write(str);
 		} catch (IOException e) {
-			Main.error(e);
+			Pascal.error(e);
 		}
 	}
 	
@@ -109,7 +109,7 @@ public class FileExport {
 		try {
 			writer_.flush();
 		} catch (IOException e) {
-			Main.error(e);
+			Pascal.error(e);
 		}
 	}
 
@@ -122,7 +122,7 @@ public class FileExport {
 		try {
 			writer_.close();
 		} catch (IOException e) {
-			Main.error(e);
+			Pascal.error(e);
 		}
 	}
 	  

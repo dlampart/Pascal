@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import ch.unil.genescore.main.FileParser;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 
 
@@ -89,12 +89,12 @@ public class GeneIdMapping {
 			
 			// Check number of columns
 			if (nextLine.length != 3)
-				Main.error("Expected three columns (ensembl id, entrez id, gene symbol)");
+				Pascal.error("Expected three columns (ensembl id, entrez id, gene symbol)");
 			
 			// Parse ensembl id
 			String ensg = nextLine[0];
 			if (!(ensg.length() > 4 && ensg.substring(0, 4).equals("ENSG")))
-				Main.error("Invalid ENSEMBL gene ID (expected 'ENSG...'): " + ensg);
+				Pascal.error("Invalid ENSEMBL gene ID (expected 'ENSG...'): " + ensg);
 			ensg = GeneAnnotationGencode.removeEnsemblVersion(ensg);
 
 			// Parse entrez id
@@ -103,7 +103,7 @@ public class GeneIdMapping {
 				try {
 					Integer.valueOf(entrez);
 				} catch (NumberFormatException e) {
-					Main.error("Invalid Entrez gene ID (expected an integer number): " + entrez);
+					Pascal.error("Invalid Entrez gene ID (expected an integer number): " + entrez);
 				}
 			}
 			

@@ -56,7 +56,7 @@ public class ProgressMonitor {
 		
 		t0_ = System.currentTimeMillis();
 		
-		Main.println("|-------------- Progress --------------|");
+		Pascal.println("|-------------- Progress --------------|");
 	}
 	
 	
@@ -84,7 +84,7 @@ public class ProgressMonitor {
 	public void estimatedTotalRuntime(int i) {
 		if (i % freq_ == 0) {
 			long t1 = System.currentTimeMillis();
-			Main.println(i + "\tERT: \t" + Utils.chronometer(totalIterations_*(t1-t0_)/i));
+			Pascal.println(i + "\tERT: \t" + Utils.chronometer(totalIterations_*(t1-t0_)/i));
 		}
 	
 	}
@@ -94,7 +94,7 @@ public class ProgressMonitor {
 
 	/** Print progress */
 	public void done() {
-		Main.print("\n\n");
+		Pascal.print("\n\n");
 	}
 
 }

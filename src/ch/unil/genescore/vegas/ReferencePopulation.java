@@ -43,7 +43,7 @@ import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.Genome;
 import ch.unil.genescore.gene.GenomicElement;
 import ch.unil.genescore.main.FileParser;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.main.Utils;
 
@@ -190,7 +190,7 @@ public class ReferencePopulation {
 			Snp.setGenotypeIsPhased(phased);
 			
 		} catch (IOException e) {
-			Main.error(e, "Error reading genotype length");
+			Pascal.error(e, "Error reading genotype length");
 		}
 	}
 
@@ -225,7 +225,7 @@ public class ReferencePopulation {
 			loadedEnd_ = snp.start_;
 		
 		} catch (Exception e) {
-			Main.error(e, "Error loading genotypes");
+			Pascal.error(e, "Error loading genotypes");
 		}
 
 	}
@@ -241,7 +241,7 @@ public class ReferencePopulation {
 			if (getInStream() != null)
 				getInStream().close();
 		} catch (IOException e) {
-			Main.error(e, "Error closing binary input genotype file");
+			Pascal.error(e, "Error closing binary input genotype file");
 		}
 	}
 			
@@ -363,7 +363,7 @@ public class ReferencePopulation {
 	protected void openDataInputStream(String filename)  {
 		
 		if (Settings.verbose_)
-			Main.println("Reading file: " + filename);
+			Pascal.println("Reading file: " + filename);
 
 		try {
 			FileInputStream infile = new FileInputStream(filename);

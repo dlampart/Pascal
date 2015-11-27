@@ -82,7 +82,7 @@ public class ChromosomeResultParser {
 		}
 		
 		// Concatenate files for the current directory
-		Main.println("Directory: " + root.getName());
+		Pascal.println("Directory: " + root.getName());
 		if (deleteOriginals_)
 			dirDelete_ = new ArrayList<File>();
 		else
@@ -106,7 +106,7 @@ public class ChromosomeResultParser {
 			for (File f : dirDelete_)
 				f.delete();
 		
-		Main.println();
+		Pascal.println();
 	}
 
 	
@@ -154,7 +154,7 @@ public class ChromosomeResultParser {
 			return header;
 			
 		} catch (Exception e) {
-			Main.error(e);
+			Pascal.error(e);
 			return null;
 		}
 	}
@@ -192,7 +192,7 @@ public class ChromosomeResultParser {
 			String msg = "Missing chromosomes: " + missingChromosomes.get(0);
 			for (int i=1; i<missingChromosomes.size(); i++)
 				msg += ", " + missingChromosomes.get(i);
-			Main.warning(msg);
+			Pascal.warning(msg);
 			
 			// Do not delete any files in this directory if there were incomplete runs
 			dirDelete_ = null;
@@ -231,7 +231,7 @@ public class ChromosomeResultParser {
 			if (curHeader_ != null) {
 				String header = reader.readLine();
 				if (!header.equals(curHeader_))
-					Main.error("Chromosome result files with inconsistent header lines");
+					Pascal.error("Chromosome result files with inconsistent header lines");
 			}
 			
 			// Read the first line
@@ -245,7 +245,7 @@ public class ChromosomeResultParser {
 			reader.close();
 						
 		} catch (Exception e) {
-			Main.error(e);
+			Pascal.error(e);
 		}
 	}
 

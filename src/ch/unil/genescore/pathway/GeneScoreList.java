@@ -33,7 +33,7 @@ import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GeneAnnotation;
 import ch.unil.genescore.gene.GenomicElement;
 import ch.unil.genescore.main.FileParser;
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 
 
 /**
@@ -211,11 +211,11 @@ public class GeneScoreList {
 		sortGeneList(0);
 		
 		if (numExcluded > 0)
-			Main.println("- " + numExcluded + " genes excluded");
+			Pascal.println("- " + numExcluded + " genes excluded");
 		if (numNoScore > 0)
-			Main.println("- " + numNoScore + " genes with NA score");
+			Pascal.println("- " + numNoScore + " genes with NA score");
 		if (numNoAnnot > 0)
-			Main.println("- " + numNoAnnot + " genes not found in the genome annotation");
+			Pascal.println("- " + numNoAnnot + " genes not found in the genome annotation");
 	}
 	
 	

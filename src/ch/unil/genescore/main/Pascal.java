@@ -36,9 +36,15 @@ import ch.unil.genescore.vegas.ReferencePopulation;
 /**
  * Main class
  */
-public class Main {
+public class Pascal {
 
+	/** The settings */
+	public GeneScoreOptionParser set;
+	
+	/** Computes gene scores */
+	private GenomeWideScoring genomeWideScoring;
 
+	
 	// ============================================================================
 	// STATIC METHODS
 
@@ -46,8 +52,9 @@ public class Main {
 	static public void main(String[] args) {
 		
 		try {
-			Main main = new Main(args);
+			Pascal main = new Pascal(args);
 			main.run();
+			
 		} catch (Exception e) {
 			error(e);
 		}
@@ -100,18 +107,21 @@ public class Main {
 	// PUBLIC METHODS
 	
 	/** Constructor, parse command-line arguments, initialize settings */
-	public Main(String[] args) {
+	public Pascal(String[] args) {
 		
-		Main.println("SETTINGS FILE");
-		Main.println("-------------\n");
+		Pascal.println("SETTINGS FILE");
+		Pascal.println("-------------\n");
 
+		// Set defaults
+		set = new GeneScoreOptionParser();
+		
 		// Parse command-line arguments and initialize settings
-		GeneScoreOptionParser optionParser = new GeneScoreOptionParser();
-		optionParser.parse(args);
-		optionParser.firstProcessingOfSettings();
+		if (args != null)
+			set.parse(args);
 				
 		// set jna path
 		System.setProperty("jna.library.path", "jars/lib/");
+		
 		// Create output directory
 		File outputDir = new File(Settings.outputDirectory_);
 		if (!outputDir.exists())
@@ -144,35 +154,35 @@ public class Main {
 	/** Compute gene scores summarizing multiple snps */
 	public void computeGeneScores() {
 		
-		Main.println("LOADING INPUT FILES");
-		Main.println("-------------------\n");		
+		Pascal.println("LOADING INPUT FILES");
+		Pascal.println("-------------------\n");		
 
-		GenomeWideScoring geneScore = new GenomeWideScoring();
+		genomeWideScoring = new GenomeWideScoring();
 		System.out.println(Settings.ucscAnnotationFile_);
 		// Load genes
 		LinkedList<Gene> genes = GeneAnnotation.createAnnotationInstance().loadAnnotation(Settings.genesToBeLoadedFile_);
 		// Load snps
 
-		geneScore.setGenes(genes);
+		genomeWideScoring.setGenes(genes);
 		ReferencePopulation myRefPop=new ReferencePopulation();				
 		myRefPop.loadGwasAndRelevantSnps();
-		geneScore.setReferencePopulation(myRefPop);
+		genomeWideScoring.setReferencePopulation(myRefPop);
 	
 		
 				
 		// Print info
-		Main.println();
+		Pascal.println();
 		if (Settings.chromosome_.equals(""))
-			Main.println("Loaded all chromosomes:");
+			Pascal.println("Loaded all chromosomes:");
 		else
-		Main.println("Loaded chromosome " + Settings.chromosome_ + ":");
-		Main.println("- " + genes.size() + " genes ");
-		Main.println();
+		Pascal.println("Loaded chromosome " + Settings.chromosome_ + ":");
+		Pascal.println("- " + genes.size() + " genes ");
+		Pascal.println();
 
-		Main.println("COMPUTING GENE SCORES");
-		Main.println("---------------------\n");		
+		Pascal.println("COMPUTING GENE SCORES");
+		Pascal.println("---------------------\n");		
 		
-		geneScore.computeScores();
+		genomeWideScoring.computeScores();
 	}
 
 
@@ -181,7 +191,7 @@ public class Main {
 	/** Run pathway / gene set enrichment analysis */
 	public void runPathwayAnalysis() {
 
-		PathwayMain pathways = new PathwayMain();
+		PathwayMain pathways = new PathwayMain(this);
 		pathways.run();
 	}
 	
@@ -194,8 +204,8 @@ public class Main {
 	public void concatenateChromosomeResults() {
 
 		// Concatenate chromosome results and exit
-		Main.println("CONCATENATING CHROMOSOME RESULTS");
-		Main.println("--------------------------------\n");	
+		Pascal.println("CONCATENATING CHROMOSOME RESULTS");
+		Pascal.println("--------------------------------\n");	
 	
 		ChromosomeResultParser results = new ChromosomeResultParser();
 		results.concatenateChromosomeResultFiles(Settings.concatenateChromosomeResultsDir_);
@@ -203,11 +213,9 @@ public class Main {
 	
 	public void writeUsedSettings(){
 		FileExport fl = new FileExport(Settings.writeUsedSettings_, false);
-		Class cls = null;
+
 		try {
-			
-			cls = Class.forName("ch.unil.genescore.main.Settings");
-		
+			Class<?> cls = Class.forName("ch.unil.genescore.main.Settings");
 	        System.out.println("Class found = " + cls.getName());
 	        System.out.println("Package = " + cls.getPackage());
 	        Field f[] = cls.getFields();
@@ -221,8 +229,14 @@ public class Main {
         }		
 		fl.close();
 	}
+	
+	
 	// ============================================================================
-	// PRIVATE METHODS
+	// GETTERS AND SETTERS
+
+	public GenomeWideScoring getGenomeWideScoring() {
+		return genomeWideScoring;
+	}
 		
 	
-	}
+}

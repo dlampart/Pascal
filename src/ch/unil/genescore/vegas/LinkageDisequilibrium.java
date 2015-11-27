@@ -29,7 +29,7 @@ import no.uib.cipr.matrix.DenseMatrix;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 
 
 /**
@@ -103,7 +103,7 @@ public class LinkageDisequilibrium {
 		
 		int n = g1.length;
 		if (g2.length != n || Snp.getGenotypeLength() != n)
-			Main.error("Genotype vectors must be same length");
+			Pascal.error("Genotype vectors must be same length");
 		
 		double preR = 0;
 		// if missing data present algorithm should behave as it would with mean-imputation

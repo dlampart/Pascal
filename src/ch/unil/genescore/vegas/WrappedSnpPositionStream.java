@@ -24,7 +24,7 @@ package ch.unil.genescore.vegas;
 import java.io.DataInputStream;
 import java.util.ArrayList;
 
-import ch.unil.genescore.main.Main;
+import ch.unil.genescore.main.Pascal;
 
 public class WrappedSnpPositionStream 
 //extends OverlappedGenomicElementFileStream
