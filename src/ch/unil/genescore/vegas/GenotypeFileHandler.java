@@ -35,25 +35,83 @@ import ch.unil.gpsutils.FileParser;
 
 public class GenotypeFileHandler {
 
-	/** The path and prefix of the ref pop files */
-	protected String filePrefix_ = null;
+	/** Prefix of reference population files including path / directory */
+	private String filePrefix;
+	/** File type of reference population files ('ser.gz', 'tped.gz' or 'txt.gz') */
+	private String fileType;
 	/** Version of the binary file format */
-	protected static final String binaryFileVersionID_ = "refpop_v1";
+	private static final String binaryFileVersionID_ = "refpop_v1";
 	/** Flag set true if at least one file had to be converted to binary (useful for console output) */
-	protected boolean missingBinaryFilesCreated_ = false;
+	private boolean missingBinaryFilesCreated_ = false;
+
+
+	// ============================================================================
+	// PUBLIC METHODS
+
+	/** Constructor (detect file formats based on first entry in chromosomes) */
+	public GenotypeFileHandler(ArrayList<String> chromosomes) {
+		
+		//refPopName = Pascal.set.refPopDirectory_ + "/" + Pascal.set.refPopFilePrefix_ + ".";
+		
+		// File formats are detected based on the first chromosome
+		if (chromosomes == null || chromosomes.size() < 1)
+			throw new RuntimeException("Empty list of chromosomes");
+		String chr = "." + chromosomes.get(0) + ".";
+		
+		// Extract the name from the files
+		String prefix = null;
+		// List all files in the ref pop dir
+		for (File f_i : Pascal.set.refPopDirectory_.listFiles()) {
+			// Skip dirs
+			if (f_i.isDirectory())
+				continue;
+				
+			// Check if the file corresponds to the first chromosome
+			if (f_i.getName().contains(chr)) {
+				// Get the prefix and suffix
+				String[] filename = f_i.getName().split(chr);
+				if (filename.length != 3)
+					throw new RuntimeException("Reference population files must have format: <prefix><chrom_name><suffix>, see documentation");
+				String prefix_i = filename[0];
+				String suffix_i = filename[2];
+				
+				// Get the prefix, should always be the same (e.g., EUR)
+				if (prefix == null)
+					prefix = prefix_i;
+				else if (!prefix.equals(prefix_i))
+					throw new RuntimeException("Two different prefixes found for " + chromosomes.get(0) + ":" 
+							+ prefix + " and " + prefix_i);
+				
+				// Get the suffix
+				// TODO @David check if correct
+				// If we find a .ser file, set this as file type (i.e., even if other files are also available)
+				if (suffix_i.endsWith(".ser.gz")) {
+					fileType = "ser.gz";
+				// Other file types don't have priority
+				} else if (fileType != null) {
+					if (suffix_i.endsWith(".tped.gz"))
+						fileType = "tped.gz";
+					else if (suffix_i.endsWith(".txt.gz"))
+						fileType = "txt.gz";
+				}
+			}
+	    }
+		filePrefix = new File(Pascal.set.refPopDirectory_, prefix).getPath();
+	}
+
 
 
 	/** Check if binary file for the given chromosome exist, if not create it */
 	protected void writeBinaryFiles(String chr) {		
 
-		String prefix = getFilePrefix() + chr + ".";
+		String prefix = filePrefix + chr + ".";
 		File binaryPosFile = new File(prefix + "pos.ser.gz");
 		File binaryGntFile = new File(prefix + "gnt.ser.gz");
 
 		// If the binary files don't exist yet
 		if (!binaryPosFile.exists() || !binaryGntFile.exists()) {
-			if (Pascal.set.refPopFileExtension_.equals("ser.gz"))
-				throw new RuntimeException("The binary reference population files specified in settings don't exist: " + prefix + "*");
+			if (fileType.equals("ser.gz"))
+				throw new RuntimeException("Binary reference population file not found: " + prefix + "*");
 
 			// Print info to console
 			if (!missingBinaryFilesCreated_) {
@@ -62,8 +120,7 @@ public class GenotypeFileHandler {
 			}
 
 			// Create binary files
-			File settingsFile = new File(prefix + Pascal.set.refPopFileExtension_);			
-			writeBinaryFiles(settingsFile, binaryPosFile, binaryGntFile);
+			writeBinaryFiles(new File(prefix + fileType), binaryPosFile, binaryGntFile);
 		}
 	}
 	static class UnserializedSnpFile {
@@ -212,8 +269,8 @@ public class GenotypeFileHandler {
 			}
 
 			// End of file is marked with the version ID
-			posStream.writeUTF(getBinaryFileVersionID());
-			gntStream.writeUTF(getBinaryFileVersionID());
+			posStream.writeUTF(binaryFileVersionID_);
+			gntStream.writeUTF(binaryFileVersionID_);
 			// Close files
 			posStream.close();
 			gntStream.close();
@@ -228,16 +285,16 @@ public class GenotypeFileHandler {
 	/**get inputStream-Object that that iterates over snp positions*/
 	public SnpSerializedPositionStream getSnpSerializedPositionStream(String chr){		 
 
-		String filename = getFilePrefix() + chr + ".pos.ser.gz";				
-		return new SnpSerializedPositionStream(filename, getBinaryFileVersionID());	
+		String filename = filePrefix + chr + ".pos.ser.gz";				
+		return new SnpSerializedPositionStream(filename, binaryFileVersionID_);	
 
 	}
 
 	/**get inputStream-Object that that iterates over snp positions*/
 	public SnpPositionStream getSnpPositionStream(String chr){		 
 
-		String filename = getFilePrefix() + chr + ".pos.ser.gz";				
-		return new SnpPositionStream(filename, getBinaryFileVersionID());	
+		String filename = filePrefix + chr + ".pos.ser.gz";				
+		return new SnpPositionStream(filename, binaryFileVersionID_);	
 
 	}
 	/**get inputStream-Object that that iterates over snp positions*/
@@ -245,11 +302,11 @@ public class GenotypeFileHandler {
 		//String[] filenames= new String[chrs.length];
 		ArrayList<String> filenames= new ArrayList<String>();
 		for (int i=0; i<chrs.length;i++){
-			String curString = getFilePrefix() + chrs[i] + ".pos.ser.gz";
+			String curString = filePrefix + chrs[i] + ".pos.ser.gz";
 			filenames.add(curString);
 		}
 		Collections.sort(filenames);
-		return new WrappedSnpPositionStream(filenames, getBinaryFileVersionID());	
+		return new WrappedSnpPositionStream(filenames, binaryFileVersionID_);	
 
 	}
 
@@ -265,7 +322,7 @@ public class GenotypeFileHandler {
 			DataOutputStream outStream = new DataOutputStream(buf);
 
 			// Write the version, used as a check when reading files
-			outStream.writeUTF(getBinaryFileVersionID());
+			outStream.writeUTF(binaryFileVersionID_);
 
 			return outStream;
 
@@ -274,21 +331,8 @@ public class GenotypeFileHandler {
 		}
 	}
 
-	public GenotypeFileHandler(){		
-		setupFilePrefix();
-	}
-
-	private void setupFilePrefix(){
-		// TODO
-		filePrefix_ = Pascal.set.refPopDirectory_ + "/" + Pascal.set.refPopFilePrefix_ + ".";
-	}
-
-	public String getFilePrefix(){
-		return filePrefix_;
-	}
+	public String getFilePrefix() { return filePrefix; }
 	public String getBinaryFileVersionID(){return binaryFileVersionID_;}
-
-
 
 
 }

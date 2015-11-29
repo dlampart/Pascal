@@ -92,10 +92,6 @@ public class PascalOptionParser extends PascalSettings {
 		if (options.has("mafcutoff"))
 			useMafCutoff_ = (Double) options.valueOf("mafcutoff");
 		
-		if (options.has("pop"))
-			refPopFilePrefix_ = (String) options.valueOf("pop");
-		if (options.has("popformat"))
-		refPopFileExtension_ = (String) options.valueOf("popformat");
 		if (options.has("chr"))
 			chromosome_ = "chr" + options.valueOf("chr");
 		

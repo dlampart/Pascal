@@ -78,10 +78,6 @@ public class PascalSettings extends Settings {
 	
 	/** Directory with the reference population files (must be named 'refPopFilePrefix.chrXX.refPopFileExtension') */
 	public File refPopDirectory_;
-	/** Prefix of reference population files (e.g. EUR or some arbitrary name) */
-	public String refPopFilePrefix_; // TODO delete, extract from file names
-	/** Extension of reference population files (defines format, must be 'ser.gz', 'tped.gz' or 'txt.gz') */
-	public String refPopFileExtension_; // TODO delete?
 	
 	/** File containing snp list to which analysis is restricted */
 	public File snpFilterFile_;
@@ -287,8 +283,6 @@ public class PascalSettings extends Settings {
 		withZScore_ = false;
 
 		refPopDirectory_ = null;
-		refPopFilePrefix_ = null;			
-		refPopFileExtension_ = null;
 
 		snpFilterFile_ = null;
 		genesToBeLoadedFile_ = null;
@@ -486,10 +480,6 @@ public class PascalSettings extends Settings {
 		
 		if (prop.containsKey("refPopDirectory"))
 			refPopDirectory_ = getFileSetting("refPopDirectory");
-		if (prop.containsKey("refPopFilePrefix"))
-			refPopFilePrefix_ = getSetting("refPopFilePrefix");
-		if (prop.containsKey("refPopFileExtension"))
-			refPopFileExtension_ = getSetting("refPopFileExtension");
 		
 		if (prop.containsKey("snpFilterFile"))
 			snpFilterFile_ = getFileSetting("snpFilterFile");

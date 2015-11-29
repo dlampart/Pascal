@@ -66,8 +66,6 @@ public class ReferencePopulation {
 	/** Flag set when end of file is reached */
 	private boolean endOfFile_ = false;
 	
-	/** The path and prefix of the ref pop files */
-	//protected String genotypeFileHandler_.getFilePrefix() = null;
 	/** The binary file being read */
 	private DataInputStream inStream_ = null;
 	
@@ -82,7 +80,8 @@ public class ReferencePopulation {
 	/** Constructor */
 	public ReferencePopulation() {
 		
-		setGenotypeFileHandler(new GenotypeFileHandler());		
+		// TODO @David wtf? :)
+		//setGenotypeFileHandler(new GenotypeFileHandler());		
 		//genotypeFileHandler_.getFilePrefix() = Settings.refPopDirectory_ + "/" + Settings.refPopFilePrefix_ + ".";
 		
 		// Initialize list of chromosomes to be considered
@@ -92,6 +91,9 @@ public class ReferencePopulation {
 				chromosomes_.add("chr" + i);
 		else
 			chromosomes_.add(Pascal.set.chromosome_);
+		
+		// Initialize genotype file handler
+		genotypeFileHandler_ = new GenotypeFileHandler(chromosomes_);
 		
 		// Create missing binary files if text or tped files were specified in settings
 		for (String chr : chromosomes_)
@@ -396,9 +398,9 @@ public class ReferencePopulation {
 		return genotypeFileHandler_;
 	}
 
-	protected void setGenotypeFileHandler(GenotypeFileHandler genotypeFileHandler_) {
-		this.genotypeFileHandler_ = genotypeFileHandler_;
-	}
+//	protected void setGenotypeFileHandler(GenotypeFileHandler genotypeFileHandler_) {
+//		this.genotypeFileHandler_ = genotypeFileHandler_;
+//	}
 
 	protected DataInputStream getInStream() {
 		return inStream_;
