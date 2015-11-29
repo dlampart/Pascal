@@ -180,7 +180,7 @@ public class PascalOptionParser extends PascalSettings {
 		if (options.has("detailed"))
 			writeDetailedOutput_ = true;
 		if (options.has("rewritesettings"))
-			writeUsedSettings_ = getFileOption("rewritesettings");
+			dumpSettingsToFile_ = (Boolean) options.valueOf("rewritesettings");
 
 		checkOptions();
 	}

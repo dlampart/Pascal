@@ -25,13 +25,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
 
 import org.apache.commons.math3.random.Well19937c;
 
-
+import ch.unil.gpsutils.FileExport;
 import ch.unil.gpsutils.Settings;
 
 
@@ -73,7 +74,7 @@ public class PascalSettings extends Settings {
 	/** The column in the tab-separated text file with the p-value (default column 2) */
 	public int pvalCol_;
 	/** GWAS file has Zscores (rs_nr\tZScore\tPval) */
-	public boolean withZScore_; // TODO are z-scores used? 
+	public boolean withZScore_; // TODO how are z-scores used? Give column as for pvals?
 	
 	/** Directory with the reference population files (must be named 'refPopFilePrefix.chrXX.refPopFileExtension') */
 	public File refPopDirectory_;
@@ -107,11 +108,6 @@ public class PascalSettings extends Settings {
 	/** Mapping file to convert Entrez IDs, ENSEMBL IDs and gene symbols */
 	public File geneIdMappingFile_;
 	
-	/** File with Snp-weights for each gene */ 
-	public File geneWiseSnpWeightsFile_;
-	/** File format Snp-weights*/ 
-	public String weightFileFormat_;
-
 	// ----------------------------------------------------------------------------
 	// PARAMETERS
 
@@ -167,11 +163,6 @@ public class PascalSettings extends Settings {
 	/** Number of integration terms for Davies method */
 	public int daviesIntegrationTerms_;
 
-	/** Keep Imhof result if error is below this bound even if the requested precision could not be reached */  
-	public double toleratedAbsolutePrecision_;
-	/** Keep Imhof result if error is below this bound even if the requested precision could not be reached */  
-	public double toleratedRelativePrecision_;
-
 	/** The delta parameter for weighting SNPs (set to 0 for unweighted, can be a comma-separated list of values) */
 	public ArrayList<Double> snpWeightingDelta_;
 
@@ -182,28 +173,22 @@ public class PascalSettings extends Settings {
 
 	/** When looking at gene A, filter out coding SNPs of genes B */
 	public boolean removeCodingSnpsOfOtherGenes_;
-	/** File where coding snps are defined */
-	public String codingSnpsFile_;
 
 	// ----------------------------------------------------------------------------
 	// OUTPUT
 
 	/** Write more detailed output to the console and the gene score file (estimated errors, Imhof and Farebrother status, ...) */
 	public boolean writeDetailedOutput_; 
-	/** Write more detailed output to the console and the gene score file (estimated errors, Imhof and Farebrother status, ...) */
-	public boolean writeDetailedErrorOutput_; 
 	/** Write a BED file with the coordinates for all considered SNPs (intersection of study SNPs and reference population SNPs) */
 	public boolean writeSnpBedFile_;
 	/** Write plink-Tped file for the genotype that was used */
 	public boolean writeTpedFile_;
-	/** Flag to output a separate file for each gene with snp positions, p-values and correlation matrix */
-	public boolean saveGeneReports_;
 	/** Path to were we would write all Correlation matrices (if null no writing) */
-	public boolean writeCorFiles_; // TODO delete if redundant
+	public boolean writeCorFiles_;
 	/** Path to were we would write all Correlation matrices (if null no writing) */
-	public boolean writeGenewiseSnpFiles_; // TODO delete if redundant with saveGeneReports
-	/** Path to were a settingsfile that was used should be written if empty no writing happens */
-	public File writeUsedSettings_; // TODO delete, check that it is always written
+	public boolean writeGenewiseSnpFiles_;
+	/** Dump all settings to a file (ugly format without comments) */
+	public boolean dumpSettingsToFile_;
 	
 	// ----------------------------------------------------------------------------
 	// PATHWAY ANALYSIS
@@ -249,11 +234,10 @@ public class PascalSettings extends Settings {
 	
 	/** Write only gene sets that pass the given significance level */
 	public double writeSignificanceThreshold_;
-	/** Set true to write gene and meta-gene scores to a file */ 
-	public boolean writeGeneScores_;
 
-	
+	// ----------------------------------------------------------------------------
 	// CONCATENATE CHROMOSOME RESULT FILES
+	
 	/** Set true to run concatenate chromosome results */
 	public boolean runConcatenateChromosomeResults_;
 	/** Concatenate individual chromosome result files in the given directory */
@@ -320,9 +304,6 @@ public class PascalSettings extends Settings {
 		loadOnlyProteinCodingGenes_ = false;
 		geneIdMappingFile_ = null;
 
-		geneWiseSnpWeightsFile_ = null;
-		weightFileFormat_ = null;
-
 		// PARAMETERS
 		geneWindowUpstream_ = -1;
 		geneWindowDownstream_ = -1;
@@ -353,27 +334,21 @@ public class PascalSettings extends Settings {
 		daviesErrorBound_ = -1;
 		daviesIntegrationTerms_ = -1;
 
-		toleratedAbsolutePrecision_ = -1;
-		toleratedRelativePrecision_ = -1;
-
 		snpWeightingDelta_ = null;
 
 		adaptiveNumSamples_ = null;
 		numSamplesGreaterCutoff_ = -1;
 
 		removeCodingSnpsOfOtherGenes_ = false;
-		codingSnpsFile_ = null;
 
 		// OUTPUT
 		writeDetailedOutput_ = true; 
-		writeDetailedErrorOutput_ = true; 
 		writeSnpBedFile_ = false;
 		writeTpedFile_ = false;
-		saveGeneReports_ = false;
 		writeCorFiles_ = false;
 		writeGenewiseSnpFiles_ = false;
-		writeUsedSettings_ = null;
-
+		dumpSettingsToFile_ = false;
+		
 		// PATHWAY ANALYSIS
 		runPathwayAnalysis_ = false;
 		geneSetFile_ = null;
@@ -410,7 +385,6 @@ public class PascalSettings extends Settings {
 		metaGeneScoreFile_ = null; 
 
 		writeSignificanceThreshold_ = -1;
-		writeGeneScores_ = false;
 
 		// CONCATENATE CHROMOSOME RESULT FILES
 		runConcatenateChromosomeResults_ = false;
@@ -461,6 +435,28 @@ public class PascalSettings extends Settings {
 	
 	// ----------------------------------------------------------------------------
 
+	/** Dump all settings to a file (ugly format without comments) */
+	public void dumpSettingsToFile(){
+		
+		FileExport writer = new FileExport(Pascal.log, new File(outputDirectory_, "settingsDump.txt"));
+		try {
+			Class<?> cls = Class.forName("ch.unil.genescore.main.Settings");
+	        System.out.println("Class found = " + cls.getName());
+	        System.out.println("Package = " + cls.getPackage());
+	        Field f[] = cls.getFields();
+	        for (int i = 0; i < f.length; i++) {
+	        	 String result = String.format("%s\t%s",f[i].getName() ,f[i].get(null));
+		          writer.println(result);
+	        }
+        } catch (Exception e) {
+			throw new RuntimeException(e);
+        } finally {
+        	writer.close();
+        }
+	}
+	
+	
+	// ----------------------------------------------------------------------------
 	
 	/** Set Main parameters based on the loaded properties */
 	private void setParameterValues() throws Exception {
@@ -520,11 +516,6 @@ public class PascalSettings extends Settings {
 		if (prop.containsKey("geneIdMappingFile"))
 			geneIdMappingFile_ = getFileSetting("geneIdMappingFile");
 
-		if (prop.containsKey("geneWiseSnpWeightsFile"))
-			geneWiseSnpWeightsFile_= getFileSetting("geneWiseSnpWeightsFile");
-		if (prop.containsKey("weightFileFormat"))
-			weightFileFormat_= getSetting("weightFileFormat");
-		
 		// ----------------------------------------------------------------------------
 		// PARAMETERS
 		
@@ -580,11 +571,6 @@ public class PascalSettings extends Settings {
 		if (prop.containsKey("daviesIntegrationTerms"))
 			daviesIntegrationTerms_ = getSettingInt("daviesIntegrationTerms");
 
-		if (prop.containsKey("toleratedAbsolutePrecision"))
-			toleratedAbsolutePrecision_ = getSettingDouble("toleratedAbsolutePrecision");
-		if (prop.containsKey("toleratedRelativePrecision"))
-			toleratedRelativePrecision_ = getSettingDouble("toleratedRelativePrecision");
-
 		if (prop.containsKey("snpWeightingDelta"))
 			snpWeightingDelta_ = getSettingDoubleArray("snpWeightingDelta", false, Pascal.log);
 
@@ -595,28 +581,22 @@ public class PascalSettings extends Settings {
 
 		if (prop.containsKey("removeCodingSnpsOfOtherGenes"))
 			removeCodingSnpsOfOtherGenes_ = getSettingBoolean("removeCodingSnpsOfOtherGenes");
-		if (prop.containsKey("codingSnpsFile"))
-			codingSnpsFile_ = getSetting("codingSnpsFile");
 
 		// ----------------------------------------------------------------------------
 		// OUTPUT
 		
 		if (prop.containsKey("writeDetailedOutput"))
 			writeDetailedOutput_ = getSettingBoolean("writeDetailedOutput");
-		if (prop.containsKey("writeDetailedErrorOutput"))
-			writeDetailedErrorOutput_ = getSettingBoolean("writeDetailedErrorOutput");
 		if (prop.containsKey("writeSnpBedFile"))
 			writeSnpBedFile_ = getSettingBoolean("writeSnpBedFile");
 		if (prop.containsKey("writeTpedFile"))
 			writeTpedFile_ = getSettingBoolean("writeTpedFile");
-		if (prop.containsKey("saveGeneReports"))
-			saveGeneReports_ = getSettingBoolean("saveGeneReports");
 		if (prop.containsKey("writeCorFiles"))
 			writeCorFiles_ = getSettingBoolean("writeCorFiles");
 		if (prop.containsKey("writeGenewiseSnpFiles"))
-			writeGenewiseSnpFiles_=getSettingBoolean("writeGenewiseSnpFiles");
-		if (prop.containsKey("writeUsedSettings"))
-			writeUsedSettings_ = getFileSetting("writeUsedSettings");
+			writeGenewiseSnpFiles_ = getSettingBoolean("writeGenewiseSnpFiles");
+		if (prop.containsKey("dumpSettingsToFile"))
+			dumpSettingsToFile_ = getSettingBoolean("dumpSettingsToFile");
 
 		// ----------------------------------------------------------------------------
 		// PATHWAY ANALYSIS
@@ -662,8 +642,6 @@ public class PascalSettings extends Settings {
 
 		if (prop.containsKey("writeSignificanceThreshold"))
 			writeSignificanceThreshold_ = getSettingDouble("writeSignificanceThreshold");
-		if (prop.containsKey("writeGeneScores"))
-			writeGeneScores_ = getSettingBoolean("writeGeneScores");
 
 		// CONCATENATE CHROMOSOME RESULT FILES
 		if (prop.containsKey("runConcatenateChromosomeResults"))
@@ -735,9 +713,10 @@ public class PascalSettings extends Settings {
 		if (param < min || param > max)
 			throw new IllegalArgumentException("Parameter " + paramName + "=" + param + " is outside of its valid range [" + min + ", " + max + "]");
 	}
-
 	
-	// ----------------------------------------------------------------------------
+	
+	// ============================================================================
+	// GETTERS AND SETTERS
 
 	/** Create new instances for the random number generators, initialize with randomSeed_ */
 	public void setRandomSeed(int seed) {
@@ -753,7 +732,7 @@ public class PascalSettings extends Settings {
 			jdkRng_ = new Random(randomSeed_);
 		}
 	}
-	
+
 	public int getRandomSeed() { return randomSeed_; }
 
 

@@ -279,6 +279,7 @@ public class GenotypeFileHandler {
 	}
 
 	private void setupFilePrefix(){
+		// TODO
 		filePrefix_ = Pascal.set.refPopDirectory_ + "/" + Pascal.set.refPopFilePrefix_ + ".";
 	}
 

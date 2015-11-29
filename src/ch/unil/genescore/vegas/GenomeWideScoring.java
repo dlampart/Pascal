@@ -161,9 +161,10 @@ public class GenomeWideScoring {
 			// Print info on method and parameters used to console
 			printConsoleMethodInfo();
 			// Load MTJ, display info
-			if (Pascal.set.writeDetailedErrorOutput_){
+			// TODO @David I removed this option, if you want we can only show if Pascal.set.verbose_
+			//if (Pascal.set.writeDetailedErrorOutput_){
 				initializeMtj();
-			}
+			//}
 		}
 		// Open output file
 		scores_ =  new GeneResultsScore();						

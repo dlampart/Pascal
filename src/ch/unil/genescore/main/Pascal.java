@@ -21,7 +21,6 @@
  *******************************************************************************/
 package ch.unil.genescore.main;
 
-import java.lang.reflect.Field;
 import java.util.LinkedList;
 
 import ch.unil.genescore.gene.Gene;
@@ -29,7 +28,6 @@ import ch.unil.genescore.gene.GeneAnnotation;
 import ch.unil.genescore.pathway.PathwayMain;
 import ch.unil.genescore.vegas.GenomeWideScoring;
 import ch.unil.genescore.vegas.ReferencePopulation;
-import ch.unil.gpsutils.FileExport;
 import ch.unil.gpsutils.Logger;
 import ch.unil.gpsutils.Utils;
 
@@ -157,9 +155,8 @@ public class Pascal {
 	/** Parse the command-line arguments, read the files, perform network inference, write outputs */
 	public void run() {
 		
-		if (!set.writeUsedSettings_.equals("")){
-			writeUsedSettings();
-		}
+		if (set.dumpSettingsToFile_)
+			set.dumpSettingsToFile();
 	
 		if (set.runConcatenateChromosomeResults_)
 			concatenateChromosomeResults();
@@ -234,24 +231,6 @@ public class Pascal {
 		results.concatenateChromosomeResultFiles(set.concatenateChromosomeResultsDir_);
 	}
 	
-	public void writeUsedSettings(){
-		FileExport fl = new FileExport(log, set.writeUsedSettings_);
-
-		try {
-			Class<?> cls = Class.forName("ch.unil.genescore.main.Settings");
-	        System.out.println("Class found = " + cls.getName());
-	        System.out.println("Package = " + cls.getPackage());
-	        Field f[] = cls.getFields();
-	        for (int i = 0; i < f.length; i++) {
-	        	 String result = String.format("%s\t%s",f[i].getName() ,f[i].get(null));
-		          fl.println(result);
-	        }
-        } catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-        }		
-		fl.close();
-	}
 	
 	
 	// ============================================================================

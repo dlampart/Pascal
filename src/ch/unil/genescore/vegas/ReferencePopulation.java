@@ -307,7 +307,7 @@ public class ReferencePopulation {
 		}
 		// Remove SNPs not in snpPruneFile
 		File snpFilterFile = Pascal.set.snpFilterFile_;
-		if (!(snpFilterFile == null) && !snpFilterFile.equals(""))
+		if (snpFilterFile != null)
 			snps.keepOnlySnpsInFilterListFile(snpFilterFile);
 
 //TODO: process again		if (Settings.removeCodingSnpsOfOtherGenes_)
@@ -330,14 +330,15 @@ public class ReferencePopulation {
 		gSnps.addElements(snps.getSnpsInList().values());		
 		
 		// Print location of SNPs of this study as bed file
+		String filename = Pascal.set.gwasName_ + ".snps" + Pascal.set.chromFileExtension_;
 		if (Pascal.set.writeSnpBedFile_) {
-			File bedFile = new File(Pascal.set.outputDirectory_, Pascal.set.gwasName_ + ".snps" + Pascal.set.chromFileExtension_ + ".txt");
+			File bedFile = new File(Pascal.set.outputDirectory_, filename + ".txt");
 			gSnps.writeBedFile(bedFile);
 		}
 		if (Pascal.set.writeTpedFile_){
-			File tfamFile = new File(Pascal.set.outputDirectory_, Pascal.set.gwasName_ + ".snps" + Pascal.set.chromFileExtension_ + ".tfam");
+			File tfamFile = new File(Pascal.set.outputDirectory_, filename + ".tfam");
             gSnps.writePseudoTfamPlinkFile(tfamFile);
-            File tpedFile = new File(Pascal.set.outputDirectory_, Pascal.set.gwasName_ + ".snps" + Pascal.set.chromFileExtension_ + ".tped");
+            File tpedFile = new File(Pascal.set.outputDirectory_, filename + ".tped");
             gSnps.writeTpedPlinkFile(tpedFile);			
 		}
 		setGenomeSnps(gSnps);
