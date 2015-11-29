@@ -22,9 +22,6 @@ package ch.unil.genescore.pathway.test;
  *******************************************************************************/
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import javastat.inference.nonparametric.RankSumTest;
 import jsc.independentsamples.MannWhitneyTest;
 import jsc.tests.H1;
@@ -34,12 +31,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ch.unil.genescore.gene.Gene;
-import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.pathway.GeneScoreList;
-import ch.unil.genescore.pathway.GeneSet;
-import ch.unil.genescore.pathway.GeneSetLibrary;
-import ch.unil.genescore.pathway.PathwayMain;
+import ch.unil.genescore.main.Pascal;
 
 
 /**
@@ -53,7 +45,7 @@ public class RankSumTestTest {
 	
 	@BeforeClass
 	public static void testSetup() {
-		Settings.loadSettings();
+		Pascal.set.resetToDefaults();
 	}
 
 	@AfterClass

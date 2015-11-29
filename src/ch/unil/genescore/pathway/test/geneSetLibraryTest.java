@@ -30,8 +30,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.unil.genescore.gene.Gene;
-import ch.unil.genescore.main.Settings;
-
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.pathway.GeneSet;
 import ch.unil.genescore.pathway.GeneSetLibrary;
 import ch.unil.genescore.pathway.MetaGene;
@@ -56,7 +55,7 @@ public class geneSetLibraryTest extends GeneSetLibrary {
 	
 	@BeforeClass
 	public static void testSetup() {
-	//	Settings.loadSettings();	
+		Pascal.set.resetToDefaults();
 	}
 
 	@AfterClass
@@ -172,7 +171,9 @@ public class geneSetLibraryTest extends GeneSetLibrary {
 			totSet[i]=i;
 		}
 		double[] subSet = {30,40,41,42,43,44,45,46,48,49};
-		Settings.hypGeomQuantiles_[0] =  0.89;
+		//Pascal.set.hypGeomQuantiles_[0] =  0.89;
+		Pascal.set.hypGeomQuantiles_ = new ArrayList<Double>();
+		Pascal.set.hypGeomQuantiles_.add(0.89);
 		GeneSetLibraryForTest myLib = new GeneSetLibraryForTest();
 		double[] out = myLib.wrapHypGeomPvalue2(subSet,totSet);		
 		double res = 0.003964583+0.0001189375;

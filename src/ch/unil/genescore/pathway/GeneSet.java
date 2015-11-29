@@ -29,8 +29,7 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 import ch.unil.genescore.gene.Gene;
-import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.main.Utils;
+import ch.unil.genescore.main.Pascal;
 
 
 /**
@@ -45,9 +44,6 @@ public class GeneSet {
 	 HashSet<Gene> genes_ = null;
 	/** The set of meta-genes (this is a subset of genes_) */
 	private HashSet<MetaGene> metaGenes_ = null;
-	/** Ignored genes because no score could be computed (no SNPs, above SNP limit, or error during computation) */
-	private HashSet<Gene> genesWithoutScore_ = null;
-	
 	/** The p-value computed using a simulation test */
 	private double simulPvalue_ = Double.NaN;
 	/** The p-value computed using a simulation test Weighted */
@@ -100,7 +96,7 @@ public class GeneSet {
 	public void createMetaGenes(HashMap<String, MetaGene> allMetaGenes) {
 		
 		setMetaGenes(new HashSet<MetaGene>());
-		final int mergeDist = (int) Math.floor(1000000 * Settings.mergeGenesDistance_);
+		final int mergeDist = (int) Math.floor(1000000 * Pascal.set.mergeGenesDistance_);
 		
 		if (genes_.size() < 1)
 			return;
@@ -239,35 +235,35 @@ public class GeneSet {
 		String str = id_;
 
 		// Enrichment pvals
-		if (Settings.useChi2_) {
-			str += "\t" + Utils.toStringScientific10(chi2Pvalue_);
+		if (Pascal.set.useChi2_) {
+			str += "\t" + Pascal.utils.toStringScientific10(chi2Pvalue_);
 		}
-		if (Settings.useSimulation_)
-			str += "\t" + Utils.toStringScientific10(simulPvalue_);
+		if (Pascal.set.useSimulation_)
+			str += "\t" + Pascal.utils.toStringScientific10(simulPvalue_);
 		
-		if (Settings.useSimulationWeightedSampling_)
-			str += "\t" + Utils.toStringScientific10(simulPvalueWeighted_);
+		if (Pascal.set.useSimulationWeightedSampling_)
+			str += "\t" + Pascal.utils.toStringScientific10(simulPvalueWeighted_);
 		
 		
-		if (Settings.useRankSum_)
-			str += "\t" + Utils.toStringScientific10(rankSumPvalue_);
+		if (Pascal.set.useRankSum_)
+			str += "\t" + Pascal.utils.toStringScientific10(rankSumPvalue_);
 		
-		if (Settings.useHypGeom_)
+		if (Pascal.set.useHypGeom_)
 			for (int i=0;i<hypGeomPvalues_.length; i++)
-				str += "\t" + Utils.toStringScientific10(hypGeomPvalues_[i]);
+				str += "\t" + Pascal.utils.toStringScientific10(hypGeomPvalues_[i]);
 		
-		if (Settings.useGamma_)
+		if (Pascal.set.useGamma_)
 			for (int i=0;i<gammaPvalues_.length; i++)
-				str += "\t" + Utils.toStringScientific10(gammaPvalues_[i]);
+				str += "\t" + Pascal.utils.toStringScientific10(gammaPvalues_[i]);
 		
-		if (Settings.useExpHyp_)
+		if (Pascal.set.useExpHyp_)
 			for (int i=0;i<expHypPvalues_.length; i++)
-				str += "\t" + Utils.toStringScientific10(expHypPvalues_[i]);
+				str += "\t" + Pascal.utils.toStringScientific10(expHypPvalues_[i]);
 		// Sort genes by score
 		
 		// Comma-separated list of gene ids
 		//TODO: this option is brocken atm
-		if (Settings.writeDetailedOutput_) {
+		if (Pascal.set.writeDetailedOutput_) {
 			ArrayList<Gene> genesSorted = new GeneScoreList(genes_, true).getGenes();
 			
 		str += "\t";
@@ -283,9 +279,9 @@ public class GeneSet {
 			str += "\t";
 			if (genesSorted.size() > 0) {
 				Iterator<Gene> iter = genesSorted.iterator();
-				str += Utils.toStringScientific10(iter.next().getScore(0));
+				str += Pascal.utils.toStringScientific10(iter.next().getScore(0));
 				while (iter.hasNext())
-					str += "," + Utils.toStringScientific10(iter.next().getScore(0));
+					str += "," + Pascal.utils.toStringScientific10(iter.next().getScore(0));
 			}
 		}
 		return str;
@@ -298,28 +294,28 @@ public class GeneSet {
 	public static String getResultsAsStringHeader() {
 		
 		String str = "Name";
-		if (Settings.useChi2_)
+		if (Pascal.set.useChi2_)
 			str += "\t" + "chi2Pvalue";
-		if (Settings.useSimulation_)
+		if (Pascal.set.useSimulation_)
 			str += "\t" + "empPvalue";
-		if (Settings.useSimulationWeightedSampling_)
+		if (Pascal.set.useSimulationWeightedSampling_)
 			str += "\t" + "simulWeightedSamplingPvalue";
-		if (Settings.useRankSum_)
+		if (Pascal.set.useRankSum_)
 			str += "\t" + "ranksumPvalue";
-		if(Settings.useHypGeom_){
-			for (int i=0;i< Settings.hypGeomQuantiles_.length; i++)
-				str += "\t" + "hypgeomPvalue" + Settings.hypGeomQuantiles_[i];  		
+		if(Pascal.set.useHypGeom_){
+			for (int i=0;i< Pascal.set.hypGeomQuantiles_.size(); i++)
+				str += "\t" + "hypgeomPvalue" + Pascal.set.hypGeomQuantiles_.get(i);  		
 		}
-		if(Settings.useGamma_){
-			for (int i=0;i< Settings.gammaShapeParameters_.length; i++)
-				str += "\t" + "gammaPvalue" + Settings.gammaShapeParameters_[i];  		
+		if(Pascal.set.useGamma_){
+			for (int i=0;i< Pascal.set.gammaShapeParameters_.size(); i++)
+				str += "\t" + "gammaPvalue" + Pascal.set.gammaShapeParameters_.get(i);
 		}
-		if(Settings.useExpHyp_){
-			for (int i=0;i< Settings.expHypParameters_.length; i++)
-				str += "\t" + "expHypPvalue" + Settings.expHypParameters_[i];  		
+		if(Pascal.set.useExpHyp_){
+			for (int i=0;i< Pascal.set.expHypParameters_.size(); i++)
+				str += "\t" + "expHypPvalue" + Pascal.set.expHypParameters_.get(i);
 		}
 		
-		if (Settings.writeDetailedOutput_){
+		if (Pascal.set.writeDetailedOutput_){
 			str += "\tGenes";
 			str += "\tGeneScores";
 		}

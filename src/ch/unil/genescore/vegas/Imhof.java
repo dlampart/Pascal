@@ -21,9 +21,7 @@
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
-import ch.unil.genescore.main.Settings;
-
-
+import ch.unil.genescore.main.Pascal;
 
 /**
  * Refactored from R package CompQuadForm by Pierre Lafaye de Micheaux and Pierre Duchesne. See bottom of file for original code.
@@ -79,9 +77,9 @@ public class Imhof implements WeightedChisquareAlgorithm {
 
 		lambda_ = lambda;
 		
-		epsabs_ = Settings.requestedAbsolutePrecision_;
-		epsrel_ = Settings.requestedRelativePrecision_;	
-		limit_ = Settings.gslIntegrationLimit_;
+		epsabs_ = Pascal.set.requestedAbsolutePrecision_;
+		epsrel_ = Pascal.set.requestedRelativePrecision_;	
+		limit_ = Pascal.set.gslIntegrationLimit_;
 	}
 
 	

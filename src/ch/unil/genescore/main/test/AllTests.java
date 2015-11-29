@@ -31,9 +31,6 @@ import ch.unil.genescore.pathway.test.geneSetLibraryTest;
 import ch.unil.genescore.vegas.test.AnalyticVegasTest;
 import ch.unil.genescore.vegas.test.DistributionMethodsTest;
 import ch.unil.genescore.vegas.test.FarebrotherTest;
-import ch.unil.genescore.vegas.test.FileParserTest;
-import ch.unil.genescore.vegas.test.GeneResultsNoScoreTest;
-import ch.unil.genescore.vegas.test.GeneResultsSnpsOutOfBoundsTest;
 import ch.unil.genescore.vegas.test.MTJConvenienceMethodsTest;
 import ch.unil.genescore.vegas.test.MaxVegasTest;
 import ch.unil.genescore.vegas.test.OverlappedCollectionStreamTest;
@@ -44,7 +41,6 @@ import ch.unil.genescore.vegas.test.SnpTest;
 @SuiteClasses({
 	
 	GenomicElementTest.class,
-	
 	
 	RankSumTestTest.class,
 	geneSetLibraryTest.class,
@@ -58,12 +54,6 @@ import ch.unil.genescore.vegas.test.SnpTest;
 	OverlappedGenomicElementTest.class,
 	
 	SnpTest.class,
-	GeneResultsSnpsOutOfBoundsTest.class,
-	GeneResultsNoScoreTest.class,
-	FileParserTest.class,
-
-	
-	
 	
 })
 public class AllTests {

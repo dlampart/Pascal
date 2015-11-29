@@ -21,6 +21,7 @@
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.ConsoleHandler;
@@ -31,9 +32,8 @@ import no.uib.cipr.matrix.SymmDenseEVD;
 import no.uib.cipr.matrix.UpperSymmDenseMatrix;
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GenomicElement;
+import ch.unil.genescore.main.ConvenienceMethods;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.main.Utils;
 
 
 /**
@@ -61,10 +61,16 @@ public class GenomeWideScoring {
 	protected GeneResultsNoScore noScores_ = null;
 	private  GeneResultsScore scores_ = null;
 	
-	
 	/** Flag set false when computeScore() has been run first time (to display info only on first run) */
 	private boolean firstRun_ = true;		
 	protected double[] fakeSignal_ = null;
+	
+	/** Directory where correlation matrices are saved */
+	private File corMatDir;
+	/** Directory where gene SNPs are saved */
+	private File geneSnpsDir;
+
+	
 	// ============================================================================
 	// PUBLIC METHODS
 	
@@ -72,27 +78,35 @@ public class GenomeWideScoring {
 	public GenomeWideScoring() {
 		
 		// Initialize gene score evaluator based on the selected method in settings
-		if (Settings.useAnalyticVegas_)
+		if (Pascal.set.useAnalyticVegas_)
 			evaluator = new AnalyticVegas();
-		else if (Settings.useMaxVegas_)
+		else if (Pascal.set.useMaxVegas_)
 			evaluator = new MaxSimulAndAnalyticVegas();
-		else if (Settings.useMaxEffVegas_)
+		else if (Pascal.set.useMaxEffVegas_)
 			evaluator = new MaxEffVegas();
         else
 			throw new RuntimeException("No gene scoring method selected");
-
 		
 		String condDot="";
-		if (!Settings.outputSuffix_.equals("")){
+		if (!Pascal.set.outputSuffix_.equals("")){
 			condDot=".";
 		}
-		additionalOutputFileSuffix_ = Settings.outputSuffix_ + condDot + evaluator.getTypeString();
+		additionalOutputFileSuffix_ = Pascal.set.outputSuffix_ + condDot + evaluator.getTypeString();
 		GeneResultsSnpsOutOfBounds_ =  new GeneResultsSnpsOutOfBounds();
 		noScores_ = new GeneResultsNoScore();
-		if(Settings.useFakeSignal_){
+		if(Pascal.set.useFakeSignal_){
 			ReferencePopulationFakeSignal fakeSignalGenerator = new ReferencePopulationFakeSignal();
 			fakeSignalGenerator.runFakeSignal();
 			fakeSignal_ = fakeSignalGenerator.getSignal();
+		}
+		
+		if (Pascal.set.writeCorFiles_) {
+			corMatDir = new File(Pascal.set.outputDirectory_, "correlationMatrices");
+			corMatDir.mkdirs();
+		}
+		if (Pascal.set.writeGenewiseSnpFiles_) {
+			geneSnpsDir = new File(Pascal.set.outputDirectory_, "geneSNPs");
+			geneSnpsDir.mkdirs();
 		}
 	}
 
@@ -107,7 +121,7 @@ public class GenomeWideScoring {
 		public void check(GenomicElement el, ReferencePopulation refpop){
 			if (!el.chr_.equals(prevChrom_)){
 				
-				if (Settings.verbose_) {
+				if (Pascal.set.verbose_) {
 					Pascal.println();
 					Pascal.println("Chromosome " + el.chr_);
 					Pascal.println("----------------");
@@ -116,7 +130,7 @@ public class GenomeWideScoring {
 				}
 				// Initialize refpop
 				refpop.initialize(el.chr_);
-				if (Settings.verbose_)
+				if (Pascal.set.verbose_)
 					Pascal.println();
 
 				
@@ -147,7 +161,7 @@ public class GenomeWideScoring {
 			// Print info on method and parameters used to console
 			printConsoleMethodInfo();
 			// Load MTJ, display info
-			if (Settings.writeDetailedErrorOutput_){
+			if (Pascal.set.writeDetailedErrorOutput_){
 				initializeMtj();
 			}
 		}
@@ -158,7 +172,7 @@ public class GenomeWideScoring {
 		}
 
 		// Print header for results displayed on console
-		if (Settings.verbose_)
+		if (Pascal.set.verbose_)
 			printConsoleHeader();
 		else
 			Pascal.println("Computing gene scores for chromosome:");
@@ -192,7 +206,7 @@ public class GenomeWideScoring {
 	// ----------------------------------------------------------------------------
 	private GeneData setupGeneData(GeneWithItsSnps gene){
 		GeneData currentGeneData = null;
-		if (Settings.useFakePhenotype_){				
+		if (Pascal.set.useFakePhenotype_){				
 				currentGeneData = new GeneDataFakePhenotype(gene.getSnpList(), fakeSignal_);
 			}
 			else{
@@ -209,7 +223,7 @@ public class GenomeWideScoring {
 		// Get the snps that are in the window around the given gene			
 		GeneWithItsSnps geneAndSnps = new GeneWithItsSnps(gene,refpop_.findSnps(gene));
 					
-		if (Settings.verbose_) 
+		if (Pascal.set.verbose_) 
 			 geneAndSnps.printGeneNameAndNrOfSnps();			
 		
 		refpop_.updateLoadedGenotypes(gene);				
@@ -220,14 +234,14 @@ public class GenomeWideScoring {
 		GeneData currentGeneData = setupGeneData(geneAndSnps);			
 		currentGeneData.processData();	
 			
-		if (!Settings.writeGenewiseSnpFiles_.equals(""))	{		
-      	  String fileNameStr="snpVals_gene" +"_"+ gene.symbol_ + "_" + gene.id_ + ".txt";
-      	  currentGeneData.writeGeneSnpsToFile(fileNameStr);
+		if (geneSnpsDir != null) {		
+			File file = new File(geneSnpsDir, "snpVals_gene" +"_"+ gene.symbol_ + "_" + gene.id_ + ".txt");
+			currentGeneData.writeGeneSnpsToFile(file);
         }		
 		
-		 if (!Settings.writeCorFiles_.equals("")) {
-			 String fileNameString="corMat_snpVals_gene" + "_" + gene.symbol_ +"_"+ gene.getId() + ".txt";
-			 currentGeneData.writeCovMatToFile(fileNameString);
+		 if (corMatDir != null) {
+			 File file= new File(corMatDir, "corMat_snpVals_gene" + "_" + gene.symbol_ +"_"+ gene.getId() + ".txt");
+			 currentGeneData.writeCovMatToFile(file);
 		 }		 
 		calculateScore(currentGeneData, gene);
 		return true;
@@ -235,7 +249,7 @@ public class GenomeWideScoring {
 	
 	public void calculateScore(GeneData currentGeneData, Gene gene){
 		
-		//GeneScoreEvaluator evaluator = Settings.getGeneScoreEvaluator();
+		//GeneScoreEvaluator evaluator = Pascal.set.getGeneScoreEvaluator();
         evaluator.setDataFromGeneData(currentGeneData);
 		// Compute gene score
 		long t0 = System.currentTimeMillis();
@@ -247,8 +261,8 @@ public class GenomeWideScoring {
 		gene.calcChi2StatFromScore();
 
 		// Print info to console
-		if (Settings.verbose_) {
-			Pascal.print("\t" + Utils.padRight(Utils.chronometer(t1 - t0), 22));
+		if (Pascal.set.verbose_) {
+			Pascal.print("\t" + ConvenienceMethods.padRight(Pascal.utils.chronometer(t1 - t0), 22));
 			Pascal.print(evaluator.getConsoleOutput());
 			Pascal.println();
 		}
@@ -260,7 +274,7 @@ public class GenomeWideScoring {
 			String str = gene.toString();
 			str += "\t" + evaluator.getNoScoreOutput();
 			noScores_.add(str);			
-			if (Settings.verbose_)
+			if (Pascal.set.verbose_)
 				Pascal.println(str);
 		}
 
@@ -273,24 +287,24 @@ public class GenomeWideScoring {
 	private void printConsoleMethodInfo() {
 		
 		// Print info
-		if (Settings.useAnalyticVegas_) {
+		if (Pascal.set.useAnalyticVegas_) {
 			Pascal.println("- Gene scoring method: analytic VEGAS");
-			if (Settings.snpWeightingDelta_.get(0) != 0.0 || Settings.snpWeightingDelta_.size() > 1)
-				Pascal.println("- SNP weighting with delta: " + Utils.array2string(Settings.snpWeightingDelta_, ","));
+			if (Pascal.set.snpWeightingDelta_.get(0) != 0.0 || Pascal.set.snpWeightingDelta_.size() > 1)
+				Pascal.println("- SNP weighting with delta: " + ConvenienceMethods.array2string(Pascal.set.snpWeightingDelta_, ","));
 
-		} else if (Settings.useSimulationVegas_) {
+		} else if (Pascal.set.useSimulationVegas_) {
 			Pascal.println("- Gene scoring method: original VEGAS using MC simulation (not recommended)");
-			if (Settings.testStatisticNumSnps_ > 0)
-				Pascal.println("- Test statistic: using up to " + Settings.testStatisticNumSnps_ + " SNPs within gene windows");
-			else
-				Pascal.println("- Test statistic: using all SNPs within gene windows");
+//			if (Pascal.set.testStatisticNumSnps_ > 0)
+//				Pascal.println("- Test statistic: using up to " + Pascal.set.testStatisticNumSnps_ + " SNPs within gene windows");
+//			else
+//				Pascal.println("- Test statistic: using all SNPs within gene windows");
 		
 		} 
 		
-        else if (Settings.useMaxVegas_) {
+        else if (Pascal.set.useMaxVegas_) {
             Pascal.println("TBD print max vegas params");
         } 
-        else if (Settings.useMaxEffVegas_) {
+        else if (Pascal.set.useMaxEffVegas_) {
             Pascal.println("TBD print maxeff vegas params");
         } 
  
@@ -305,13 +319,13 @@ public class GenomeWideScoring {
 	/** Print a header for the gene score computation to the console */
 	private void printConsoleHeader() {
 
-		if (Settings.useAnalyticVegas_)
+		if (Pascal.set.useAnalyticVegas_)
 			Pascal.println("Format: gene_id, symbol, #snps, runtime, [warnings]");
-		else if (Settings.useSimulationVegas_)
+		else if (Pascal.set.useSimulationVegas_)
 			Pascal.println("Format: gene_id, symbol, #snps, #simulations, runtime, [warnings]");		            
-        else if (Settings.useMaxVegas_)
+        else if (Pascal.set.useMaxVegas_)
             Pascal.println("TBD");
-        else if (Settings.useMaxEffVegas_) {
+        else if (Pascal.set.useMaxEffVegas_) {
             Pascal.println("TBD");
         } 
    
@@ -320,15 +334,9 @@ public class GenomeWideScoring {
 
 		Pascal.println("------------------------------------------------------------------------------");
 	}
-	
-	
-	
+
 
 	// ----------------------------------------------------------------------------
-
-	
-	
-	
 
 	/** Load MTJ and display info */
 	private void initializeMtj() {
@@ -359,7 +367,7 @@ public class GenomeWideScoring {
 		Iterator<Snp> it = snpList.iterator();
 		while (it.hasNext()){
 			Snp snp = it.next();
-			if (snp.getMaf() < Settings.useMafCutoff_ || snp.getAlleleSd()==0)
+			if (snp.getMaf() < Pascal.set.useMafCutoff_ || snp.getAlleleSd()==0)
 				it.remove();
 		}
 		

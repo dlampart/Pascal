@@ -31,19 +31,17 @@ import no.uib.cipr.matrix.UpperSymmDenseMatrix;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.apache.commons.math3.distribution.ChiSquaredDistribution;
-
-import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.vegas.AnalyticVegas;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.vegas.MaxVegas;
 import ch.unil.genescore.vegas.MaxVegasWithoutPruning;
-import ch.unil.genescore.vegas.Snp;
 
 /**
  * Unit tests for MaxVegas
  */
 public class MaxVegasTest {
 	
+	/** The Pascal instance (initializes Settings) */
+	private static Pascal psc = new Pascal();
 
 	
 	class TestableMaxVegas extends MaxVegas{
@@ -70,7 +68,7 @@ public class MaxVegasTest {
 	
 	@BeforeClass
 	public static void testSetup() {
-		Settings.loadSettings();
+		Pascal.set.resetToDefaults();
 	}
 
 	@AfterClass
@@ -83,7 +81,7 @@ public class MaxVegasTest {
 	@Test
 	public void deWeight_test(){
 		
-		Settings.withZScore_=true;
+		Pascal.set.withZScore_=true;
 		ArrayList<Double>  geneScores = new ArrayList<Double>(4);
 		//TestableMaxVegas testable = new TestableMaxVegas(new ArrayList<Double>(),new DenseMatrix(4, 4));
 		DenseMatrix testMat= new DenseMatrix(4,4);
@@ -112,7 +110,7 @@ public class MaxVegasTest {
 	@Test
 	public void stretchToVarOne_test(){
 		
-		Settings.withZScore_=true;
+		Pascal.set.withZScore_=true;
 		ArrayList<Double>  geneScores = new ArrayList<Double>(4);
 		//TestableMaxVegas testable = new TestableMaxVegas(new ArrayList<Double>(),new DenseMatrix(4, 4));
 		DenseMatrix testMat= new DenseMatrix(4,4);
@@ -143,7 +141,7 @@ public class MaxVegasTest {
 	@Test
 	public void calculateWeightedMaximum_test(){
 		
-		Settings.withZScore_=true;		
+		Pascal.set.withZScore_=true;		
 		ArrayList<Double>  geneScores = new ArrayList<Double>(4);
 		geneScores.add(1.2);geneScores.add((double) 0.9);geneScores.add(1.0);geneScores.add(1.0);		
 		double[] weights={1,1,1,1};
@@ -162,7 +160,7 @@ public class MaxVegasTest {
 	@Test
 	public void calculateWeightedMaximum_withDifferentVariances_test(){
 		
-		Settings.withZScore_=true;		
+		Pascal.set.withZScore_=true;		
 		ArrayList<Double>  geneScores = new ArrayList<Double>(4);
 		geneScores.add(1.2);geneScores.add((double) 0.9);geneScores.add(1.0);geneScores.add(1.0);		
 		double[] weights={1,1,1,1};
@@ -193,7 +191,7 @@ public class MaxVegasTest {
 		 ** 0  0  1 .89
 		 ** 0  0 .89 1 		 
 		 * */		
-		Settings.withZScore_=true;		
+		Pascal.set.withZScore_=true;		
 		ArrayList<Double>  geneScores = new ArrayList<Double>(4);
 		geneScores.add(1.2);geneScores.add((double) 0.9);geneScores.add(1.0);geneScores.add(1.0);		
 		double[] weights={1,1,1,1};
@@ -228,7 +226,7 @@ public class MaxVegasTest {
 		 ** 0  0  1 .89
 		 ** 0  0 .89 1 		 
 		 * */		
-		Settings.withZScore_=true;		
+		Pascal.set.withZScore_=true;		
 		ArrayList<Double>  geneScores = new ArrayList<Double>(4);
 		geneScores.add(1.2);geneScores.add((double) 0.9);geneScores.add(1.0);geneScores.add(1.0);		
 		double[] weights={1,2,1,1};
@@ -251,7 +249,7 @@ public class MaxVegasTest {
 	@Test
 	public void compareToMaxVegasWithoutPruningWithoutWeighting(){
 		
-		Settings.withZScore_=true;
+		Pascal.set.withZScore_=true;
 		ArrayList<Double>  geneScores = new ArrayList<Double>(4);
 		//TestableMaxVegas testable = new TestableMaxVegas(new ArrayList<Double>(),new DenseMatrix(4, 4));
 		DenseMatrix testMat= new DenseMatrix(4,4);
@@ -279,7 +277,7 @@ public class MaxVegasTest {
 	@Test
 	public void compareToMaxVegasWithoutPruningWithWeighting(){
 		
-		Settings.withZScore_=true;
+		Pascal.set.withZScore_=true;
 		ArrayList<Double>  geneScores = new ArrayList<Double>(4);
 		//TestableMaxVegas testable = new TestableMaxVegas(new ArrayList<Double>(),new DenseMatrix(4, 4));
 		DenseMatrix testMat= new DenseMatrix(4,4);
@@ -308,7 +306,7 @@ public class MaxVegasTest {
 	@Test
 	public void compareToMaxVegasWithoutPruningWithWeighting2(){
 		
-		Settings.withZScore_=true;
+		Pascal.set.withZScore_=true;
 		ArrayList<Double>  geneScores = new ArrayList<Double>(4);
 		//TestableMaxVegas testable = new TestableMaxVegas(new ArrayList<Double>(),new DenseMatrix(4, 4));
 		DenseMatrix testMat= new DenseMatrix(4,4);
@@ -337,7 +335,7 @@ public class MaxVegasTest {
 	@Test
 	public void testManual(){
 		
-		Settings.withZScore_=true;
+		Pascal.set.withZScore_=true;
 		ArrayList<Double>  geneScores = new ArrayList<Double>(2);
 		//TestableMaxVegas testable = new TestableMaxVegas(new ArrayList<Double>(),new DenseMatrix(4, 4));
 		DenseMatrix testMat= new DenseMatrix(2,2);
@@ -362,7 +360,7 @@ public class MaxVegasTest {
 	@Test
 	public void testManual2(){
 		
-		Settings.withZScore_=true;
+		Pascal.set.withZScore_=true;
 		ArrayList<Double>  geneScores = new ArrayList<Double>(2);
 		//TestableMaxVegas testable = new TestableMaxVegas(new ArrayList<Double>(),new DenseMatrix(4, 4));
 		DenseMatrix testMat= new DenseMatrix(2,2);
@@ -387,7 +385,7 @@ public class MaxVegasTest {
 	@Test
 	public void testManual3(){
 		
-		Settings.withZScore_=true;
+		Pascal.set.withZScore_=true;
 		ArrayList<Double>  geneScores = new ArrayList<Double>(2);
 		//TestableMaxVegas testable = new TestableMaxVegas(new ArrayList<Double>(),new DenseMatrix(4, 4));
 		DenseMatrix testMat= new DenseMatrix(2,2);

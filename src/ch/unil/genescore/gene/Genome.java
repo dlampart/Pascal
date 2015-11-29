@@ -21,15 +21,16 @@
  *******************************************************************************/
 package ch.unil.genescore.gene;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-import ch.unil.genescore.main.FileExport;
-import ch.unil.genescore.main.Settings;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.vegas.Snp;
+import ch.unil.gpsutils.FileExport;
 
 
 /**
@@ -59,11 +60,11 @@ public class Genome {
 		
 		for (int i=1; i<=22; i++)
 			chromosomes_.put("chr" + i, new Chromosome());
-		if (!Settings.ignoreAllosomes_) {
+		if (!Pascal.set.ignoreAllosomes_) {
 			chromosomes_.put("chrX", new Chromosome());
 			chromosomes_.put("chrY", new Chromosome());
 		}
-		if (!Settings.ignoreChrM_)
+		if (!Pascal.set.ignoreChrM_)
 			chromosomes_.put("chrM", new Chromosome());
 	}
 
@@ -81,7 +82,7 @@ public class Genome {
 	/** Add the elements of the specified chromosome to the genome (add all elements if chromosome is null or empty) */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void addElements(Collection elements) {
-		String chromosome=Settings.chromosome_;
+		String chromosome=Pascal.set.chromosome_;
 		boolean addAll = (chromosome == null) || (chromosome.length() == 0);
 		Iterator<GenomicElement> iter = elements.iterator();
 		
@@ -158,9 +159,9 @@ public class Genome {
 	// ----------------------------------------------------------------------------
 
 	/** Write a BED file with all the elements */
-	public void writeBedFile(String filename) {
+	public void writeBedFile(File file) {
 		
-		FileExport writer = new FileExport(filename);
+		FileExport writer = new FileExport(Pascal.log, file);
 		
 		for (Chromosome chr : chromosomes_.values()) {
 			for (GenomicElement el : chr.getElements()) {
@@ -170,9 +171,11 @@ public class Genome {
 		}
 		writer.close();
 	}
-	public void writeTpedPlinkFile(String filename) {		
-		String filenameTped = filename + ".tped";
-		FileExport writer = new FileExport(filenameTped);
+	
+	
+	public void writeTpedPlinkFile(File file) {		
+
+		FileExport writer = new FileExport(Pascal.log, file);
 		
 		for (Chromosome chr : chromosomes_.values()) {
 			for (GenomicElement el : chr.getElements()) {
@@ -187,14 +190,16 @@ public class Genome {
 		}
 		writer.close();		
 	}
-	public void writePseudoTfamPlinkFile(String filename) {		
-		String filenameTfam = filename + ".tfam";
-		FileExport writer = new FileExport(filenameTfam);
+	
+	
+	public void writePseudoTfamPlinkFile(File file) {		
+		
+		FileExport writer = new FileExport(Pascal.log, file);
 		
 		for (Chromosome chr : chromosomes_.values()) {	
-			if (chr.getNumElements() == 0){
+			if (chr.getNumElements() == 0)
 				continue;
-			}
+
 			GenomicElement el =  chr.getNearestElement(1);
 				if(!(el instanceof Snp)){//TODO : replace with exception
 					System.out.println("first in genome not filled with snp.");

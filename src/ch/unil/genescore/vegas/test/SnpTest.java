@@ -27,10 +27,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ch.unil.genescore.main.Settings;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.vegas.Snp;
 
-import org.apache.commons.math3.distribution.NormalDistribution;
 
 public class SnpTest {
 	
@@ -40,7 +39,7 @@ public class SnpTest {
 	
 	@BeforeClass
 	public static void testSetup() {
-		Settings.loadSettings();
+		Pascal.set.resetToDefaults();
 	}
 
 	@AfterClass

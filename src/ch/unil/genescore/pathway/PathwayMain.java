@@ -21,6 +21,7 @@
  *******************************************************************************/
 package ch.unil.genescore.pathway;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,12 +30,10 @@ import java.util.LinkedHashMap;
 
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GeneAnnotation;
-import ch.unil.genescore.main.FileParser;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.main.Utils;
 import ch.unil.genescore.vegas.GenomeWideScoring;
 import ch.unil.genescore.vegas.ReferencePopulation;
+import ch.unil.gpsutils.FileParser;
 
 
 /**
@@ -64,7 +63,7 @@ public class PathwayMain {
 		this.pascal = pascal;
 		
 		// Prefix used for output files
-		name_ = extractName(Settings.snpPvalFile_, Settings.geneSetFile_);
+		name_ = extractName(Pascal.set.snpPvalFile_, Pascal.set.geneSetFile_);
 		
 		Pascal.println("LOADING INPUT FILES");
 		Pascal.println("-------------------\n");		
@@ -95,7 +94,7 @@ public class PathwayMain {
 			Pascal.println("---------------------\n");		
 
 			// Sort genes by position 	
-			if (!Settings.loadScoresFromFiles_){
+			if (!Pascal.set.loadScoresFromFiles_){
 				
 				ArrayList<Gene> genes = new ArrayList<Gene>(genes_.values());
 				Collections.sort(genes);
@@ -105,12 +104,12 @@ public class PathwayMain {
 			}
 			else {
 				Pascal.println("Loading genescores form files:");
-				Pascal.println(Settings.geneScoreFile_);
-				Pascal.println(Settings.metaGeneScoreFile_);
-				genes_=loadScoresFromFile(Settings.geneScoreFile_);
+				Pascal.println(Pascal.set.geneScoreFile_.getPath());
+				Pascal.println(Pascal.set.metaGeneScoreFile_.getPath());
+				genes_=loadScoresFromFile(Pascal.set.geneScoreFile_);
 				
 			}
-			geneSetLib_ = new GeneSetLibrary(Settings.geneSetFile_, genes_);
+			geneSetLib_ = new GeneSetLibrary(Pascal.set.geneSetFile_, genes_);
 			
 			// Print info on gene overlap
 			Pascal.println();
@@ -121,10 +120,10 @@ public class PathwayMain {
 			Pascal.println("- " + geneSetLib_.getNotFoundInGenomeAnnot().size() + " genes not found in loaded genome annotation (" + GeneAnnotation.getAnnotationName() + ")");			
 			Pascal.println();	
 		
-		if (!(Settings.mergeGenesDistance_ < 0)) {
+		if (!(Pascal.set.mergeGenesDistance_ < 0)) {
 			Pascal.println("CREATING META-GENES");
 			Pascal.println("-------------------\n");	
-			Pascal.println("Merging genes of the same pathway that are <" + Settings.mergeGenesDistance_ + "mb apart:");
+			Pascal.println("Merging genes of the same pathway that are <" + Pascal.set.mergeGenesDistance_ + "mb apart:");
 		
 			// Merge neighboring genes in meta-genes
 			geneSetLib_.createMetaGenes();
@@ -139,16 +138,16 @@ public class PathwayMain {
 
 			// Sort meta-genes by position
 			ArrayList<Gene> metagenes = new ArrayList<Gene>(geneSetLib_.getMetaGenes());
-			if (!Settings.loadScoresFromFiles_){
+			if (!Pascal.set.loadScoresFromFiles_){
 				Collections.sort(metagenes);
 				// Compute scores
 				geneScorer_.setGenes(metagenes);
 				geneScorer_.addAdditionalOutputFileSuffix(".fusion");
 				geneScorer_.computeScores();
 				}
-			else if(Settings.mergeGenesDistance_ >= 0){
+			else if(Pascal.set.mergeGenesDistance_ >= 0){
 				LinkedHashMap<String, Gene> metaGenesFromFile;
-				metaGenesFromFile = loadScoresFromFile(Settings.metaGeneScoreFile_);
+				metaGenesFromFile = loadScoresFromFile(Pascal.set.metaGeneScoreFile_);
 				for (Gene metaGene : metagenes){
 					String currentId=metaGene.id_;
 					if(metaGenesFromFile.containsKey(currentId)){
@@ -170,24 +169,24 @@ public class PathwayMain {
 		
 		boolean doApproxAnalysis = false;
 		if(doApproxAnalysis){
-		geneSetLib_.computeApproxPathwayCorrelationLowerBound();
-		geneSetLib_.writePathwayCorrelationMat("", "pathwayCorLowerBoundMat.txt");
-		geneSetLib_.computeApproxPathwayCorrelation();
-		geneSetLib_.writePathwayCorrelationMat("", "pathwayCorMat.txt");
+			geneSetLib_.computeApproxPathwayCorrelationLowerBound();
+			geneSetLib_.writePathwayCorrelationMat(new File(Pascal.set.outputDirectory_, "pathwayCorLowerBoundMat.txt"));
+			geneSetLib_.computeApproxPathwayCorrelation();
+			geneSetLib_.writePathwayCorrelationMat(new File(Pascal.set.outputDirectory_, "pathwayCorMat.txt"));
 		}
-		
+
 		long t0 = System.currentTimeMillis();
 		geneSetLib_.computeEnrichment();
 		long t1 = System.currentTimeMillis();
 				
 		
-		Pascal.println("- Runtime: " + Utils.chronometer(t1-t0));
-		Pascal.println("- " + geneSetLib_.countNumSignificantSets() + " gene sets with p-value < " + Settings.writeSignificanceThreshold_);
+		Pascal.println("- Runtime: " + Pascal.utils.chronometer(t1-t0));
+		Pascal.println("- " + geneSetLib_.countNumSignificantSets() + " gene sets with p-value < " + Pascal.set.writeSignificanceThreshold_);
 		Pascal.println();
 		
 		// Write result
-		String filename = Settings.outputDirectory_ + "/" + name_ + ".txt";
-		geneSetLib_.writeOutput(filename);		
+		File file = new File(Pascal.set.outputDirectory_, name_ + ".txt");
+		geneSetLib_.writeOutput(file);		
 	}
 
 	
@@ -216,9 +215,9 @@ public class PathwayMain {
 		return headerIndex;
 	}
 	
-	public LinkedHashMap<String, Gene> loadScoresFromFile(String filename){
+	public LinkedHashMap<String, Gene> loadScoresFromFile(File file){
 		LinkedHashMap<String, Gene> Genes = new LinkedHashMap<String, Gene>();		
-		FileParser parser = new FileParser(filename);
+		FileParser parser = new FileParser(Pascal.log, file);
 		String[] header = parser.readLine();
 		if (header == null){
 		parser.close();
@@ -259,8 +258,8 @@ public class PathwayMain {
 			GeneAnnotation annot = GeneAnnotation.createAnnotationInstance();
 			genes = annot.loadAnnotation();
 			// Remove excluded genes (this updates genes_)
-			if (!Settings.excludedGenesFile_.equals("")) {
-				int numRemoved = annot.removeGenes(Settings.excludedGenesFile_);
+			if (!Pascal.set.excludedGenesFile_.equals("")) {
+				int numRemoved = annot.removeGenes(Pascal.set.excludedGenesFile_);
 				Pascal.println("- " + numRemoved + " genes removed because they are in the excluded genes file");
 			}
 
@@ -273,18 +272,18 @@ public class PathwayMain {
 	// ----------------------------------------------------------------------------
 
 	/** Extract the name for this run from the snp and pathway annotation files */
-	protected String extractName(String geneScoreFile, String geneSetFile) {
+	protected String extractName(File geneScoreFile, File geneSetFile) {
 		
-		String gwasName = Utils.extractBasicFilename(geneScoreFile, false);
-		String functName = Utils.extractBasicFilename(geneSetFile, false);
+		String gwasName = Pascal.utils.extractBasicFilename(geneScoreFile.getName(), false);
+		String functName = Pascal.utils.extractBasicFilename(geneSetFile.getName(), false);
 		
 		functName = functName.replace("_nodeProperties", "");
 		functName = functName.replace("_undir", "");
 		String condDot="";
-		if (!Settings.outputSuffix_.equals("")){
+		if (!Pascal.set.outputSuffix_.equals("")){
 			condDot=".";
 		}
-		return gwasName + ".PathwaySet--" + functName + "--" + Settings.outputSuffix_ + condDot + pascal.getGenomeWideScoring().getEvaluator().getTypeString() + Settings.chromFileExtension_;
+		return gwasName + ".PathwaySet--" + functName + "--" + Pascal.set.outputSuffix_ + condDot + pascal.getGenomeWideScoring().getEvaluator().getTypeString() + Pascal.set.chromFileExtension_;
 	}
 	
 	

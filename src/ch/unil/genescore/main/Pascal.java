@@ -21,16 +21,17 @@
  *******************************************************************************/
 package ch.unil.genescore.main;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 
-import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GeneAnnotation;
 import ch.unil.genescore.pathway.PathwayMain;
 import ch.unil.genescore.vegas.GenomeWideScoring;
 import ch.unil.genescore.vegas.ReferencePopulation;
+import ch.unil.gpsutils.FileExport;
+import ch.unil.gpsutils.Logger;
+import ch.unil.gpsutils.Utils;
 
 
 /**
@@ -38,9 +39,13 @@ import ch.unil.genescore.vegas.ReferencePopulation;
  */
 public class Pascal {
 
+	/** The logger -- a different logger can be plugged in for custom logging */
+	static public Logger log;
 	/** The settings */
-	public GeneScoreOptionParser set;
-	
+	static public PascalOptionParser set;
+	/** The utilities */
+	static public Utils utils;
+
 	/** Computes gene scores */
 	private GenomeWideScoring genomeWideScoring;
 
@@ -105,27 +110,45 @@ public class Pascal {
 	
 	// ============================================================================
 	// PUBLIC METHODS
-	
-	/** Constructor, parse command-line arguments, initialize settings */
+
+	/** Constructor with custom logger */
 	public Pascal(String[] args) {
+		this(args, null);
+	}
+
+	/** Constructor with custom logger */
+	public Pascal() {
+		this(null, null);
+	}
+
+	/** Constructor with custom logger */
+	public Pascal(Logger customLog) {
+		this(null, customLog);
+	}
+
+	/** Constructor, parse command-line arguments, initialize settings */
+	public Pascal(String[] args, Logger customLog) {
 		
-		Pascal.println("SETTINGS FILE");
-		Pascal.println("-------------\n");
+		// Initialize
+		if (customLog != null)
+			log = customLog;
+		else
+			log = new Logger(); // must be first
+		utils = new Utils(log);
 
 		// Set defaults
-		set = new GeneScoreOptionParser();
+		set = new PascalOptionParser();
 		
 		// Parse command-line arguments and initialize settings
 		if (args != null)
 			set.parse(args);
 				
+		// Set verbose flag in logger
+		log.setVerbose(set.verbose_);
 		// set jna path
 		System.setProperty("jna.library.path", "jars/lib/");
-		
 		// Create output directory
-		File outputDir = new File(Settings.outputDirectory_);
-		if (!outputDir.exists())
-			outputDir.mkdirs();
+		set.outputDirectory_.mkdirs();
 	}
 
 
@@ -134,13 +157,13 @@ public class Pascal {
 	/** Parse the command-line arguments, read the files, perform network inference, write outputs */
 	public void run() {
 		
-		if (!Settings.writeUsedSettings_.equals("")){
+		if (!set.writeUsedSettings_.equals("")){
 			writeUsedSettings();
 		}
 	
-		if (Settings.runConcatenateChromosomeResults_)
+		if (set.runConcatenateChromosomeResults_)
 			concatenateChromosomeResults();
-		else if (Settings.runPathwayAnalysis_)
+		else if (set.runPathwayAnalysis_)
 			runPathwayAnalysis();				
 		else
 			computeGeneScores();			
@@ -158,9 +181,9 @@ public class Pascal {
 		Pascal.println("-------------------\n");		
 
 		genomeWideScoring = new GenomeWideScoring();
-		System.out.println(Settings.ucscAnnotationFile_);
+		System.out.println(set.ucscAnnotationFile_);
 		// Load genes
-		LinkedList<Gene> genes = GeneAnnotation.createAnnotationInstance().loadAnnotation(Settings.genesToBeLoadedFile_);
+		LinkedList<Gene> genes = GeneAnnotation.createAnnotationInstance().loadAnnotation(set.genesToBeLoadedFile_);
 		// Load snps
 
 		genomeWideScoring.setGenes(genes);
@@ -172,10 +195,10 @@ public class Pascal {
 				
 		// Print info
 		Pascal.println();
-		if (Settings.chromosome_.equals(""))
+		if (set.chromosome_.equals(""))
 			Pascal.println("Loaded all chromosomes:");
 		else
-		Pascal.println("Loaded chromosome " + Settings.chromosome_ + ":");
+		Pascal.println("Loaded chromosome " + set.chromosome_ + ":");
 		Pascal.println("- " + genes.size() + " genes ");
 		Pascal.println();
 
@@ -208,11 +231,11 @@ public class Pascal {
 		Pascal.println("--------------------------------\n");	
 	
 		ChromosomeResultParser results = new ChromosomeResultParser();
-		results.concatenateChromosomeResultFiles(Settings.concatenateChromosomeResultsDir_);
+		results.concatenateChromosomeResultFiles(set.concatenateChromosomeResultsDir_);
 	}
 	
 	public void writeUsedSettings(){
-		FileExport fl = new FileExport(Settings.writeUsedSettings_, false);
+		FileExport fl = new FileExport(log, set.writeUsedSettings_);
 
 		try {
 			Class<?> cls = Class.forName("ch.unil.genescore.main.Settings");

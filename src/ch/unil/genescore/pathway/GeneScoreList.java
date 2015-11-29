@@ -21,6 +21,7 @@
  *******************************************************************************/
 package ch.unil.genescore.pathway;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,8 +33,8 @@ import java.util.Set;
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GeneAnnotation;
 import ch.unil.genescore.gene.GenomicElement;
-import ch.unil.genescore.main.FileParser;
 import ch.unil.genescore.main.Pascal;
+import ch.unil.gpsutils.FileParser;
 
 
 /**
@@ -50,7 +51,7 @@ public class GeneScoreList {
 	// PUBLIC METHODS
 	
 	/** Constructor loading genes from file */
-	public GeneScoreList(String geneScoreFile, String excludedGenesFile) {
+	public GeneScoreList(File geneScoreFile, File excludedGenesFile) {
 			
 		// Load genes and scores
 		loadGeneScores(geneScoreFile, excludedGenesFile);
@@ -120,7 +121,7 @@ public class GeneScoreList {
 	 * Removes genes in excludedGenes_. 
 	 * Translates the gene score ids to idTypeGeneSets if necessary. (TODO, see below)
 	 */
-	private void loadGeneScores(String geneScoreFile, String excludedGenesFile) {
+	private void loadGeneScores(File geneScoreFile, File excludedGenesFile) {
 		
 		// Load genes to be excluded
 		HashSet<String> excludedGenes = GeneAnnotation.loadGeneList(excludedGenesFile);
@@ -132,7 +133,7 @@ public class GeneScoreList {
 //			throw new NotImplementedException();
 		
 		rankedGenes_ = new ArrayList<Gene>();
-		FileParser parser = new FileParser(geneScoreFile);
+		FileParser parser = new FileParser(Pascal.log, geneScoreFile);
 		
 		// Parse header, check format: chromosome	start	end	strand	gene_id	gene_symbol	pvalue
 		String[] header = parser.readLine();

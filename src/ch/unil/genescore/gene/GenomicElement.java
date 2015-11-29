@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import ch.unil.genescore.main.Settings;
+import ch.unil.genescore.main.Pascal;
 
 
 /**
@@ -216,11 +216,11 @@ public class GenomicElement implements Comparable<GenomicElement> {
 		int start;
 		int end;
 		if (posStrand_) {
-			start = start_ - Settings.geneWindowUpstream_;
-			end = end_ + Settings.geneWindowDownstream_;
+			start = start_ - Pascal.set.geneWindowUpstream_;
+			end = end_ + Pascal.set.geneWindowDownstream_;
 		} else {
-			start = start_ - Settings.geneWindowDownstream_;
-			end = end_ + Settings.geneWindowUpstream_;
+			start = start_ - Pascal.set.geneWindowDownstream_;
+			end = end_ + Pascal.set.geneWindowUpstream_;
 		}
 		
 		// Get the set of snps assigned to this gene as an array

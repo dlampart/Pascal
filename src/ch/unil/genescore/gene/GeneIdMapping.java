@@ -21,12 +21,12 @@
  *******************************************************************************/
 package ch.unil.genescore.gene;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import ch.unil.genescore.main.FileParser;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
+import ch.unil.gpsutils.FileParser;
 
 
 /**
@@ -69,17 +69,17 @@ public class GeneIdMapping {
 	/** Private constructor, loads mapping */
 	private GeneIdMapping() {
 		
-		load(Settings.geneIdMappingFile_);
+		load(Pascal.set.geneIdMappingFile_);
 	}
 	
 	
 	// ----------------------------------------------------------------------------
 
 	/** Load the mapping */
-	private void load(String filename) {
+	private void load(File file) {
 		
 		ensembl2entrez_ = new HashMap<String, HashSet<String>>();
-		FileParser parser = new FileParser(filename);
+		FileParser parser = new FileParser(Pascal.log, file);
 		
 		while(true) {
 			// Read next line

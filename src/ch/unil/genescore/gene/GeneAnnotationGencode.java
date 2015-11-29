@@ -23,9 +23,8 @@ package ch.unil.genescore.gene;
 
 import java.util.LinkedHashMap;
 
-import ch.unil.genescore.main.FileParser;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
+import ch.unil.gpsutils.FileParser;
 
 
 /**
@@ -55,7 +54,7 @@ public class GeneAnnotationGencode extends GeneAnnotation {
 	/** Constructor */
 	public GeneAnnotationGencode() {
 		
-		super(Settings.gencodeAnnotationFile_);
+		super(Pascal.set.gencodeAnnotationFile_);
 	}
 	
 
@@ -69,7 +68,7 @@ public class GeneAnnotationGencode extends GeneAnnotation {
 		//HashSet<String> geneType = new HashSet<String>();
 		
 		// Open the file
-		FileParser parser = new FileParser(annotationFile_);
+		FileParser parser = new FileParser(Pascal.log, annotationFile_);
 		//GeneIdMapping mapping = GeneIdMapping.getInstance();
 		
 		// Skip the first 5 lines (start with #)

@@ -26,7 +26,6 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 
 import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.UpperSymmDenseMatrix;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,20 +33,22 @@ import org.junit.Test;
 
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
-import ch.unil.genescore.main.Settings;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.vegas.AnalyticVegas;
 import ch.unil.genescore.vegas.Snp;
 
 
 public class AnalyticVegasTest {
 	
-	
+	/** The Pascal instance (initializes Settings) */
+	private static Pascal psc = new Pascal();
+
 	// ============================================================================
 	// SETUP
 	
 	@BeforeClass
 	public static void testSetup() {
-		Settings.loadSettings();
+		Pascal.set.resetToDefaults();
 	}
 
 	@AfterClass
@@ -64,7 +65,7 @@ public class AnalyticVegasTest {
 		Snp fakeSnp1 = new Snp("fakeId1", 0, 0.3);
 		Snp fakeSnp2 = new Snp("fakeId2", 0, 0.8);
 		Snp fakeSnp3 = new Snp("fakeId3", 0, 1.4);
-		Settings.withZScore_=true;
+		Pascal.set.withZScore_=true;
 		ArrayList<Snp> geneSnps = new ArrayList<Snp>();
 		geneSnps.add(fakeSnp1);geneSnps.add(fakeSnp2);geneSnps.add(fakeSnp3);
 		DenseMatrix ld= new DenseMatrix(3,3);
@@ -85,7 +86,7 @@ public class AnalyticVegasTest {
 		ld.set(2,0,0.81);
 		double[] weights = {2,2,2};
 		AnalyticVegas myAnalyticObj= null;
-		UpperSymmDenseMatrix myMatToDecompose = null;
+		//UpperSymmDenseMatrix myMatToDecompose = null;
 		double[] myEigenvals = null;
 		double[] emptyWeights = {1,1,1};
 		myAnalyticObj= new AnalyticVegas(snpScores, ld, emptyWeights);
@@ -122,11 +123,11 @@ public class AnalyticVegasTest {
 		ld.set(0,2,0.81);
 		ld.set(2,0,0.81);
 		
-		double delta = 0.00001;
+		//double delta = 0.00001;
 		Snp fakeSnp1 = new Snp("fakeId1", 0.7641772, 0);
 		Snp fakeSnp2 = new Snp("fakeId2", 0.4237108, 0);
 		Snp fakeSnp3 = new Snp("fakeId3", 0.1615133, 0);
-		Settings.withZScore_=false;
+		Pascal.set.withZScore_=false;
 		ArrayList<Snp> geneSnps = new ArrayList<Snp>();
 		geneSnps.add(fakeSnp1);geneSnps.add(fakeSnp2);geneSnps.add(fakeSnp3);
 		//
@@ -145,10 +146,10 @@ public class AnalyticVegasTest {
 		double firstRes = myAnalyticObj.getTestStatisticReal();
 		
 		
-		Snp fakeSnp1_1 = new Snp("fakeId1", 0, 0.3);
-		Snp fakeSnp2_1 = new Snp("fakeId2", 0, 0.8);
-		Snp fakeSnp3_1 = new Snp("fakeId3", 0, 1.4);
-		Settings.withZScore_=false;
+		//Snp fakeSnp1_1 = new Snp("fakeId1", 0, 0.3);
+		//Snp fakeSnp2_1 = new Snp("fakeId2", 0, 0.8);
+		//Snp fakeSnp3_1 = new Snp("fakeId3", 0, 1.4);
+		Pascal.set.withZScore_=false;
 		ArrayList<Double> zscores= new ArrayList<Double>();
 		zscores.add(0.3);
 		zscores.add(0.8);

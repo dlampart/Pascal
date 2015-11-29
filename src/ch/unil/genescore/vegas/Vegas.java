@@ -22,17 +22,14 @@
 package ch.unil.genescore.vegas;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 import no.uib.cipr.matrix.AbstractMatrix;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.UpperSymmDenseMatrix;
-import ch.unil.genescore.main.FileExport;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.main.Utils;
+import ch.unil.gpsutils.FileExport;
+
 
 /**
  * Summarize p-values of multiple snps at a locus
@@ -243,15 +240,8 @@ public abstract class Vegas extends GeneScoreEvaluator {
 	}
     protected void writeMatrixMTJ(AbstractMatrix mat, String outName) {
         
-        String filename = Settings.outputDirectory_ + "/" + "run_" + outName + ".ld";
-        System.out.println(filename); 
-        File file = new File(filename);
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        FileExport writer = new FileExport(filename);
+        File file = new File(Pascal.set.outputDirectory_, "run_" + outName + ".ld");
+        FileExport writer = new FileExport(Pascal.log, file);
         
         for (int i = 0; i < mat.numRows(); i++){
             String line = "";

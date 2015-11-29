@@ -22,8 +22,9 @@
 package ch.unil.genescore.vegas;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
+
+
 //TODO: Dangerous class I think
 public class OverlappedCollectionStream 
 implements OverlappedGenomicElementStream {
@@ -65,8 +66,8 @@ implements OverlappedGenomicElementStream {
 	@Override
 	public void reOpenStream() {
 		if(streamOpen()){throw new RuntimeException("never call reopen on open stream");}
-		OverlappedGenomicElement lastElement_ = null;
-		OverlappedGenomicElement currentElement_ = null;
+//		OverlappedGenomicElement lastElement_ = null;
+//		OverlappedGenomicElement currentElement_ = null;
 		streamOpen_ = true;
 		it_ = myCollection_.iterator();		
 	}

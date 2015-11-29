@@ -21,8 +21,11 @@
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
+import java.io.File;
+
 import ch.unil.genescore.gene.GenomicElement;
-import ch.unil.genescore.main.FileParser;
+import ch.unil.genescore.main.Pascal;
+import ch.unil.gpsutils.FileParser;
 
 
 public class BedFileStream 
@@ -30,16 +33,17 @@ extends OverlappedGenomicElementFileStream
 implements OverlappedGenomicElementStream {
 	static String fakeIds = ".";
 	FileParser parser_ = null;
-	String filePath_ = null;
+	File file_ = null;
 	//OverlappedGenomicElement currentElement_ = null;
 	
 	
-	public BedFileStream(String filePath){
-		filePath_= filePath;
-    	parser_ = new FileParser(filePath,"\t");
+	public BedFileStream(File file){
+		file_= file;
+    	parser_ = new FileParser(Pascal.log, file);
     	streamOpen_=true;
-    	           		
-	}	
+	}
+
+	
 	public void loadElement(){
 		if (!streamOpen_)
 			throw new RuntimeException("never use on closed stream");
@@ -65,7 +69,7 @@ implements OverlappedGenomicElementStream {
 	public void reOpenStream() {
 		
 		if(streamOpen()){throw new RuntimeException("never call reopen on open stream");}
-    	parser_ = new FileParser(filePath_,"\t");
+    	parser_ = new FileParser(Pascal.log, file_);
     	streamOpen_=true;
 		// TODO Auto-generated method stub
 		

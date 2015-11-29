@@ -33,7 +33,7 @@ import org.junit.Test;
 
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GenomicElement;
-import ch.unil.genescore.main.Settings;
+import ch.unil.genescore.main.Pascal;
 
 
 /**
@@ -41,13 +41,15 @@ import ch.unil.genescore.main.Settings;
  */
 public class GenomicElementTest {
 	
-	
+	/** The Pascal instance (initializes Settings) */
+	private static Pascal psc = new Pascal();
+
 	// ============================================================================
 	// SETUP
 	
 	@BeforeClass
 	public static void testSetup() {
-		Settings.loadSettings();
+		Pascal.set.resetToDefaults();
 	}
 
 	@AfterClass

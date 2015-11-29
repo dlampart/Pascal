@@ -21,13 +21,13 @@
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import ch.unil.genescore.gene.GeneAnnotationGencode;
-import ch.unil.genescore.main.FileParser;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
+import ch.unil.gpsutils.FileParser;
 
 public class GwasSnps {
 
@@ -37,11 +37,11 @@ public class GwasSnps {
 	//TODO: sort out header situation
 	
 	
-	public void loadSnpPvalZval(String filename){
+	public void loadSnpPvalZval(File file){
         
         LinkedHashMap<String, Snp> snps = new LinkedHashMap<String, Snp>();
         // Open the file
-        FileParser parser = new FileParser(filename);
+        FileParser parser = new FileParser(Pascal.log, file);
        
         String[] nextLine=null;
         int numNA=0;
@@ -131,10 +131,10 @@ public class GwasSnps {
     }	
 	
 	/** Load SNPs with p-values */
-	public void loadSnpPvals(String filename) {
+	public void loadSnpPvals(File file) {
 		
 		LinkedHashMap<String, Snp> snps = new LinkedHashMap<String, Snp>();
-		FileParser parser = new FileParser(filename);		
+		FileParser parser = new FileParser(Pascal.log, file);		
 		 String[] nextLine=null;
 	        if (hasHeader_)
 	        	nextLine = parser.readLine();
@@ -147,9 +147,9 @@ public class GwasSnps {
 		// Check that all subsequent lines have the same number of cols
 		int numCols = nextLine.length;
 		// Check that there are enough columns
-		int pvalCol = Settings.pvalCol_ - 1; // Here we start at 0
+		int pvalCol = Pascal.set.pvalCol_ - 1; // Here we start at 0
 		if (pvalCol >= numCols)
-			parser.error("Not enough columns, expected p-value in column specified in settings file snpPvalCol=" + Settings.pvalCol_);
+			parser.error("Not enough columns, expected p-value in column specified in settings file snpPvalCol=" + Pascal.set.pvalCol_);
 		
 		// Snps that are listed multiple times in the input file
 		LinkedHashMap<String, Integer> multiSnps = new LinkedHashMap<String, Integer>();
@@ -232,10 +232,10 @@ public class GwasSnps {
 	}
 
 	/** Load the positions of the given snps */ 
-	public void loadCodingSnps(String filename, HashMap<String, Snp> snps) {
+	public void loadCodingSnps(File file, HashMap<String, Snp> snps) {
 		
 		// Open file
-		FileParser parser = new FileParser(filename);
+		FileParser parser = new FileParser(Pascal.log, file);
 		
 		while (true) {
 			// Read next line
@@ -260,13 +260,9 @@ public class GwasSnps {
 		parser.close();
 	}
 	/** keep only snps form list that are in snpFilterFile */
-	public void keepOnlySnpsInFilterListFile(String snpFilterFile){
+	public void keepOnlySnpsInFilterListFile(File snpFilterFile){
 
-		if (snpFilterFile== null || snpFilterFile.isEmpty()){
-			throw new RuntimeException("filter file not  properly specified");
-		} 		  		
-		  
-		FileParser parser = new FileParser(snpFilterFile);
+		FileParser parser = new FileParser(Pascal.log, snpFilterFile);
 		HashMap<String, Snp> filteredSnps = new HashMap<String, Snp>();
 		String snpId = null;
 		

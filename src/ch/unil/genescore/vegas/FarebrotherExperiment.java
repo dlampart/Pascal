@@ -25,7 +25,7 @@ import java.math.BigDecimal;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 
-import ch.unil.genescore.main.Settings;
+import ch.unil.genescore.main.Pascal;
 
 
 /**
@@ -79,9 +79,9 @@ public class FarebrotherExperiment {
 		for (int i=0; i<lambda.length; i++)
 			delta_[i] = 0;
 		
-		eps_ = Settings.requestedAbsolutePrecision_;
-		maxit_ = Settings.farebrotherMaxIterations_;	
-		mode_ = Settings.farebrotherMode_;
+		eps_ = Pascal.set.requestedAbsolutePrecision_;
+		maxit_ = Pascal.set.farebrotherMaxIterations_;	
+		mode_ = Pascal.set.farebrotherMode_;
 	}
 
 		

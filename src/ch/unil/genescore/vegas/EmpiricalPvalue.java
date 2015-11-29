@@ -22,7 +22,6 @@
 package ch.unil.genescore.vegas;
 
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
 
 
 /**
@@ -75,7 +74,7 @@ public class EmpiricalPvalue {
 	public boolean stop(int numSamples) {
 		
 		numSamples_ = numSamples;
-		return numSamplesGreater_ > Settings.numSamplesGreaterCutoff_;
+		return numSamplesGreater_ > Pascal.set.numSamplesGreaterCutoff_;
 		//return false;
 	}
 
@@ -86,7 +85,7 @@ public class EmpiricalPvalue {
 	public double getPval() {
 		
 		// Check that there are more samples greater than the observed statistic than the cutoff, or the max number of samples was reached
-		assert numSamplesGreater_ > Settings.numSamplesGreaterCutoff_ || numSamples_ == Settings.adaptiveNumSamples_.get(Settings.adaptiveNumSamples_.size()-1);
+		assert numSamplesGreater_ > Pascal.set.numSamplesGreaterCutoff_ || numSamples_ == Pascal.set.adaptiveNumSamples_.get(Pascal.set.adaptiveNumSamples_.size()-1);
 
 		// Note, the correct (unbiased) estimate of a p-value from monte carlo sampling is not r/n, but (r+1)/(n+1)
 		if (numSamples_ <= 0)

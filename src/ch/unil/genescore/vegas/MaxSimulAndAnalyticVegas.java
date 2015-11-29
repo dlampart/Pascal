@@ -24,8 +24,6 @@ package ch.unil.genescore.vegas;
 import java.util.ArrayList;
 
 import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.UpperSymmDenseMatrix;
-import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.vegas.VegasSimulationNew;;
 
 public class MaxSimulAndAnalyticVegas extends AnalyticVegas {

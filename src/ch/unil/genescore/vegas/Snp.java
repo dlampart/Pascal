@@ -33,7 +33,7 @@ import java.util.HashSet;
 import org.apache.commons.math3.distribution.TDistribution;
 
 import ch.unil.genescore.gene.GenomicElement;
-import ch.unil.genescore.main.Settings;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.vegas.DistributionMethods;
 
 /**
@@ -484,7 +484,7 @@ public class Snp extends GenomicElement {
 		String chr = "chr" + splittedTpedStr[0];
 		int start = Integer.parseInt(splittedTpedStr[3]);
 		this.setPosition(chr, start, start+1, true);
-		assert(Settings.dePhase_);
+		assert(Pascal.set.dePhase_);
 	}
 	
 	
@@ -551,7 +551,7 @@ public class Snp extends GenomicElement {
 		if (minorAllele_!='N' || majorAllele_!='N'){
 			snpHasBeenSeenInGWAS = true;
 		}
-		if (Settings.withZScore_ && minorAllele_!=snp.getMinorAllele()) {
+		if (Pascal.set.withZScore_ && minorAllele_!=snp.getMinorAllele()) {
 			if(snp.getMinorAllele() !=majorAllele_ && snpHasBeenSeenInGWAS){
 				throw new DataInconsistencyException("different minor allele of reference population not found GWAS data. Snp left out.");
 		     }
@@ -610,7 +610,7 @@ public void readPosAndAllele(DataInputStream is) throws IOException,DataInconsis
 		if (minorAllele_!='N' || majorAllele_!='N'){
 			snpHasBeenSeenInGWAS = true;
 		}
-		if (Settings.withZScore_ && minorAllele_!=minorAllele) {
+		if (Pascal.set.withZScore_ && minorAllele_!=minorAllele) {
 			if(minorAllele!=majorAllele_ && snpHasBeenSeenInGWAS){
 				throw new DataInconsistencyException("different minor allele of reference population not found GWAS data. Snp left out.");
 		     }

@@ -31,7 +31,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
 
 public class StreamMethods {
 	
@@ -59,7 +58,7 @@ public class StreamMethods {
 	/** Open a data input stream */
 	public static DataInputStream openDataInputStream(String filename,  String binaryFileVersionID)  {
 		
-		if (Settings.verbose_)
+		if (Pascal.set.verbose_)
 			Pascal.println("Reading file: " + filename);
 
 		try {

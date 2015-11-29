@@ -25,10 +25,6 @@ import java.util.ArrayList;
 
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.UpperSymmDenseMatrix;
-import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.vegas.MaxVegas.Status;
-
-import com.sun.jna.Native;
 import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
 
@@ -143,7 +139,7 @@ public class MaxVegasWithoutPruning extends AnalyticVegas {
 		long timeDiff=t1-t0;
 		System.out.println(timeDiff);
 		geneScore_=(1-value.getValue());
-		double err = error.getValue();
+		//double err = error.getValue();
 		
 		status_ = evaluateMvtdstStatus(inform.getValue());
 		}

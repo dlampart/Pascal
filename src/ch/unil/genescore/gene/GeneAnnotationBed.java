@@ -21,18 +21,19 @@
  *******************************************************************************/
 package ch.unil.genescore.gene;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
-import ch.unil.genescore.main.FileParser;
-import ch.unil.genescore.main.Settings;
+import ch.unil.genescore.main.Pascal;
+import ch.unil.gpsutils.FileParser;
 
 /**
  * bed-file annotation with genSymbol as ids
  */
 public class GeneAnnotationBed extends GeneAnnotation {
 
-	public GeneAnnotationBed(String annotationFile) {
+	public GeneAnnotationBed(File annotationFile) {
 		super(annotationFile);
 		// TODO Auto-generated constructor stub
 	}
@@ -40,10 +41,11 @@ public class GeneAnnotationBed extends GeneAnnotation {
 	/** Constructor */
 	public GeneAnnotationBed() {
 		
-		super(Settings.bedAnnotationFile_);
-		System.out.println("Load annotation: " + Settings.bedAnnotationFile_);
+		super(Pascal.set.bedAnnotationFile_);
+		System.out.println("Load annotation: " + Pascal.set.bedAnnotationFile_);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public LinkedHashMap<String, Gene> loadAnnotation() {
 		// TODO Auto-generated method stub
@@ -51,7 +53,7 @@ public class GeneAnnotationBed extends GeneAnnotation {
 		HashSet<String> inconsistentEntries = new HashSet<String>();
 		HashSet<String> inconsistentStrand = new HashSet<String>();
 		System.out.println("Loading annotation: " + annotationFile_);
-		FileParser parser = new FileParser(annotationFile_);
+		FileParser parser = new FileParser(Pascal.log, annotationFile_);
 		
 		// Skip the header lines (start with #)
 		String[] nextLine = parser.readLine();

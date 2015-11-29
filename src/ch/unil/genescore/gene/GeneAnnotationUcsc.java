@@ -24,9 +24,8 @@ package ch.unil.genescore.gene;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
-import ch.unil.genescore.main.FileParser;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
+import ch.unil.gpsutils.FileParser;
 
 
 /**
@@ -42,8 +41,8 @@ public class GeneAnnotationUcsc extends GeneAnnotation {
 	/** Constructor */
 	public GeneAnnotationUcsc() {
 		
-		super(Settings.ucscAnnotationFile_);
-		System.out.println("Load annotation: " + Settings.ucscAnnotationFile_);
+		super(Pascal.set.ucscAnnotationFile_);
+		System.out.println("Load annotation: " + Pascal.set.ucscAnnotationFile_);
 	}
 
 	
@@ -61,7 +60,7 @@ public class GeneAnnotationUcsc extends GeneAnnotation {
 		HashSet<String> inconsistentEntries = new HashSet<String>();
 		HashSet<String> inconsistentStrand = new HashSet<String>();
 		System.out.println("Loading annotation: " + annotationFile_);
-		FileParser parser = new FileParser(annotationFile_);
+		FileParser parser = new FileParser(Pascal.log, annotationFile_);
 		
 		// Skip the header lines (start with #)
 		String[] nextLine = parser.readLine();

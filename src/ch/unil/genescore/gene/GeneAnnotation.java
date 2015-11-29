@@ -21,6 +21,7 @@
  *******************************************************************************/
 package ch.unil.genescore.gene;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,10 +29,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
-import ch.unil.genescore.main.FileExport;
-import ch.unil.genescore.main.FileParser;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
+import ch.unil.gpsutils.FileExport;
+import ch.unil.gpsutils.FileParser;
 
 
 /**
@@ -40,7 +40,7 @@ import ch.unil.genescore.main.Settings;
 abstract public class GeneAnnotation {
 
 	/** The file with the genome annotation */
-	protected String annotationFile_ = null;
+	protected File annotationFile_ = null;
 	
 	/** User specified set of genes to be loaded (leave empty for all genes, boolean indicates if gene was found in the annotation) */
 	protected HashMap<String, Boolean> genesToBeLoaded_ = null;
@@ -66,11 +66,11 @@ abstract public class GeneAnnotation {
 	public static GeneAnnotation createAnnotationInstance() {
 		
 		// TODO allow annotation to be loaded from a bed file, create appropriate subclass
-		if (Settings.genomeAnnotation_.equals("gencode"))
+		if (Pascal.set.genomeAnnotation_.equals("gencode"))
 			return new GeneAnnotationGencode();
-		else if (Settings.genomeAnnotation_.equals("ucsc"))
+		else if (Pascal.set.genomeAnnotation_.equals("ucsc"))
 			return new GeneAnnotationUcsc();
-		else if (Settings.genomeAnnotation_.equals("bed"))
+		else if (Pascal.set.genomeAnnotation_.equals("bed"))
 			return new GeneAnnotationBed();
 			throw new RuntimeException("Settings.genomeAnnotation_ must be 'gencode','ucsc' or 'bed'.");
 	}
@@ -79,20 +79,20 @@ abstract public class GeneAnnotation {
 	// PUBLIC METHODS
 	
 	/** Constructor */
-	public GeneAnnotation(String annotationFile) {
+	public GeneAnnotation(File annotationFile) {
 		
 		annotationFile_ = annotationFile; 
-		chromosomeToBeLoaded_ = Settings.chromosome_;
-		ignoreAllosomes_ = Settings.ignoreAllosomes_;
-		ignoreChrM_ = Settings.ignoreChrM_;
-		loadOnlyProteinCoding_ = Settings.loadOnlyProteinCodingGenes_;
+		chromosomeToBeLoaded_ = Pascal.set.chromosome_;
+		ignoreAllosomes_ = Pascal.set.ignoreAllosomes_;
+		ignoreChrM_ = Pascal.set.ignoreChrM_;
+		loadOnlyProteinCoding_ = Pascal.set.loadOnlyProteinCodingGenes_;
 	}
 	
 	
 	// ----------------------------------------------------------------------------
 
 	/** Load the specified genes (genesToBeLoaded_) from the annotation file */
-	public LinkedList<Gene> loadAnnotation(String genesToBeLoadedFile) {
+	public LinkedList<Gene> loadAnnotation(File genesToBeLoadedFile) {
 		
 		// Load the set of genes to be considered
 		loadGenesToBeLoaded(genesToBeLoadedFile);
@@ -128,16 +128,14 @@ abstract public class GeneAnnotation {
 	// ----------------------------------------------------------------------------
 
 	/** Load the specified set of genes (genesToBeLoaded_) */
-	public void loadGenesToBeLoaded(String filename) {
+	public void loadGenesToBeLoaded(File file) {
 				
 		// Return if no gene file was specified (all genes from the annotation will be loaded)
-		if (filename == null ||
-				filename.equals(" ") ||
-				filename.equals(""))
+		if (file == null)
 			return;
 
 		genesToBeLoaded_ = new HashMap<String, Boolean>();
-		FileParser parser = new FileParser(filename);
+		FileParser parser = new FileParser(Pascal.log, file);
 		
 		while (true) {
 			String[] nextLine = parser.readLine();
@@ -155,9 +153,9 @@ abstract public class GeneAnnotation {
 	// ----------------------------------------------------------------------------
 
 	/** Write the genes to a file with gene id, symbol and position */
-	public void writeGeneList(String filename) {
+	public void writeGeneList(File file) {
 		
-		FileExport writer = new FileExport(filename);
+		FileExport writer = new FileExport(Pascal.log, file);
 		String prevChr = null;
 		int prevStart = -1;
 		
@@ -200,7 +198,7 @@ abstract public class GeneAnnotation {
 	// ----------------------------------------------------------------------------
 
 	/** Remove the genes in the given file from the loaded set of genes */
-	public int removeGenes(String excludedGenesFile) {
+	public int removeGenes(File excludedGenesFile) {
 		
 		excludedGenes_ = loadGeneList(excludedGenesFile);
 		int numRemoved = 0;
@@ -217,14 +215,13 @@ abstract public class GeneAnnotation {
 	// ----------------------------------------------------------------------------
 	
 	/** Load a list of genes (one line per gene, id in first column) */
-	public static HashSet<String> loadGeneList(String excludedGenesFile) {
+	public static HashSet<String> loadGeneList(File excludedGenesFile) {
 		
 		HashSet<String> excludedGenes = new HashSet<String>();
-		
-		if (excludedGenesFile == null || excludedGenesFile.length() == 0)
+		if (excludedGenesFile == null)
 			return excludedGenes;
 		
-		FileParser parser = new FileParser(excludedGenesFile);
+		FileParser parser = new FileParser(Pascal.log, excludedGenesFile);
 
 		// Parse header
 		String[] header = parser.readLine();
@@ -251,12 +248,12 @@ abstract public class GeneAnnotation {
 	/** Get name of genome annotation for console output ('UCSC known gene', 'GENCODE genes') */
 	public static String getAnnotationName() {
 		
-		if (Settings.genomeAnnotation_.equalsIgnoreCase("ucsc"))
+		if (Pascal.set.genomeAnnotation_.equalsIgnoreCase("ucsc"))
 			return "UCSC known genes";
-		else if (Settings.genomeAnnotation_.equalsIgnoreCase("gencode"))
+		else if (Pascal.set.genomeAnnotation_.equalsIgnoreCase("gencode"))
 			return "GENCODE genes";
 		else
-			throw new RuntimeException("Unknown genomeAnnotation:" + Settings.genomeAnnotation_);
+			throw new RuntimeException("Unknown genomeAnnotation:" + Pascal.set.genomeAnnotation_);
 	}
 	
 	

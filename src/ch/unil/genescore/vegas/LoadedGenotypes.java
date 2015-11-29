@@ -21,12 +21,11 @@
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
-import java.io.IOException;
 import java.util.LinkedList;
 
 import ch.unil.genescore.gene.GenomicElement;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
+
 
 public class LoadedGenotypes {
 	
@@ -66,7 +65,7 @@ public class LoadedGenotypes {
 			return;
 			
 		// Boundaries of region for which genotypes should be loaded (note, with meta-genes we don't really know what's up and down, that's why we use max())
-		int d = Math.max(Settings.geneWindowDownstream_, Settings.geneWindowUpstream_);
+		int d = Math.max(Pascal.set.geneWindowDownstream_, Pascal.set.geneWindowUpstream_);
 		int laxityFactor=3000000;
 		int newStart = gene.start_ - d - laxityFactor;
 		int newEnd = gene.end_ + d + laxityFactor;;		

@@ -25,12 +25,9 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Queue;
-import java.util.Stack;
 import java.util.TreeSet;
 
 import ch.unil.genescore.gene.Gene;
-import ch.unil.genescore.main.Settings;
 
 public class Damper {
 	/** Damper: takes in Collection of genes and lowers chi-square scores of genes that have neighbour with higher chi-sq-scores
@@ -45,7 +42,7 @@ public class Damper {
 	LinkedList<Double> myMaxDeque_=null;
 	int dist_;
 	double deflationRate_;
-	public Damper(Collection genes, int dist, double deflationRate){
+	public Damper(Collection<Gene> genes, int dist, double deflationRate){
 		
 		mySet_=new TreeSet<Gene>(genes);
 		dist_ = dist; 

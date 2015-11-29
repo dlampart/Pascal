@@ -21,8 +21,8 @@
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.math3.distribution.TDistribution;
@@ -30,10 +30,8 @@ import org.apache.commons.math3.stat.ranking.NaNStrategy;
 import org.apache.commons.math3.stat.ranking.NaturalRanking;
 import org.apache.commons.math3.stat.ranking.TiesStrategy;
 
-import ch.unil.genescore.gene.Gene;
-import ch.unil.genescore.main.FileExport;
-import ch.unil.genescore.main.Settings;
-import no.uib.cipr.matrix.DenseVector;
+import ch.unil.genescore.main.Pascal;
+import ch.unil.gpsutils.FileExport;
 
 public class GeneDataFakePhenotype extends GeneData {
 	
@@ -43,22 +41,22 @@ public class GeneDataFakePhenotype extends GeneData {
 	static double fakePhenoSd_;
 	static double fakePhenoMean_;
 	//static Random r = new Random();
-	static String snpStr= "snpValsSeed"+ Settings.randomSeed_ + ".txt";
-	static String fakePhenoStr= "fakePhenoSeed"+ Settings.randomSeed_ + ".txt";
-	static FileExport writerSnpScores = new FileExport(snpStr);
-	static FileExport writerFakePheno = new FileExport(fakePhenoStr);
-	private static Random rand = new Random(Settings.randomSeed_);
+	static FileExport writerSnpScores = new FileExport(Pascal.log, new File("snpValsSeed"+ Pascal.set.getRandomSeed() + ".txt"));
+	static FileExport writerFakePheno = new FileExport(Pascal.log, new File("fakePhenoSeed"+ Pascal.set.getRandomSeed() + ".txt"));
+	private static Random rand = new Random(Pascal.set.getRandomSeed());
 	static TDistribution myT= null;
 	static double[] fakeSignal_ = null;
+	
+	
 	public GeneDataFakePhenotype(ArrayList<Snp> snpList) {
 		super(snpList);				
-		nrOfMultiples_=Settings.multipleOfPhenotype_;		
+		nrOfMultiples_=Pascal.set.multipleOfPhenotype_;		
 	}
 	
 	public GeneDataFakePhenotype(ArrayList<Snp> snpList, double[] fakeSignal) {
 		super(snpList);	
 		fakeSignal_=fakeSignal;				
-		nrOfMultiples_=Settings.multipleOfPhenotype_;
+		nrOfMultiples_=Pascal.set.multipleOfPhenotype_;
 		
 	}	
 	
@@ -138,7 +136,7 @@ public class GeneDataFakePhenotype extends GeneData {
 	}
 	private void simulateNormalsRnd(double[] fakePheno) {
 		for (int i=0; i<fakePheno.length;i++){
-			fakePheno[i]=Settings.jdkRng_.nextGaussian();
+			fakePheno[i]=Pascal.set.jdkRng_.nextGaussian();
 			
 			calcFakePhenoMeanAndSd();
 		}
@@ -182,15 +180,10 @@ public class GeneDataFakePhenotype extends GeneData {
 		writerFakePheno.close();
 	}
 	
-	private void runGenescoreMultipleTimesForSameGene(){
-		
-		
-	}
-	
-	void writeSnpGenotypes(String filename){
-		FileExport writerSnpGenotypes = new FileExport(filename);
+	void writeSnpGenotypes(File file){
+		FileExport writerSnpGenotypes = new FileExport(Pascal.log, file);
 		int nrOfSnps=snpList_.size();
-		int nrOfGenotypes=snpList_.get(0).getGenotypeLength();
+		int nrOfGenotypes=Snp.getGenotypeLength();
 		//for (int i=0;i < nrOfGenotypes ; i++){
 		String myStr = null;
 		for (int i=0;i < nrOfSnps ; i++){

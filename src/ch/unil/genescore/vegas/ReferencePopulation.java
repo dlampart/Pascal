@@ -22,30 +22,20 @@
 package ch.unil.genescore.vegas;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.Genome;
 import ch.unil.genescore.gene.GenomicElement;
-import ch.unil.genescore.main.FileParser;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.main.Utils;
 
 
 /**
@@ -97,11 +87,11 @@ public class ReferencePopulation {
 		
 		// Initialize list of chromosomes to be considered
 		chromosomes_ = new ArrayList<String>();
-		if (Settings.chromosome_ == null || Settings.chromosome_.length() == 0)
+		if (Pascal.set.chromosome_ == null || Pascal.set.chromosome_.length() == 0)
 			for (int i=1; i<=22; i++)
 				chromosomes_.add("chr" + i);
 		else
-			chromosomes_.add(Settings.chromosome_);
+			chromosomes_.add(Pascal.set.chromosome_);
 		
 		// Create missing binary files if text or tped files were specified in settings
 		for (String chr : chromosomes_)
@@ -137,7 +127,7 @@ public class ReferencePopulation {
 			return;
 			
 		// Boundaries of region for which genotypes should be loaded (note, with meta-genes we don't really know what's up and down, that's why we use max())
-		int d = Math.max(Settings.geneWindowDownstream_, Settings.geneWindowUpstream_);
+		int d = Math.max(Pascal.set.geneWindowDownstream_, Pascal.set.geneWindowUpstream_);
 		int laxityFactor=3000000;
 		int newStart = gene.start_ - d - laxityFactor;
 		int newEnd = gene.end_ + d + laxityFactor;;		
@@ -307,16 +297,16 @@ public class ReferencePopulation {
 			
 		// Load pvals (all chromosomes)
 		GwasSnps snps = new GwasSnps();
-		if (!Settings.withZScore_){
+		if (!Pascal.set.withZScore_){
 			snps.setHeader(false);
-			snps.loadSnpPvals(Settings.snpPvalFile_);
+			snps.loadSnpPvals(Pascal.set.snpPvalFile_);
 		}
 		else{
 			snps.setHeader(true);
-			snps.loadSnpPvalZval(Settings.snpPvalFile_);
+			snps.loadSnpPvalZval(Pascal.set.snpPvalFile_);
 		}
 		// Remove SNPs not in snpPruneFile
-		String snpFilterFile = Settings.snpFilterFile_;
+		File snpFilterFile = Pascal.set.snpFilterFile_;
 		if (!(snpFilterFile == null) && !snpFilterFile.equals(""))
 			snps.keepOnlySnpsInFilterListFile(snpFilterFile);
 
@@ -328,7 +318,7 @@ public class ReferencePopulation {
 		
 		
 		initializeSnps();	
-		if (Settings.useOnlyGwasSnps_){
+		if (Pascal.set.useOnlyGwasSnps_){
 			 useOnlyGwasSnps();
 		}
         //TODO: this has to be somehow taken care of Don't freak
@@ -340,15 +330,15 @@ public class ReferencePopulation {
 		gSnps.addElements(snps.getSnpsInList().values());		
 		
 		// Print location of SNPs of this study as bed file
-		String gwasName = Utils.extractBasicFilename(Settings.snpPvalFile_, false);
-		if (Settings.writeSnpBedFile_) {
-			
-			gSnps.writeBedFile(Settings.outputDirectory_ + "/" + Settings.gwasName_ + ".snps" + Settings.chromFileExtension_ + ".txt");
+		if (Pascal.set.writeSnpBedFile_) {
+			File bedFile = new File(Pascal.set.outputDirectory_, Pascal.set.gwasName_ + ".snps" + Pascal.set.chromFileExtension_ + ".txt");
+			gSnps.writeBedFile(bedFile);
 		}
-		if (Settings.writeTpedFile_){
-			
-            gSnps.writePseudoTfamPlinkFile(Settings.outputDirectory_ + "/" + Settings.gwasName_ + ".snps" + Settings.chromFileExtension_);
-            gSnps.writeTpedPlinkFile(Settings.outputDirectory_ + "/" + Settings.gwasName_ + ".snps" + Settings.chromFileExtension_);			
+		if (Pascal.set.writeTpedFile_){
+			File tfamFile = new File(Pascal.set.outputDirectory_, Pascal.set.gwasName_ + ".snps" + Pascal.set.chromFileExtension_ + ".tfam");
+            gSnps.writePseudoTfamPlinkFile(tfamFile);
+            File tpedFile = new File(Pascal.set.outputDirectory_, Pascal.set.gwasName_ + ".snps" + Pascal.set.chromFileExtension_ + ".tped");
+            gSnps.writeTpedPlinkFile(tpedFile);			
 		}
 		setGenomeSnps(gSnps);
 		
@@ -362,7 +352,7 @@ public class ReferencePopulation {
 	/** Open a data input stream */
 	protected void openDataInputStream(String filename)  {
 		
-		if (Settings.verbose_)
+		if (Pascal.set.verbose_)
 			Pascal.println("Reading file: " + filename);
 
 		try {

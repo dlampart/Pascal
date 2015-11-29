@@ -24,8 +24,9 @@ package ch.unil.genescore.vegas;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import ch.unil.genescore.gene.Chromosome;
 import ch.unil.genescore.gene.GenomicElement;
+
+
 /**this is a recursive DataStructure*/
 public class OverlappedGenomicElement implements Comparable<OverlappedGenomicElement> {
 

@@ -23,15 +23,12 @@ package ch.unil.genescore.vegas;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.NotConvergedException;
 import no.uib.cipr.matrix.SymmDenseEVD;
 import no.uib.cipr.matrix.UpperSymmDenseMatrix;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.main.Utils;
 
 
 /**
@@ -72,7 +69,7 @@ public class AnalyticVegas extends Vegas {
 	
     /** Initialization */
     static {
-    	if (Settings.useImhof_){
+    	if (Pascal.set.useImhof_){
     		System.loadLibrary("jni-gsl");
     	}
     }
@@ -157,7 +154,7 @@ public class AnalyticVegas extends Vegas {
 	/** Get string representation of result that will be written to the output file */
 	  public String getResultsAsString() {
 		  
-		  String line = "\t" + numSnps_ + "\t" + Utils.toStringScientific10(geneScore_) + "\t" + getStatusString();		 
+		  String line = "\t" + numSnps_ + "\t" + Pascal.utils.toStringScientific10(geneScore_) + "\t" + getStatusString();		 
 	        return line;
 	    }
 
@@ -166,7 +163,7 @@ public class AnalyticVegas extends Vegas {
 
 	        //String header = "\tpvalue\tnumSnps";
 	    	String header = "\tnumSnps\tpvalue\tStatus";
-	  //      if (Settings.writeDetailedOutput_)
+	  //      if (Pascal.set.writeDetailedOutput_)
 	   //         header += "\tavgSnpCorrelation\tstatus";
 	        return header;
 	    }
@@ -176,7 +173,7 @@ public class AnalyticVegas extends Vegas {
 	/** Get output to be printed on console after computing score for a gene */
 	public String getConsoleOutput() { 
 		
-		if (Settings.writeDetailedOutput_) {
+		if (Pascal.set.writeDetailedOutput_) {
 			return getStatusString();
 		
 		}
@@ -190,7 +187,7 @@ public class AnalyticVegas extends Vegas {
 	/** Get output to be printed for genes where no score could be computed (error) */
 	public String getNoScoreOutput() {
 		
-		String str = Utils.toStringScientific10(geneScore_) + "\t" + getStatusString();		
+		String str = Pascal.utils.toStringScientific10(geneScore_) + "\t" + getStatusString();		
 		return str; 
 	}
 	
@@ -248,13 +245,13 @@ public class AnalyticVegas extends Vegas {
 		} 
 		WeightedChisquareAlgorithm mainAlgo = null;
 		if (useOnlyOneAlgorithm()){
-			if (Settings.useDavies_){
+			if (Pascal.set.useDavies_){
 			mainAlgo = new Davies(lambda_);			
 			}
-			else if (Settings.useFarebrother_){
+			else if (Pascal.set.useFarebrother_){
 			mainAlgo = new Farebrother(lambda_);			
 			}
-			else if (Settings.useImhof_){
+			else if (Pascal.set.useImhof_){
 				mainAlgo = new Imhof(lambda_);
 			}
 		mainScore_ = mainAlgo.probQsupx(testStatisticReal_);
@@ -274,7 +271,7 @@ public class AnalyticVegas extends Vegas {
 		setStatusAndScore();		
 	}
 	private boolean useOnlyOneAlgorithm(){
-		return (Settings.useDavies_ || Settings.useFarebrother_ || Settings.useImhof_);
+		return (Pascal.set.useDavies_ || Pascal.set.useFarebrother_ || Pascal.set.useImhof_);
 	}
 		private void setStatusAndScore(){
 			if (useOnlyOneAlgorithm()){
@@ -385,7 +382,7 @@ public class AnalyticVegas extends Vegas {
 	/** Compute test statistics with weights */
 	protected double computeTestStatisticRealSubclass() {
 		double myTest=0;
-		if (Settings.withZScore_){
+		if (Pascal.set.withZScore_){
 			//double[] zscores = new double[numSnps_];
 			//for (int i=0; i<numSnps_; i++)
 				//zscores[i] = geneSnps_.get(i).getZscore();						
@@ -446,7 +443,7 @@ public class AnalyticVegas extends Vegas {
 			if (x > 0)
 				sum += x;
 
-		double cutoff = sum / (Settings.eigenValueFractionCut_);
+		double cutoff = sum / (Pascal.set.eigenValueFractionCut_);
 		// The index where the eigenvalues are below the cutoff		
 		int k = 0;
 		for (Double x : eigenValues) {

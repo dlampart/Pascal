@@ -21,64 +21,72 @@
  *******************************************************************************/
 package ch.unil.genescore.main;
 
+import java.io.File;
+
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 /**
  * Defines and parses the command-line arguments
  */
-public class GeneScoreOptionParser extends Settings {
+public class PascalOptionParser extends PascalSettings {
 
 	/** The option parser */
-	OptionParser parser_ = null;
+	OptionParser parser_;
+	/** The options */
+	OptionSet options;
 
 	// ============================================================================
 	// PUBLIC METHODS
 
 	/** Parse the command-line arguments, initialize all settings */
-	public GeneScoreOptionParser() {
+	public PascalOptionParser() {
 
 		// Defines the arguments
 		defineArgs();
 	}
 
+	
 	// ----------------------------------------------------------------------------
 
 	/** Parses the command-line arguments, which were defined by defineArgs() */
 	public void parse(String[] args) {
 
 		// (1) Parse the options
-		OptionSet options = parser_.parse(args);
+		options = null;
+		try {
+			options = parser_.parse(args);
+		} catch (Exception e) {
+			displayHelp();
+			throw new RuntimeException(e);
+		}
 
 		// Display help
-		if (options.has("help")) {
+		if (options.has("help") || options.has("h") || options.has("?")) {
 			displayHelp();
 			System.exit(0);
 		}
 
-		// (2) Set the settings file
+		// (2-3) Set and load the settings file
 		if (options.has("set"))
-			settingsFile_ = (String) options.valueOf("set");
+			loadSettings((String) options.valueOf("set"));
 
-		// (3) Load the settings file
-		loadSettings();
+		// (4) Set command-line options (override settings in loaded settings file)
 
-		// (4) Set command-line options (default is what has been loaded from
-		// settings file)
 		if (options.has("outdir"))
-			outputDirectory_ = (String) options.valueOf("outdir");
+			outputDirectory_ = getFileOption("outdir"); 
 		if (options.has("outsuffix"))
 			outputSuffix_ = (String) options.valueOf("outsuffix");		
 		if (options.has("writesnpbed"))
 			writeSnpBedFile_ = true;
 		if (options.has("ucscdir"))
-			ucscAnnotationFile_ = (String) options.valueOf("ucscdir");
+			ucscAnnotationFile_ = getFileOption("ucscdir");
 		if (options.has("refpopdir"))
-			refPopDirectory_ = (String) options.valueOf("refpopdir");
+			refPopDirectory_ = getFileOption("refpopdir");
 		if (options.has("genestobeloaded"))
-			genesToBeLoadedFile_ = (String) options.valueOf("genestobeloaded");
+			genesToBeLoadedFile_ = getFileOption("genestobeloaded");
 		if (options.has("pval"))
-			snpPvalFile_ = (String) options.valueOf("pval");
+			snpPvalFile_ = getFileOption("pval");
 		if (options.has("pvalcol"))
 			pvalCol_ = (Integer) options.valueOf("pvalcol");
 		if (options.has("mafcutoff"))
@@ -91,8 +99,6 @@ public class GeneScoreOptionParser extends Settings {
 		if (options.has("chr"))
 			chromosome_ = "chr" + options.valueOf("chr");
 		
-		if (options.has("nsnp"))
-			testStatisticNumSnps_ = (Integer) options.valueOf("nsnp");
 		if (options.has("maxsnp"))
 			maxSnpsPerGene_ = (Integer) options.valueOf("maxsnp");
 		
@@ -105,11 +111,6 @@ public class GeneScoreOptionParser extends Settings {
 		if (options.has("multipleofphenotype"))
 			multipleOfPhenotype_ = (Integer) options.valueOf("multipleofphenotype");
 		
-		if (options.has("randseed")){
-			randomSeed_ = (Integer) options.valueOf("randseed");
-			initializeRandomNumberGenerators();
-		}
-		
 		
 		if (options.has("useimhof"))
 			useImhof_=true;		
@@ -119,7 +120,7 @@ public class GeneScoreOptionParser extends Settings {
 			useFarebrother_=true;
 		
 		if (options.has("genewisesnpdir"))
-			writeGenewiseSnpFiles_= (String) options.valueOf("genewisesnpdir");
+			writeGenewiseSnpFiles_= (Boolean) options.valueOf("genewisesnpdir");
 		
 		if (options.has("analyticvegas"))
 			useAnalyticVegas_ = true;
@@ -131,7 +132,7 @@ public class GeneScoreOptionParser extends Settings {
 		if (options.has("withzscore"))
 			withZScore_ = true;
 		if (options.has("prunelist"))
-			snpFilterFile_ = (String) options.valueOf("filterlist");
+			snpFilterFile_ = getFileOption("filterlist");
 		if (options.has("up"))
 			geneWindowUpstream_ = (Integer) options.valueOf("up");
 		if (options.has("down"))
@@ -140,7 +141,7 @@ public class GeneScoreOptionParser extends Settings {
 		if (options.has("annotation"))
 			genomeAnnotation_ = (String) options.valueOf("annotation");
 		if (options.has("gencodefile"))
-			gencodeAnnotationFile_ = (String) options.valueOf("gencodefile");
+			gencodeAnnotationFile_ = getFileOption("gencodefile");
 		
 		if (options.has("finalize")) {
 			concatenateChromosomeResultsDir_ = (String) options.valueOf("finalize");
@@ -157,7 +158,7 @@ public class GeneScoreOptionParser extends Settings {
 			mergeGenesDistance_ = (Double) options.valueOf("mergedistance");
 		
 		if (options.has("genesetfile"))
-			geneSetFile_ = (String) options.valueOf("genesetfile");
+			geneSetFile_ = getFileOption("genesetfile");
 		
 		if (options.has("hypgeom"))
 			useHypGeom_ = true;
@@ -169,23 +170,18 @@ public class GeneScoreOptionParser extends Settings {
 			loadScoresFromFiles_= true;
 		
 		if (options.has("scores"))
-			geneScoreFile_ = (String) options.valueOf("scores");
+			geneScoreFile_ = getFileOption("scores");
 		
 		if (options.has("metascores"))
-			metaGeneScoreFile_ = (String) options.valueOf("metascores");
+			metaGeneScoreFile_ = getFileOption("metascores");
 		if (options.has("deflationrate"))
 			deflationRate_ = (Double) options.valueOf("deflationrate");
 		
-		//path to pathway
 		if (options.has("detailed"))
 			writeDetailedOutput_ = true;
 		if (options.has("rewritesettings"))
-		writeUsedSettings_ = (String) options.valueOf("scores");
-		//path to pathway
+			writeUsedSettings_ = getFileOption("rewritesettings");
 
-	
-
-		// TODO, write a method that checks consistency / if everything has been defined that we need
 		checkOptions();
 	}
 
@@ -310,5 +306,16 @@ public class GeneScoreOptionParser extends Settings {
 	}
 	
 	
+	// ----------------------------------------------------------------------------
+    
+    /** Get a file / directory saved as a string, throw exception if the name is empty */
+	private File getFileOption(String param) {
+		
+		String filename = (String) options.valueOf(param);
+    	if (filename.isEmpty() || filename.equals(" "))
+    		throw new RuntimeException("Option '" + param + "': file/directory name is empty or has trailing whitespace");
+    	
+		return new File(filename.trim());
+	}
 
 }

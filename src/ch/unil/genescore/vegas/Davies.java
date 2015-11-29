@@ -21,9 +21,7 @@
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
-
-import ch.unil.genescore.main.Settings;
-
+import ch.unil.genescore.main.Pascal;
 
 /**
  * Refactored from R package CompQuadForm by Pierre Lafaye de Micheaux and Pierre Duchesne. See bottom of file for original code.
@@ -116,8 +114,8 @@ public class Davies implements WeightedChisquareAlgorithm {
 		for (int i=0; i<lambda.length; i++)
 			delta_[i] = 0;
 		
-		acc_ = Settings.daviesErrorBound_;
-		lim_ = Settings.daviesIntegrationTerms_;
+		acc_ = Pascal.set.daviesErrorBound_;
+		lim_ = Pascal.set.daviesIntegrationTerms_;
 	}
 
 		

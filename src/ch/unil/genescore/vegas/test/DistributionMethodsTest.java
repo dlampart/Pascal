@@ -23,23 +23,18 @@ package ch.unil.genescore.vegas.test;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.commons.math3.distribution.ChiSquaredDistribution;
-import org.apache.commons.math3.distribution.NormalDistribution;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.vegas.DistributionMethods;
-
-
 
 
 	
 public class DistributionMethodsTest {
 
-	private static ChiSquaredDistribution chiSquared1df_ = new ChiSquaredDistribution(1);
-	private static NormalDistribution normalDist_ = new NormalDistribution();
+	//private static ChiSquaredDistribution chiSquared1df_ = new ChiSquaredDistribution(1);
+	//private static NormalDistribution normalDist_ = new NormalDistribution();
 	
 	// ============================================================================
 		// SETUP

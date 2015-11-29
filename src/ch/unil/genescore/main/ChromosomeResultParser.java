@@ -27,6 +27,8 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import ch.unil.gpsutils.FileExport;
+
 
 
 /**
@@ -57,7 +59,7 @@ public class ChromosomeResultParser {
 	/** Constructor */
 	public ChromosomeResultParser() {
 
-		deleteOriginals_ = Settings.deleteOriginals_;
+		deleteOriginals_ = Pascal.set.deleteOriginals_;
 	}
 
 	
@@ -165,8 +167,8 @@ public class ChromosomeResultParser {
 	/** Concatenate result files with the given prefix */
 	private void concatenateRuns() {
 		
-		String outfile = Settings.outputDirectory_ + "/" + new File(curPrefix_ + ".txt").getName();
-		writer_ = new FileExport(outfile);
+		File outfile = new File(Pascal.set.outputDirectory_, curPrefix_ + ".txt");
+		writer_ = new FileExport(Pascal.log, outfile);
 		
 		// Write header
 		if (curHeader_ != null)

@@ -22,28 +22,19 @@
 package ch.unil.genescore.vegas;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.Matrix;
-import ch.unil.genescore.main.FileExport;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
+import ch.unil.gpsutils.FileExport;
+
 
 public class WritingMethods {
 
-	public static void writeMTJ(Matrix mat, String fileName, String additonalDirectory) {
+	public static void writeMTJ(Matrix mat, File file) {
 		
-		String filename = Settings.outputDirectory_ + "/" + additonalDirectory + "/" + fileName;
-		System.out.println(filename); 
-		File file = new File(filename);
-	      try {
-			file.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		FileExport writer = new FileExport(filename);
+		FileExport writer = new FileExport(Pascal.log, file);
 		
 		for (int i = 0; i < mat.numRows(); i++){
 			String line = "";
@@ -61,7 +52,7 @@ public class WritingMethods {
 		Pascal.println("");
 	}
 
-	public static void writeGenotypeToFile(ArrayList<Snp> snpList, String fileName, String additonalDirectory) {
+	public static void writeGenotypeToFile(ArrayList<Snp> snpList, File file) {
 	
 		int numRows = snpList.get(0).getGenotypes().length;
 		int numColumns = snpList.size();
@@ -74,10 +65,11 @@ public class WritingMethods {
 				printMat.set(i,j,val);				
 			}		
 		}
-		writeMTJ( printMat, fileName, additonalDirectory);
+		writeMTJ( printMat, file);
 	}
-	public static void writeZscoreToFile(ArrayList<Snp> snpList, String fileName, String additonalDirectory) {
-		
+	
+	
+	public static void writeZscoreToFile(ArrayList<Snp> snpList, File file) {
 		
 		int numSnps = snpList.size();
 		DenseMatrix printMat = new DenseMatrix(numSnps,1);		
@@ -86,25 +78,17 @@ public class WritingMethods {
 			val=snpList.get(i).getZscore();	
 			printMat.set(i,0,val);				
 		}				
-		writeMTJ( printMat, fileName, additonalDirectory);
+		writeMTJ(printMat, file);
 	}
 	
-	public static void writeSnpPosWithValToFile(ArrayList<Snp> snpList, ArrayList<String> valString,String header, String fileName, String additonalDirectory) {
+	public static void writeSnpPosWithValToFile(ArrayList<Snp> snpList, ArrayList<String> valString,String header, File file) {
 		
 		int numSnps= snpList.size();
 		if (numSnps!=valString.size()){
 			throw new RuntimeException("can't write; not same length");
 		}
-		String filename = Settings.outputDirectory_ + "/" + additonalDirectory + "/" + fileName;
-		System.out.println(filename); 
-		File file = new File(filename);
-	      try {
-			file.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	    
-		FileExport writer = new FileExport(filename);
+		FileExport writer = new FileExport(Pascal.log, file);
+		
 		String headerline= "chr\tstart\tend\tid\t" + header;
 		writer.println(headerline);
 		for (int i=0 ; i < numSnps ; i++){
@@ -126,17 +110,9 @@ public class WritingMethods {
 	// ----------------------------------------------------------------------------
 
 	/** Write correlation matrix of a gene to file */
-	public static void writeLD(double[][] cor, String geneName, String additonalDirectory) {
+	public static void writeLD(double[][] cor, File file) {
 						
-		String filename = Settings.outputDirectory_ + "/" + additonalDirectory + "/" + "run_" + geneName + ".ld";
-		System.out.println(filename); 
-		File file = new File(filename);
-	      try {
-			file.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		FileExport writer = new FileExport(filename);
+		FileExport writer = new FileExport(Pascal.log, file);
 		
 		for (int i = 0; i < cor.length; i++){
 			String line = "";
@@ -154,17 +130,10 @@ public class WritingMethods {
 		Pascal.println("");
 	}
 
-	public static void writeLdMTJ(DenseMatrix cor, String geneName, String additonalDirectory) {
+	public static void writeLdMTJ(DenseMatrix cor, File file) {
 		
-		String filename = Settings.outputDirectory_ + "/" + additonalDirectory + "/" + "run_" + geneName + ".ld";
-		System.out.println(filename); 
-		File file = new File(filename);
-	      try {
-			file.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		FileExport writer = new FileExport(filename);
+		//String filename = Pascal.set.outputDirectory_ + "/" + additonalDirectory + "/" + "run_" + geneName + ".ld";
+		FileExport writer = new FileExport(Pascal.log, file);
 		
 		for (int i = 0; i < cor.numRows(); i++){
 			String line = "";

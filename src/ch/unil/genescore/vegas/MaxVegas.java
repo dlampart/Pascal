@@ -28,11 +28,11 @@ import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
 
 import ch.unil.genescore.main.ConvenienceMethods;
-import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.main.Utils;
-import ch.unil.genescore.vegas.AnalyticVegas.Status;
+import ch.unil.genescore.main.Pascal;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.UpperSymmDenseMatrix;
+
+
 /**
  * used to calculate max-Statistic
  * 
@@ -91,12 +91,12 @@ public class MaxVegas extends AnalyticVegas {
 	
 		public MaxVegas(){
 			super();
-			pruningCutoff_=Settings.maxPruningCutoff_;		
-			String myJna = System.getProperty("jna.library.path");
+			pruningCutoff_=Pascal.set.maxPruningCutoff_;		
+			//String myJna = System.getProperty("jna.library.path");
 		}
 		public MaxVegas(ArrayList<Double> snpScores, DenseMatrix ld, double[] weights) {			
 		super(snpScores, ld);			
-		pruningCutoff_=Settings.maxPruningCutoff_;		
+		pruningCutoff_=Pascal.set.maxPruningCutoff_;		
 		weights_ = weights;
 		System.setProperty("jna.debug_load", "true");						
 				
@@ -104,7 +104,7 @@ public class MaxVegas extends AnalyticVegas {
 		
 		public MaxVegas(ArrayList<Double> snpScores, UpperSymmDenseMatrix ld, double[] weights) {			
 			super(snpScores, ld);			
-			pruningCutoff_=Settings.maxPruningCutoff_;		
+			pruningCutoff_=Pascal.set.maxPruningCutoff_;		
 			weights_ = weights;
 			System.setProperty("jna.library.path", "lib/fortranlibs/");
 			
@@ -178,7 +178,7 @@ public class MaxVegas extends AnalyticVegas {
 	private double[] deweightSnpScores(){
 		
 		double[] upper  = new double[numSnps_];
-		if (!Settings.withZScore_){
+		if (!Pascal.set.withZScore_){
 			for (int i=0; i< numSnps_; i++)
 				upper[i]=Math.sqrt(snpScores_.get(i)/weights_[i]);
 		}
@@ -271,25 +271,25 @@ public class MaxVegas extends AnalyticVegas {
 		}					
 
 		if (upper_.length<1000){
-			long t0 = System.currentTimeMillis();
+			//long t0 = System.currentTimeMillis();
 			MvnPackDirectMapping.mvtdst_(new IntByReference(n), new IntByReference(0), lower, upper_, infin, correlflat, delta, maxpts_ref, abseps_ref, releps_ref, error, value, inform);
-			long t1 = System.currentTimeMillis();
-			long timeDiff=t1-t0;
+			//long t1 = System.currentTimeMillis();
+			//long timeDiff=t1-t0;
 			geneScore_=(1-value.getValue());
 
 			double err = error.getValue();		
 			status_ = evaluateMvtdstStatus(inform.getValue());
 			///do checks for errors.
-			if(Settings.externalConvergenceCheck_){
+			if(Pascal.set.externalConvergenceCheck_){
 				for(int i = 0; i< 8; i++){
 					if(err*3 < geneScore_ && status_==Status.CONVERGED){
 						break;
 					}
 
-					t0 = System.currentTimeMillis();
+					//t0 = System.currentTimeMillis();
 					MvnPackDirectMapping.mvtdst_(new IntByReference(n), new IntByReference(0), lower, upper_, infin, correlflat, delta, maxpts_ref, abseps_ref, releps_ref, error, value, inform);
-					t1 = System.currentTimeMillis();
-					timeDiff=t1-t0;
+					//t1 = System.currentTimeMillis();
+					//timeDiff=t1-t0;
 
 					geneScore_=(1-value.getValue());		
 					err = error.getValue();
@@ -314,7 +314,7 @@ public class MaxVegas extends AnalyticVegas {
 		double maxStat = 0;
 	
 		for (double score : snpScores_){
-			if (Settings.withZScore_){
+			if (Pascal.set.withZScore_){
 				score=Math.pow(score,2);
 			}
 			if (maxStat< score)
@@ -372,7 +372,7 @@ public class MaxVegas extends AnalyticVegas {
 	
 	@Override
 	public String getResultsAsString() {
-		String line = "\t" + numSnps_ + "\t" + Utils.toStringScientific10(geneScore_) + "\t" + status_.toString();		 
+		String line = "\t" + numSnps_ + "\t" + Pascal.utils.toStringScientific10(geneScore_) + "\t" + status_.toString();		 
 		return line;
 	}
 	

@@ -21,11 +21,11 @@
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
+import java.io.File;
 import java.util.ArrayList;
 
-import ch.unil.genescore.main.FileExport;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
+import ch.unil.gpsutils.FileExport;
 
 public class GeneResultsNoScore {
 	
@@ -33,7 +33,7 @@ public class GeneResultsNoScore {
 	private FileExport exporter_ = null;
 	public GeneResultsNoScore(){
 		noScore_ = new ArrayList<String>(); 
-		exporter_ = new FileExport();
+		//exporter_ = new FileExport();
 	}
 
 	public void add(String str){
@@ -45,8 +45,10 @@ public class GeneResultsNoScore {
 	}
 	
 	public void setExporter(String additionalOutputFileSuffix) {
-		String filename = Settings.outputDirectory_ + "/" + Settings.gwasName_+ additionalOutputFileSuffix + ".scoreComputeError" + Settings.chromFileExtension_ + ".txt";		
-		exporter_.setWriter(filename);		
+		File file = new File(Pascal.set.outputDirectory_, 
+				Pascal.set.gwasName_+ additionalOutputFileSuffix + ".scoreComputeError" + Pascal.set.chromFileExtension_ + ".txt");		
+		//exporter_.setWriter(filename);
+		exporter_ = new FileExport(Pascal.log, file);
 	}
 	
 	

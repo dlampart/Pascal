@@ -20,23 +20,24 @@
  * THE SOFTWARE.
  *******************************************************************************/
 package ch.unil.genescore.vegas.test;
-import static org.junit.Assert.assertEquals;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ch.unil.genescore.main.Settings;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.vegas.Farebrother;
 import ch.unil.genescore.vegas.FarebrotherExperiment;
 
 
 public class FarebrotherTest {
 
-	
+	/** The Pascal instance (initializes Settings) */
+	private static Pascal psc = new Pascal();
+
 	@BeforeClass
 	public static void testSetup() {
-		Settings.loadSettings();
+		Pascal.set.resetToDefaults();
 	}
 
 	@AfterClass
@@ -48,8 +49,8 @@ public class FarebrotherTest {
 
 	/** Test test statistic */
 	@Test
-	public void FarebrotherTest() {
-		Settings.requestedAbsolutePrecision_=1e-25;
+	public void testFarebrother() {
+		Pascal.set.requestedAbsolutePrecision_=1e-25;
 		double w=1e-17;
 		System.out.println(w);
 		double q=1-w;

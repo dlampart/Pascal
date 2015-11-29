@@ -21,13 +21,11 @@
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
 
 
 public class ReferencePopulationFakeSignal  {
@@ -36,7 +34,7 @@ public class ReferencePopulationFakeSignal  {
 	private ReferencePopulation refpop_ = new ReferencePopulation();		
 	
 	Snp currentSnp_ = null;
-	Random rnd = new Random(Settings.randomSeed_);
+	Random rnd = new Random(Pascal.set.getRandomSeed());
 	ArrayList<String> snpNames_= new ArrayList<String>();
 	double[] signal_ = null;
 	
@@ -114,9 +112,9 @@ public class ReferencePopulationFakeSignal  {
 		currentSnp_.computeAlleleStats();		
 		maf = currentSnp_.getMaf();
 		sd = currentSnp_.getAlleleSd();
-		if (maf > Settings.useMafCutoff_ || sd==0){
+		if (maf > Pascal.set.useMafCutoff_ || sd==0){
 			rndNr = rnd.nextDouble();
-			if (rndNr < Settings.chanceOfSignal_){
+			if (rndNr < Pascal.set.chanceOfSignal_){
 				beta = 10;//rnd.nextGaussian()*10;
 				genotypes = currentSnp_.getGenotypes();
 				assert(genotypes.length==signal_.length);

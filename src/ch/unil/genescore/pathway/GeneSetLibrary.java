@@ -21,6 +21,7 @@
  *******************************************************************************/
 package ch.unil.genescore.pathway;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,11 +48,11 @@ import org.apache.commons.math3.distribution.HypergeometricDistribution;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
 import ch.unil.genescore.gene.Gene;
-import ch.unil.genescore.main.FileExport;
-import ch.unil.genescore.main.FileParser;
-import ch.unil.genescore.main.Settings;
+import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.vegas.DistributionMethods;
 import ch.unil.genescore.vegas.WritingMethods;
+import ch.unil.gpsutils.FileExport;
+import ch.unil.gpsutils.FileParser;
 
 
 /**
@@ -93,7 +94,7 @@ public class GeneSetLibrary {
 	}
 	
 	/**input: genes: string is geneId within gene*/
-	public GeneSetLibrary(String geneSetFile, HashMap<String, Gene> genes) {
+	public GeneSetLibrary(File geneSetFile, HashMap<String, Gene> genes) {
 		//TODO: does it really here cover all genes that do not have a score?, no
 		load(geneSetFile, genes);
 	}
@@ -216,45 +217,45 @@ public class GeneSetLibrary {
 		//if (Settings.useSimulation_){
 			double p;
 			// TODO @David delete?
-			double[] ps= null;
+			//double[] ps= null;
 			for (GeneSet set : geneSets_){
 				System.out.println(set.getId());
 				fillUpGenesForSimulationArray(set);
 				allChiSqVals=getAllChisq();
 				allChiSqValsCopy=allChiSqVals.clone();
-				if(Settings.deflationRate_!=0){
+				if(Pascal.set.deflationRate_!=0){
 					
-					Damper damper = new Damper(genesForSimulation_, Settings.deflationDist_, Settings.deflationRate_);
+					Damper damper = new Damper(genesForSimulation_, Pascal.set.deflationDist_, Pascal.set.deflationRate_);
 					damper.dampSet();
 				}
 				allChiSqVals=getAllChisq();
 				setChiSqVals=getSetChisq(set);
 				allSamplingWeights=getAllSamplingWeights();
 				
-				if (Settings.useRankSum_){
+				if (Pascal.set.useRankSum_){
 					computeRankSumPvalue(set);
 				}
 				
-				if (Settings.useSimulation_){
+				if (Pascal.set.useSimulation_){
 					System.out.println("simulation");
 					p = simulatePvalue(setChiSqVals,allChiSqVals);
 					set.setSimulPvalue(p);
 				}
-				if (Settings.useSimulationWeightedSampling_){
+				if (Pascal.set.useSimulationWeightedSampling_){
 					System.out.println("simulationWeightedSampling");
 					p = simulatePvalueWeightedSampling(setChiSqVals, allChiSqVals, allSamplingWeights);
 					set.setSimulPvalueWeighted(p);
 				}
 				
-				if (Settings.useHypGeom_){
+				if (Pascal.set.useHypGeom_){
 					computeHypGeomPvalue(set);
-					ps=computeHypGeomPvalue2(setChiSqVals,allChiSqVals);
+					//ps=computeHypGeomPvalue2(setChiSqVals,allChiSqVals);
 					
 				}
-				if (Settings.useChi2_ || Settings.useGamma_ || Settings.useExpHyp_) {
+				if (Pascal.set.useChi2_ || Pascal.set.useGamma_ || Pascal.set.useExpHyp_) {
 					rankGeneScoresAndMapToChi();				
 					fillUpGenesForSimulationArray(set);
-					if (Settings.useChi2_)
+					if (Pascal.set.useChi2_)
 						computeChi2Pvalue(set);
 				}		
 	
@@ -296,26 +297,26 @@ public class GeneSetLibrary {
 
 
 	/** Write results of enrichment computation */
-	public void writeOutput(String filename) {
+	public void writeOutput(File file) {
 
 		// Sort gene sets based on enrichment score
 		sortGeneSets();
 
 		// Open output file
-		FileExport writer = new FileExport(filename);
+		FileExport writer = new FileExport(Pascal.log, file);
 		// Write header
 		writer.println(GeneSet.getResultsAsStringHeader());
 
 		for (GeneSet set : geneSets_) {
-			if ((Settings.useChi2_ && set.getChi2Pvalue() <= Settings.writeSignificanceThreshold_) ||
-					(Settings.useSimulation_ && set.getSimulPvalue() <= Settings.writeSignificanceThreshold_)
-						|| (Settings.useRankSum_ && set.getRankSumPvalue() <= Settings.writeSignificanceThreshold_))
+			if ((Pascal.set.useChi2_ && set.getChi2Pvalue() <= Pascal.set.writeSignificanceThreshold_) ||
+					(Pascal.set.useSimulation_ && set.getSimulPvalue() <= Pascal.set.writeSignificanceThreshold_)
+						|| (Pascal.set.useRankSum_ && set.getRankSumPvalue() <= Pascal.set.writeSignificanceThreshold_))
 				writer.println(set.getResultsAsString());
 		}
 		writer.close();
 	}
-	public void writePathwayCorrelationMat(String fileName, String additonalDirectory){
-		WritingMethods.writeMTJ(pathwayCorMat_,fileName, additonalDirectory);
+	public void writePathwayCorrelationMat(File file){
+		WritingMethods.writeMTJ(pathwayCorMat_, file);
 	}
 	
 	// ----------------------------------------------------------------------------
@@ -326,7 +327,7 @@ public class GeneSetLibrary {
 		class GeneSetComparator implements Comparator<GeneSet> {
 			@Override
 			public int compare(GeneSet set1, GeneSet set2) {
-				if (Settings.useChi2_)
+				if (Pascal.set.useChi2_)
 					return Double.compare(set1.getChi2Pvalue(), set2.getChi2Pvalue());
 				else
 					return Double.compare(set1.getSimulPvalue(), set2.getSimulPvalue());
@@ -343,8 +344,8 @@ public class GeneSetLibrary {
 		
 		numSignificantSets_ = 0;
 		for (GeneSet set : geneSets_)
-			if ((Settings.useChi2_ && set.getChi2Pvalue() <= Settings.writeSignificanceThreshold_) ||
-					(Settings.useSimulation_ && set.getSimulPvalue() <= Settings.writeSignificanceThreshold_)) {
+			if ((Pascal.set.useChi2_ && set.getChi2Pvalue() <= Pascal.set.writeSignificanceThreshold_) ||
+					(Pascal.set.useSimulation_ && set.getSimulPvalue() <= Pascal.set.writeSignificanceThreshold_)) {
 				numSignificantSets_++;
 		}
 		return numSignificantSets_;
@@ -430,19 +431,19 @@ public class GeneSetLibrary {
 	 * 	quantile refers to the cutoff used to assign ins and outs.
 	 * */
 	protected double[] computeHypGeomPvalue2(double[] set, double[] totSet) {
-		double[] quantiles = Settings.hypGeomQuantiles_;
-		double[] pvals = new double[quantiles.length];
+		ArrayList<Double> quantiles = Pascal.set.hypGeomQuantiles_;
+		double[] pvals = new double[quantiles.size()];
 		if (set.length == 0){
-			for (int i=0;i<quantiles.length;i++){
+			for (int i=0;i<quantiles.size();i++){
 				pvals[i]=1;
 			}						
 			return pvals;
 		}
 			
-		for (int j=0;j <quantiles.length ; j++){
+		for (int j=0;j <quantiles.size() ; j++){
 			double[] valAr = totSet.clone();
 			Arrays.sort(valAr);	
-			int n=(int) Math.floor(valAr.length*quantiles[j]);
+			int n=(int) Math.floor(valAr.length*quantiles.get(j));
 			double cutoffVal=valAr[n];
 			int setSize= valAr.length-n-1;
 					
@@ -461,23 +462,23 @@ public class GeneSetLibrary {
 	
 	
 protected void computeHypGeomPvalue(GeneSet set) {
-		double[] quantiles = Settings.hypGeomQuantiles_;
-		double[] pvals = new double[quantiles.length];
+		ArrayList<Double> quantiles = Pascal.set.hypGeomQuantiles_;
+		double[] pvals = new double[quantiles.size()];
 		if (set.getGenes().size() == 0){
-			for (int i=0;i<quantiles.length;i++){
+			for (int i=0;i<quantiles.size();i++){
 				pvals[i]=1;
 			}			
 			set.setHypGeomPvalues(pvals);
 			return;
 		}
 			
-		for (int j=0;j <quantiles.length ; j++){
+		for (int j=0;j <quantiles.size() ; j++){
 		double[] valAr = new double[genesForSimulation_.size()];
 		for (int i=0;i<genesForSimulation_.size();i++){
 			valAr[i]=genesForSimulation_.get(i).getChi2Stat();
 		}
 		Arrays.sort(valAr);
-		int n=(int) Math.floor(valAr.length*quantiles[j]);
+		int n=(int) Math.floor(valAr.length*quantiles.get(j));
 		double cutoffVal=valAr[n];
 		int setSize= valAr.length-n-1;
 		HashSet<Gene> pathwayGenes = set.getGenes();
@@ -550,10 +551,10 @@ protected double simulatePvalueWeightedSampling(double[] set, double[] totSet,do
 	double nrOfHigherSimuls=0;
 	boolean enoughSimulated=false;
 	int nrOfSimulRuns=1000;
-			if (nrOfSimulRuns*100>Settings.maxNrOfSimulationsForEnrichment_){
+			if (nrOfSimulRuns*100>Pascal.set.maxNrOfSimulationsForEnrichment_){
 				throw new RuntimeException("minimum nr of simulation runs for enrichment is 100000. at least 1000'000 is recommended.");
 			}
-	while (!enoughSimulated && nrOfSimulRuns <= Settings.maxNrOfSimulationsForEnrichment_){
+	while (!enoughSimulated && nrOfSimulRuns <= Pascal.set.maxNrOfSimulationsForEnrichment_){
 		System.out.println(nrOfSimulRuns);
 		nrOfSimulRuns=nrOfSimulRuns*10;
 		nrOfHigherSimuls=0;
@@ -613,10 +614,10 @@ protected double simulatePvalue(double[] set, double[] totSet) {
 		double nrOfHigherSimuls=0;
 		boolean enoughSimulated=false;
 		int nrOfSimulRuns=10000;
-				if (nrOfSimulRuns*100>Settings.maxNrOfSimulationsForEnrichment_){
+				if (nrOfSimulRuns*100>Pascal.set.maxNrOfSimulationsForEnrichment_){
 					throw new RuntimeException("minimum nr of simulation runs for enrichment is 100000. at least 1000'000 is recommended.");
 				}
-		while (!enoughSimulated && nrOfSimulRuns <= Settings.maxNrOfSimulationsForEnrichment_){
+		while (!enoughSimulated && nrOfSimulRuns <= Pascal.set.maxNrOfSimulationsForEnrichment_){
 			System.out.println(nrOfSimulRuns);
 			nrOfSimulRuns=nrOfSimulRuns*10;
 			nrOfHigherSimuls=0;
@@ -661,7 +662,7 @@ private void computeRankSumPvalue(GeneSet set) {
 		complementVals[count]=g.getChi2Stat();
 		count++;	
 	}	
-//	
+//	TODO cleanup
 	double pval=1;
 	double pval6=1;
 	
@@ -715,13 +716,13 @@ private void computeRankSumPvalue(GeneSet set) {
 	// ----------------------------------------------------------------------------
 
 	/** Load gene set library, only genes that have scores are included */
-	private void load(String geneSetFile, HashMap<String, Gene> genes) {
+	private void load(File geneSetFile, HashMap<String, Gene> genes) {
 
 		geneSets_ = new ArrayList<GeneSet>();
 		
 		genes_ = new HashSet<Gene>();
 		notFoundInGenomeAnnot_ = new HashSet<String>();	
-		if(!Settings.onlyPathwayGenesAsBackground_){
+		if(!Pascal.set.onlyPathwayGenesAsBackground_){
 			for (Map.Entry<String, Gene> entry : genes.entrySet()){
 				if(entry.getValue().getChi2Stat()!=-1)
 					genes_.add(entry.getValue());
@@ -729,11 +730,11 @@ private void computeRankSumPvalue(GeneSet set) {
 		}
 		// The column where the gene list starts
 		int firstGeneCol = 1; // standard format: id gene1 gene2 ...
-		if (geneSetFile.endsWith(".gmt"))
+		if (geneSetFile.getName().endsWith(".gmt"))
 			firstGeneCol = 2; // gmt format (msigdb): id url gene1 gene2 ...
 		
 		// Open the file
-		FileParser parser = new FileParser(geneSetFile);
+		FileParser parser = new FileParser(Pascal.log, geneSetFile);
 
 		// Check that gene set ids are unique
 		HashSet<String> geneSetIds = new HashSet<String>();
@@ -762,7 +763,7 @@ private void computeRankSumPvalue(GeneSet set) {
 				
 				if (gene != null && gene.getChi2Stat()!=-1) {					
 					geneSet.add(gene);
-					if(Settings.onlyPathwayGenesAsBackground_){
+					if(Pascal.set.onlyPathwayGenesAsBackground_){
 						genes_.add(gene);
 					}
 				
@@ -887,25 +888,27 @@ private void computeRankSumPvalue(GeneSet set) {
 	// ----------------------------------------------------------------------------
 
 	/** Create a vector with the scores of these genes */
-		private void printSimulationArray(GeneSet set) {
+	private void printSimulationArray(GeneSet set) {
 
-			if(set.getMetaGenes()!=null || set.getMetaGenes().isEmpty()){
-			FileExport writer = new FileExport("geneSimulFiles/SimulationAr_" + set.getId() + ".txt");
+		if(set.getMetaGenes()!=null || set.getMetaGenes().isEmpty()){
+			// TODO Do not use '/'
+			File file = new File("geneSimulFiles/SimulationAr_" + set.getId() + ".txt");
+			FileExport writer = new FileExport(Pascal.log, file);
 			// Write header
 			for (Gene el:genesForSimulation_){
-				
+
 				writer.println(el.id_+"\t" + el.getChi2Stat());
-				
+
 			}
 			writer.close();
-			}
-			//double[] scores = new double[genes.size()];
-			//int i = 0;
-			//for (Gene g : genes)
-			//	scores[i++] = g.getScore(0);
-			
-			//return scores;
 		}
+		//double[] scores = new double[genes.size()];
+		//int i = 0;
+		//for (Gene g : genes)
+		//	scores[i++] = g.getScore(0);
+
+		//return scores;
+	}
 	// ----------------------------------------------------------------------------
 
 	/** Create a vector with the scores of these genes */

@@ -31,83 +31,81 @@ import org.junit.Test;
 
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
-import ch.unil.genescore.main.Utils;
 import ch.unil.genescore.vegas.GeneWithItsSnps;
 import ch.unil.genescore.vegas.Snp;
 
 public class GeneWithItsSnpsTest {
 
 	// SETUP
-	
-			@BeforeClass
-			public static void testSetup() {
-				Settings.loadSettings();
-			}
 
-			@AfterClass
-			public static void testCleanup() {
-			
-			
-				
-			
-			}									
-			
-			
-			private class snpAllwaysCoding extends Snp {
-				 public snpAllwaysCoding(String id) {
-						super(id);						
-				 }
-				 public boolean isCodingForOtherGene(String thisGene){return true;}
-			}
-				 
-				private class snpNeverCoding extends Snp {
-					 public snpNeverCoding(String id) {
-						super(id);
-					}
-					public boolean isCodingForOtherGene(String thisGene){return false;}
-				}
-			
-			// ============================================================================
-			// TESTS
-					
-			@Test
-			public void constructorTest1(){
-									
+	@BeforeClass
+	public static void testSetup() {
+		Pascal.set.resetToDefaults();
+	}
 
-				Settings.removeCodingSnpsOfOtherGenes_=true;
-				 ArrayList<Snp> mySnps = new ArrayList<Snp>();
-				 mySnps.add(new snpNeverCoding("id1"));
-				 mySnps.add(new snpAllwaysCoding("id2"));
-				 mySnps.add(new snpNeverCoding("id3"));				 
-				 GeneWithItsSnps myG = new GeneWithItsSnps(new Gene("gId"),mySnps);
-				 assertTrue(myG.getGene().getId().equals("gId"));
-				 
-				 assertTrue(myG.getNrOfSnps()==2);
-				 assertTrue(myG.getSnpList().get(0).id_.equals("id1"));
-				 assertTrue(myG.getSnpList().get(1).id_.equals("id3"));				 				 
-				 
-			}
-			
-			@Test
-			public void constructorTest2(){
-									
+	@AfterClass
+	public static void testCleanup() {
 
-				Settings.removeCodingSnpsOfOtherGenes_=false;
-				 ArrayList<Snp> mySnps = new ArrayList<Snp>();
-				 mySnps.add(new snpNeverCoding("id1"));
-				 mySnps.add(new snpAllwaysCoding("id2"));
-				 mySnps.add(new snpNeverCoding("id3"));				 
-				 GeneWithItsSnps myG = new GeneWithItsSnps(new Gene("gId"),mySnps);
-				 assertTrue(myG.getGene().getId().equals("gId"));
-				 
-				 assertTrue(myG.getNrOfSnps()==3);
-				 assertTrue(myG.getSnpList().get(0).id_.equals("id1"));
-				 assertTrue(myG.getSnpList().get(1).id_.equals("id2"));
-				 assertTrue(myG.getSnpList().get(2).id_.equals("id3"));				 				 
-				 
-			}
-						
-				
-			
+
+
+
+	}									
+
+
+	private class snpAllwaysCoding extends Snp {
+		public snpAllwaysCoding(String id) {
+			super(id);						
+		}
+		public boolean isCodingForOtherGene(String thisGene){return true;}
+	}
+
+	private class snpNeverCoding extends Snp {
+		public snpNeverCoding(String id) {
+			super(id);
+		}
+		public boolean isCodingForOtherGene(String thisGene){return false;}
+	}
+
+	// ============================================================================
+	// TESTS
+
+	@Test
+	public void constructorTest1(){
+
+
+		Pascal.set.removeCodingSnpsOfOtherGenes_=true;
+		ArrayList<Snp> mySnps = new ArrayList<Snp>();
+		mySnps.add(new snpNeverCoding("id1"));
+		mySnps.add(new snpAllwaysCoding("id2"));
+		mySnps.add(new snpNeverCoding("id3"));				 
+		GeneWithItsSnps myG = new GeneWithItsSnps(new Gene("gId"),mySnps);
+		assertTrue(myG.getGene().getId().equals("gId"));
+
+		assertTrue(myG.getNrOfSnps()==2);
+		assertTrue(myG.getSnpList().get(0).id_.equals("id1"));
+		assertTrue(myG.getSnpList().get(1).id_.equals("id3"));				 				 
+
+	}
+
+	@Test
+	public void constructorTest2(){
+
+
+		Pascal.set.removeCodingSnpsOfOtherGenes_=false;
+		ArrayList<Snp> mySnps = new ArrayList<Snp>();
+		mySnps.add(new snpNeverCoding("id1"));
+		mySnps.add(new snpAllwaysCoding("id2"));
+		mySnps.add(new snpNeverCoding("id3"));				 
+		GeneWithItsSnps myG = new GeneWithItsSnps(new Gene("gId"),mySnps);
+		assertTrue(myG.getGene().getId().equals("gId"));
+
+		assertTrue(myG.getNrOfSnps()==3);
+		assertTrue(myG.getSnpList().get(0).id_.equals("id1"));
+		assertTrue(myG.getSnpList().get(1).id_.equals("id2"));
+		assertTrue(myG.getSnpList().get(2).id_.equals("id3"));				 				 
+
+	}
+
+
+
 }

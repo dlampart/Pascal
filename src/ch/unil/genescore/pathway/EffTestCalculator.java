@@ -46,8 +46,6 @@ public class EffTestCalculator {
 	 * these are the genes that have been calculated: Do not change internally.
 	 * */	
 	private ArrayList<GeneSet> geneSets_ = null;
-	private double[] cutoffs_ = null;
-	private double[] cutoffsTheor_ = null;
 	private static ChiSquaredDistribution chiSquared1df_ = new ChiSquaredDistribution(1);
 	
 	

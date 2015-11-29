@@ -23,7 +23,6 @@ package ch.unil.genescore.vegas.test;
 
 import static org.junit.Assert.*;
 import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.Matrix;
 import no.uib.cipr.matrix.UpperSymmDenseMatrix;
 
 import org.junit.*;
@@ -48,7 +47,7 @@ public class MTJConvenienceMethodsTest {
 		
 		@BeforeClass
 		public  static void testSetup() {
-			Settings.loadSettings();
+			Pascal.set.resetToDefaults();
 			delta = 1E-14;
 			matA = new DenseMatrix(4,4);
 			for (int i=0; i < 4 ; i++){

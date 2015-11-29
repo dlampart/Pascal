@@ -32,652 +32,681 @@ import java.util.Random;
 import org.apache.commons.math3.random.Well19937c;
 
 
-import ch.unil.genescore.vegas.AnalyticVegas;
-import ch.unil.genescore.vegas.GeneScoreEvaluator;
-import ch.unil.genescore.vegas.MaxEffVegas;
-import ch.unil.genescore.vegas.MaxSimulAndAnalyticVegas;
+import ch.unil.gpsutils.Settings;
 
 
 /** 
  * Offers global parameters (settings) and functions used by all classes of the
  * Main package.
  */
-public class PascalSettings {	
+public class PascalSettings extends Settings {	
 	
-	/** The configuration file with the settings (leave empty for default settings) */
-	static public String settingsFile_ = null;
-	/** The properties (settings file) */
-	static private Properties set_ = null;
+	/** Current version of genescore */
+	public final String version_ = "1.0 alpha";
+
+	/** The annotation file (default file included in jar) */
+	public final String annotationRsc = "edu/mit/magnum/gene/rsc/gene_coord.bed";
 	
-
-
 	/** Apache Commons random engine */
-	static public Well19937c wellRng_ = null;
+	public Well19937c wellRng_;
 	/** Java random engine */
-	static public Random jdkRng_ = null;
+	public Random jdkRng_;
+
 
 	// ----------------------------------------------------------------------------
 	// VARIOUS
 	
-	/** Current version of genescore */
-	static public String version_ = "0.1 Alpha";
-	/** Seed for the random number generator. Set to -1 to use current time */
-	static public int randomSeed_ = -1;
 	/** Output directory to save stuff */
-	static public String outputDirectory_ = "";
+	public File outputDirectory_;
 	/** A suffix/ending that is appended to all output files for this run (use to distinguish output files from multiple runs) */
-	static public String outputSuffix_ = "";
+	public String outputSuffix_;
 	/** Set true to display more detailed information on console */
-	static public boolean verbose_ = true;
+	public boolean verbose_;
+	/** PRIVATE, NEEDS TO BE SET WITH setRandomSeed(), which initializes the random number generators. Set to -1 to use current time */
+	private int randomSeed_;
 
-	// INPUT FILES
+	// ----------------------------------------------------------------------------
+	// INPUT
+	
 	/** SNP p-values text file: ID in column 1; p-value in column pvalCol (see below) */ 
-	static public String snpPvalFile_ = null;
-	/** The column in the tab-separated text file with the p-value (usually column 2) */
-	static public int pvalCol_ = -1;
-
-	/** gwas-file has Zscores (rs_nr\tZScore\tPval) */
-	static public boolean withZScore_ = false;
-	/** fileName containing snp list to which analysis is restricted */
-	static public String snpFilterFile_ = null;
+	public File snpPvalFile_;
+	/** The column in the tab-separated text file with the p-value (default column 2) */
+	public int pvalCol_;
+	/** GWAS file has Zscores (rs_nr\tZScore\tPval) */
+	public boolean withZScore_; // TODO are z-scores used? 
 	
 	/** Directory with the reference population files (must be named 'refPopFilePrefix.chrXX.refPopFileExtension') */
-	static public String refPopDirectory_ = null;
+	public File refPopDirectory_;
 	/** Prefix of reference population files (e.g. EUR or some arbitrary name) */
-	static public String refPopFilePrefix_ = null;			
+	public String refPopFilePrefix_; // TODO delete, extract from file names
 	/** Extension of reference population files (defines format, must be 'ser.gz', 'tped.gz' or 'txt.gz') */
-	static public String refPopFileExtension_ = null;
+	public String refPopFileExtension_; // TODO delete?
 	
+	/** File containing snp list to which analysis is restricted */
+	public File snpFilterFile_;
 	/** Set of genes to be considered (leave empty to use all genes from the annotation file) */
-	static public String genesToBeLoadedFile_ = null;
+	public File genesToBeLoadedFile_;
 
 	/** The chromosome to be considered (chr1, ..., chr22, chrX, chrY), leave empty for all chromosomes */ 
-	static public String chromosome_ = null;
+	public String chromosome_;
 	/** Ignore sex chromosomes */
-	static public boolean ignoreAllosomes_ = true;
+	public boolean ignoreAllosomes_;
 	/** Ignore mitochondrial genes */
-	static public boolean ignoreChrM_ = true;
+	public boolean ignoreChrM_;
 
 	/** The genes to be used for gene scoring ('gencode', 'ucsc' or [TODO] a bed file with a custom set of regions) */
-	public static String genomeAnnotation_ = null;
+	public String genomeAnnotation_;
 	/** The file with the gencode annotation */
-	static public String gencodeAnnotationFile_ = null;
+	public File gencodeAnnotationFile_;
 	/** UCSC genome browser annotation (use for Entrez IDs) */ 
-	static public String ucscAnnotationFile_ = null;
+	public File ucscAnnotationFile_;
 	/**  bed-annotation (use for gene symbols) */ 
-	static public String bedAnnotationFile_ = null;
-	/** File with Snp-weights for each gene */ 
-	static public String geneWiseSnpWeightsFile_ = null;
-	/** File format Snp-weights*/ 
-	static public String weightFileFormat_ = null;
-	//static public String identifyGenesByIdOrSymbol_ = null; 
+	public File bedAnnotationFile_;
 	/** Set true to load only protein-coding genes */
-	static public boolean loadOnlyProteinCodingGenes_ = false;
-
+	public boolean loadOnlyProteinCodingGenes_;
 	/** Mapping file to convert Entrez IDs, ENSEMBL IDs and gene symbols */
-	static public String geneIdMappingFile_ = null;
+	public File geneIdMappingFile_;
+	
+	/** File with Snp-weights for each gene */ 
+	public File geneWiseSnpWeightsFile_;
+	/** File format Snp-weights*/ 
+	public String weightFileFormat_;
 
+	// ----------------------------------------------------------------------------
 	// PARAMETERS
-	/** if phased genotype is known, this option will artificially treat the genotype as unphased */
-	static public boolean dePhase_ = false;
+
 	/** Window size up-stream of genes */
-	static public int geneWindowUpstream_ = -1;
+	public int geneWindowUpstream_;
 	/** Window size down-stream of genes */
-	static public int geneWindowDownstream_ = -1;
-	/** Use the X most significant snps for the test statistic (1: only the most significant snp; -1: all snps) */
-	static public int testStatisticNumSnps_ = -1;
+	public int geneWindowDownstream_;
 		
 	/** Max number of snps per gene (display warning and ignore genes with more snps) */
-	static public int maxSnpsPerGene_ = -1;
-	/** only use snps that have maf above this value in refererence population*/
-	static public double useMafCutoff_ = 0;
-	/**check converge of Max vegas externally */
-	static  public boolean externalConvergenceCheck_ = false;
-	/** matrix in maxvegas approach*/
-	static public double maxPruningCutoff_ = 0;
+	public int maxSnpsPerGene_;
+	/** Only use snps that have maf above this value in refererence population */
+	public double useMafCutoff_;
+	/** if phased genotype is known, this option will artificially treat the genotype as unphased */
+	public boolean dePhase_;
+	/** Check converge of Max vegas externally */
+	public boolean externalConvergenceCheck_;
+	/** Matrix in maxvegas approach*/
+	public double maxPruningCutoff_;
 	
 	/** Analytic solution to Vegas */
-	static public boolean useAnalyticVegas_ = false;
-	static public boolean useMaxVegas_ = false;
-	static public boolean useMaxEffVegas_ = false;
+	public boolean useAnalyticVegas_;
+	/** TODO describe */
+	public boolean useMaxVegas_;
+	/** TODO describe */
+	public boolean useMaxEffVegas_;
 	/** Original version of Vegas with Monte Carlo simulation */
-	static public boolean useSimulationVegas_ = false;
+	public boolean useSimulationVegas_;
 	
-	/**
-	
-//	/** all snps onto which we project have to have maf above this cutoff */
-
-	static public double eigenValueFractionCut_ = 1e4; 
+	/** all snps onto which we project have to have maf above this cutoff */
+	public double eigenValueFractionCut_; 
 	/** Use only GWAS snps */
-	static public boolean useOnlyGwasSnps_ = true;
+	public boolean useOnlyGwasSnps_;
 
-	
 	/** The requested absolute precision (used for Imhof and Farebrother methods) */
-	static public double requestedAbsolutePrecision_ = -1;
+	public double requestedAbsolutePrecision_;
 	/** The requested relative precision (used for Imhof and Farebrother methods) */
-	static public double requestedRelativePrecision_ = -1;
+	public double requestedRelativePrecision_;
 	/** Maximum number of subintervals in the partition of the given integration interval */
-	static public int gslIntegrationLimit_ = -1;
+	public int gslIntegrationLimit_;
 	
 	/** Maxiumum number of iterations for Farebrother method */
-	static public int farebrotherMaxIterations_ = -1;
+	public int farebrotherMaxIterations_;
 	/** Farebrother mode parameter */
-	static public double farebrotherMode_ = 1.0;
+	public double farebrotherMode_;
 	/** use Farebrother algorithm*/
-	static public boolean useFarebrother_ = false;
+	public boolean useFarebrother_;
 	/** use Imhof algorithm*/
-	static public boolean useImhof_ = false;
+	public boolean useImhof_;
 	/** use Davies algorithm*/
-	static public boolean useDavies_ = false;
+	public boolean useDavies_;
 	/** Error bound for Davies method */
-	static public double daviesErrorBound_ = -1;
+	public double daviesErrorBound_;
 	/** Number of integration terms for Davies method */
-	static public int daviesIntegrationTerms_ = -1;
+	public int daviesIntegrationTerms_;
 
 	/** Keep Imhof result if error is below this bound even if the requested precision could not be reached */  
-	static public double toleratedAbsolutePrecision_ = -1;
+	public double toleratedAbsolutePrecision_;
 	/** Keep Imhof result if error is below this bound even if the requested precision could not be reached */  
-	static public double toleratedRelativePrecision_ = -1;
+	public double toleratedRelativePrecision_;
 
 	/** The delta parameter for weighting SNPs (set to 0 for unweighted, can be a comma-separated list of values) */
-	static public ArrayList<Double> snpWeightingDelta_ = null;
+	public ArrayList<Double> snpWeightingDelta_;
 
 	/** The number of samples at each stage when computing empirical p-values */
-	static public ArrayList<Integer> adaptiveNumSamples_ = null;
+	public ArrayList<Integer> adaptiveNumSamples_;
 	/** Adaptive estimation of empirical p-values -- require at least this many samples beyond the observed test statistic */
-	static public int numSamplesGreaterCutoff_ = -1;
+	public int numSamplesGreaterCutoff_;
 
 	/** When looking at gene A, filter out coding SNPs of genes B */
-	static public boolean removeCodingSnpsOfOtherGenes_ = false;
+	public boolean removeCodingSnpsOfOtherGenes_;
 	/** File where coding snps are defined */
-	static public String codingSnpsFile_ = null;
+	public String codingSnpsFile_;
 
+	// ----------------------------------------------------------------------------
 	// OUTPUT
+
 	/** Write more detailed output to the console and the gene score file (estimated errors, Imhof and Farebrother status, ...) */
-	static public boolean writeDetailedOutput_ = true; 
+	public boolean writeDetailedOutput_; 
 	/** Write more detailed output to the console and the gene score file (estimated errors, Imhof and Farebrother status, ...) */
-	static public boolean writeDetailedErrorOutput_ = true; 
+	public boolean writeDetailedErrorOutput_; 
 	/** Write a BED file with the coordinates for all considered SNPs (intersection of study SNPs and reference population SNPs) */
-	static public boolean writeSnpBedFile_ = false;
+	public boolean writeSnpBedFile_;
 	/** Write plink-Tped file for the genotype that was used */
-	static public boolean writeTpedFile_ = false;
+	public boolean writeTpedFile_;
 	/** Flag to output a separate file for each gene with snp positions, p-values and correlation matrix */
-	static public boolean saveGeneReports_ = false;
+	public boolean saveGeneReports_;
 	/** Path to were we would write all Correlation matrices (if null no writing) */
-	static public String writeCorFiles_ = null;
+	public boolean writeCorFiles_; // TODO delete if redundant
 	/** Path to were we would write all Correlation matrices (if null no writing) */
-	static public String writeGenewiseSnpFiles_ = null;
+	public boolean writeGenewiseSnpFiles_; // TODO delete if redundant with saveGeneReports
 	/** Path to were a settingsfile that was used should be written if empty no writing happens */
-	static public String writeUsedSettings_ = null;
+	public File writeUsedSettings_; // TODO delete, check that it is always written
 	
+	// ----------------------------------------------------------------------------
 	// PATHWAY ANALYSIS
+
 	/** Set true to run pathway analysis */
-	static public boolean runPathwayAnalysis_ = false;
-	/** The gene score file: ID in column 1; p-value in column pvalCol (see above) */ 
-	//static public String geneScoreFile_ = null;
+	public boolean runPathwayAnalysis_;
 	/** The gene set library file (.gmt format used by GSEA) */
-	static public String geneSetFile_ = null;
+	public File geneSetFile_;
 	/** Genes to be excluded from enrichment analysis (e.g., MHC region) */
-	static public String excludedGenesFile_ = null;
+	public File excludedGenesFile_;
 	/** Create meta-genes by merging genes that are closer than the given distance (given in *megabases*; set to -1 to disable meta-genes) */
-	static public double mergeGenesDistance_ = -1;
-	/** Use empirical distribution of p-values by sampling over scores for gene set enrichment*/
-	static public boolean useSimulation_ = false;
-	/** Use empirical distribution of p-values by sampling over scores for gene set enrichment*/
-	static public boolean useSimulationWeightedSampling_ = false;
+	public double mergeGenesDistance_;
 	
+	/** Use empirical distribution of p-values by sampling over scores for gene set enrichment*/
+	public boolean useSimulation_;
+	/** Use empirical distribution of p-values by sampling over scores for gene set enrichment */
+	public boolean useSimulationWeightedSampling_; // TODO difference from above
 	/** max nr of simulation runs.  at least 100'000 is required. */
-	static public int maxNrOfSimulationsForEnrichment_ = 100000;
+	public int maxNrOfSimulationsForEnrichment_;
 	/** Use chi-squared distribution to compute p-values for gene set enrichment */
-	static public boolean useChi2_ = false; 
+	public boolean useChi2_; 
 	/** Use rank-sum-test to compute p-values for gene set enrichment */
-	static public boolean useRankSum_ = false; 
+	public boolean useRankSum_; 
 	/** Use hypergeometric distribution to compute p-values for gene set enrichment */
-	static public boolean useHypGeom_ = false; 
-	/** quantile to use for hypergeometric distribution (lower tail)*/
-	static public double[] hypGeomQuantiles_ = {-1}; 
-	
-	static public boolean useGamma_ = false; 
-	/** shape parameter to use for gamma distribution*/
-	static public double[] gammaShapeParameters_ = {0.1,0.2,0.3,0.5,1,2,4}; 
-	
-	static public boolean useExpHyp_ = true; 
+	public boolean useHypGeom_; 
+	/** quantile to use for hypergeometric distribution (lower tail) */
+	public ArrayList<Double> hypGeomQuantiles_; 
+	/** TODO describe */
+	public boolean useGamma_; 
+	/** shape parameter to use for gamma distribution */
+	public ArrayList<Double> gammaShapeParameters_; 
+	/** TODO describe */
+	public boolean useExpHyp_; 
 	/** shape parameter to use for gamma distribution (lower tail)*/
-	static public double[] expHypParameters_ = {0.5,0.75,0.85,0.9};
+	public ArrayList<Double> expHypParameters_;
 	
-	static public boolean loadScoresFromFiles_ = false; 
-	static public String geneScoreFile_ = null; 
-	static public String metaGeneScoreFile_ = null; 
+	/** Load pre-computed gene scores */
+	public boolean loadScoresFromFiles_;
+	/** File with pre-computed gene scores */
+	public File geneScoreFile_; 
+	/** TODO What is this? */
+	public File metaGeneScoreFile_; 
 	
 	/** Write only gene sets that pass the given significance level */
-	static public double writeSignificanceThreshold_ = -1;
-	
+	public double writeSignificanceThreshold_;
 	/** Set true to write gene and meta-gene scores to a file */ 
-	static public boolean writeGeneScores_ = false;
+	public boolean writeGeneScores_;
 
-	
-	
 	
 	// CONCATENATE CHROMOSOME RESULT FILES
 	/** Set true to run concatenate chromosome results */
-	static public boolean runConcatenateChromosomeResults_ = false;
+	public boolean runConcatenateChromosomeResults_;
 	/** Concatenate individual chromosome result files in the given directory */
-	static public String concatenateChromosomeResultsDir_ = null;	
+	public String concatenateChromosomeResultsDir_;	
 	/** Delete original chromosome result files after concatenating them */
-	static public boolean deleteOriginals_ = false;
-	public static boolean useFakePhenotype_;
-	public static boolean useFakeSignal_;
-	public static double chanceOfSignal_=0.0;
-	public static int multipleOfPhenotype_=0;
+	public boolean deleteOriginals_;
 	
+	// TODO describe
+	public boolean useFakePhenotype_;
+	public boolean useFakeSignal_;
+	public double chanceOfSignal_;
+	public int multipleOfPhenotype_;
 
-	public static double deflationRate_;
-	public static int deflationDist_;
-	public static Boolean onlyPathwayGenesAsBackground_;	
+	public double deflationRate_;
+	public int deflationDist_;
+	public Boolean onlyPathwayGenesAsBackground_;	
 	
-	// processed fields
+	// processed fields // TODO move to respective classes?
+	public String gwasName_;	
+	public String chromFileExtension_;	
 	
-	public static String gwasName_;	
-	public static String chromFileExtension_;	
 	
-
 	// ============================================================================
 	// PUBLIC METHODS
-	
-	/** Initialize settings */
-	static public void initialize() {
-		
-		initializeRandomNumberGenerators();
+
+	/** Constructor */
+	public PascalSettings() {
+		resetToDefaults();
 	}
+	
+	
+	// ----------------------------------------------------------------------------
+	
+	/** Set default values for all settings */
+	public void resetToDefaults() {
+
+		// VARIOUS
+		outputDirectory_ = new File(System.getProperty("user.dir"));
+		outputSuffix_ = "";
+		verbose_ = true;
+		// Initializes the RNGs
+		setRandomSeed(42);
+
+		// INPUT FILES
+		snpPvalFile_ = null;
+		pvalCol_ = 2;
+		withZScore_ = false;
+
+		refPopDirectory_ = null;
+		refPopFilePrefix_ = null;			
+		refPopFileExtension_ = null;
+
+		snpFilterFile_ = null;
+		genesToBeLoadedFile_ = null;
+
+		chromosome_ = null;
+		ignoreAllosomes_ = true;
+		ignoreChrM_ = true;
+
+		genomeAnnotation_ = null;
+		gencodeAnnotationFile_ = null;
+		ucscAnnotationFile_ = null;
+		bedAnnotationFile_ = null;
+		loadOnlyProteinCodingGenes_ = false;
+		geneIdMappingFile_ = null;
+
+		geneWiseSnpWeightsFile_ = null;
+		weightFileFormat_ = null;
+
+		// PARAMETERS
+		geneWindowUpstream_ = -1;
+		geneWindowDownstream_ = -1;
+
+		maxSnpsPerGene_ = -1;
+		useMafCutoff_ = 0;
+		dePhase_ = false;
+		externalConvergenceCheck_ = false;
+		maxPruningCutoff_ = 0;
+
+		useAnalyticVegas_ = false;
+		useMaxVegas_ = false;
+		useMaxEffVegas_ = false;
+		useSimulationVegas_ = false;
+
+		eigenValueFractionCut_ = 1e4; 
+		useOnlyGwasSnps_ = true;
+
+		requestedAbsolutePrecision_ = -1;
+		requestedRelativePrecision_ = -1;
+		gslIntegrationLimit_ = -1;
+
+		farebrotherMaxIterations_ = -1;
+		farebrotherMode_ = 1.0;
+		useFarebrother_ = false;
+		useImhof_ = false;
+		useDavies_ = false;
+		daviesErrorBound_ = -1;
+		daviesIntegrationTerms_ = -1;
+
+		toleratedAbsolutePrecision_ = -1;
+		toleratedRelativePrecision_ = -1;
+
+		snpWeightingDelta_ = null;
+
+		adaptiveNumSamples_ = null;
+		numSamplesGreaterCutoff_ = -1;
+
+		removeCodingSnpsOfOtherGenes_ = false;
+		codingSnpsFile_ = null;
+
+		// OUTPUT
+		writeDetailedOutput_ = true; 
+		writeDetailedErrorOutput_ = true; 
+		writeSnpBedFile_ = false;
+		writeTpedFile_ = false;
+		saveGeneReports_ = false;
+		writeCorFiles_ = false;
+		writeGenewiseSnpFiles_ = false;
+		writeUsedSettings_ = null;
+
+		// PATHWAY ANALYSIS
+		runPathwayAnalysis_ = false;
+		geneSetFile_ = null;
+		excludedGenesFile_ = null;
+		mergeGenesDistance_ = -1;
+		useSimulation_ = false;
+		useSimulationWeightedSampling_ = false;
+
+		maxNrOfSimulationsForEnrichment_ = 100000;
+		useChi2_ = false; 
+		useRankSum_ = false; 
+		useHypGeom_ = false;
+		hypGeomQuantiles_ = null; 
+
+		useGamma_ = false; 
+		gammaShapeParameters_ = new ArrayList<Double>();
+		gammaShapeParameters_.add(0.1);
+		gammaShapeParameters_.add(0.2);
+		gammaShapeParameters_.add(0.3);
+		gammaShapeParameters_.add(0.5);
+		gammaShapeParameters_.add(1.0);
+		gammaShapeParameters_.add(2.0);
+		gammaShapeParameters_.add(4.0);
+
+		useExpHyp_ = true; 
+		expHypParameters_ = new ArrayList<Double>();
+		expHypParameters_.add(0.5);
+		expHypParameters_.add(0.75);
+		expHypParameters_.add(0.85);
+		expHypParameters_.add(0.9);
+		
+		loadScoresFromFiles_ = false; 
+		geneScoreFile_ = null; 
+		metaGeneScoreFile_ = null; 
+
+		writeSignificanceThreshold_ = -1;
+		writeGeneScores_ = false;
+
+		// CONCATENATE CHROMOSOME RESULT FILES
+		runConcatenateChromosomeResults_ = false;
+		concatenateChromosomeResultsDir_ = null;	
+		deleteOriginals_ = false;
+		useFakePhenotype_ = false;
+		useFakeSignal_ = false;
+		chanceOfSignal_=0.0;
+		multipleOfPhenotype_=0;
+
+	}
+	
 	
 	// ----------------------------------------------------------------------------
 
 	/** Load and initialize settings */
-	static public void loadSettings() {
+	public void loadSettings(String settingsFile) {
 		
+		Pascal.println("SETTINGS FILE");
+		Pascal.println("-------------\n");
+				
 		try {
-			InputStream in;
-			if (settingsFile_ == null || settingsFile_.compareTo("") == 0) {
-				Pascal.println("- No settings file specified");
-				Pascal.println("- Loading default settings\n");
-			//	in = Settings.class.getClassLoader().getResourceAsStream("ch/unil/genescore/main/settings.txt");				
-				in = new FileInputStream("settings.txt");
-			} else {
-				Pascal.println("- Loading settings file: " + settingsFile_ + "\n");
-				in = new FileInputStream(settingsFile_);
-			}
-			set_ = new Properties();
-			set_.load(new InputStreamReader(in));
+			// Check that the specified settings file exists
+			if (settingsFile == null || settingsFile.isEmpty())
+				throw new RuntimeException("No settings file specified");
+			else if (!new File(settingsFile).exists())
+				throw new RuntimeException("Settings file not found: " + settingsFile);
+
+			// Open file input stream
+			Pascal.println("- Loading settings file: " + settingsFile + "\n");
+			InputStream in = new FileInputStream(settingsFile);
+
+			// Load the settings
+			prop = new Properties();
+			prop.load(new InputStreamReader(in));
 			
+			// Get the param values
 			setParameterValues();
-			checkParamBounds();
-			
+			checkOptions();
+
 		} catch (Exception e) {
 			Pascal.warning(e.getMessage());
-			String msg = "Failed to load settings file (a parameter may be missing or malformed)";
-			if (settingsFile_ != null)
-				msg += ": " + settingsFile_; 
-			Pascal.error(msg);
-		}
-		
-		// Reinitialize the random number generators
-		initializeRandomNumberGenerators();		
-		checkOptions();
-	//	warnOptions();
-	}
-	
-	
-	// ----------------------------------------------------------------------------
-	
-	/** Get folder of the default Main directory (in home) */
-	public File getGseaDirectory() {
-		
-		File folder = new File(MainDirectoryPath());
-		return folder;
-	}
-	
-	
-	// ----------------------------------------------------------------------------
-	
-	/** Get file associated to default settings file */
-	public File getCustomMainSettings() {
-		
-		File file = new File(personalMainSettingsPath());
-		return file;
-	}
-	
-	
-	// ----------------------------------------------------------------------------
-	
-	/** Get path to default Main directory (in home) */
-	public String MainDirectoryPath() {
-		
-		return System.getProperty("user.home")
-				+ System.getProperty("file.separator")
-				+ "Main";
-	}
-	
-	
-	// ----------------------------------------------------------------------------
-	
-	/** Get path to default settings file */
-	public String personalMainSettingsPath() {
-		
-		return MainDirectoryPath()
-				+ System.getProperty("file.separator")
-				+ "settings.txt";
-	}
-	
-	
-	// ----------------------------------------------------------------------------
-	
-	/** Return true if a custom default Main settings file exists */
-	public boolean personalMainSettingsExist() {
-		
-		return (new File(personalMainSettingsPath())).exists();
-	}
-	
-	
-	// ----------------------------------------------------------------------------
-	
-	/**
-	 * Set the user path. Could be with or without "/" terminal.
-	 * @param absPath Absolute path
-	 */
-	public void setOutputDirectory(String absPath) {
-		
-		outputDirectory_ = absPath;
-		String sep = System.getProperty("file.separator");
-		if (outputDirectory_.charAt(outputDirectory_.length()-1) != sep.charAt(0))
-			outputDirectory_ += sep;
-	}
-	
-	
-	// ============================================================================
-	// PRIVATE METHODS
+			throw new RuntimeException("Failed to load settings file (a parameter may be missing or malformed): " + settingsFile);
+		}		
 
-	/** Create new instances for the random number generators, initialize with randomSeed_ */
-	protected static void initializeRandomNumberGenerators() {
-		System.out.println("random seed:");
-		System.out.println(Integer.toString(randomSeed_));
-		if (randomSeed_ == -1) {
-			wellRng_ = new Well19937c();
-			jdkRng_ = new Random();
-		} else {
-			wellRng_ = new Well19937c(randomSeed_);
-			jdkRng_ = new Random(randomSeed_);
-		}
-		
-		//uniformDistribution_ = new Uniform(mersenneTwister_);
-		//normalDistribution_ = new Normal(0, 1, mersenneTwister_); // mean 0, stdev 1
 	}
 	
 	
 	// ----------------------------------------------------------------------------
 
+	
 	/** Set Main parameters based on the loaded properties */
-	static private void setParameterValues() throws Exception {
+	private void setParameterValues() throws Exception {
 
 		// VARIOUS
-		randomSeed_ = getSettingInt("randomSeed");
-		outputDirectory_ = getSetting("outputDirectory");
-		if (outputDirectory_.equals("")) 
-			outputDirectory_ = System.getProperty("user.dir");
-		outputSuffix_ = getSetting("outputSuffix");
-		verbose_ = getSettingBoolean("verbose");
+		if (prop.containsKey("outputDirectory")) {
+			outputDirectory_ = getFileSetting("outputDirectory");
+			if (outputDirectory_.equals("")) 
+				outputDirectory_ = new File(System.getProperty("user.dir"));
+		}
+		if (prop.containsKey("outputSuffix"))
+			outputSuffix_ = getSetting("outputSuffix");
+		if (prop.containsKey("verbose"))
+			verbose_ = getSettingBoolean("verbose");
+		if (prop.containsKey("randomSeed"))
+			setRandomSeed(getSettingInt("randomSeed"));
+
+		// ----------------------------------------------------------------------------
+		// INPUT
+
+		if (prop.containsKey("snpPvalFile"))
+			snpPvalFile_ = getFileSetting("snpPvalFile");
+		if (prop.containsKey("pvalCol"))
+			pvalCol_ = getSettingInt("pvalCol");
+		if (prop.containsKey("withZScore"))
+			withZScore_ = getSettingBoolean("withZScore");
+		
+		if (prop.containsKey("refPopDirectory"))
+			refPopDirectory_ = getFileSetting("refPopDirectory");
+		if (prop.containsKey("refPopFilePrefix"))
+			refPopFilePrefix_ = getSetting("refPopFilePrefix");
+		if (prop.containsKey("refPopFileExtension"))
+			refPopFileExtension_ = getSetting("refPopFileExtension");
+		
+		if (prop.containsKey("snpFilterFile"))
+			snpFilterFile_ = getFileSetting("snpFilterFile");
+		if (prop.containsKey("genesToBeLoadedFile"))
+			genesToBeLoadedFile_ = getFileSetting("genesToBeLoadedFile");
+
+		if (prop.containsKey("chromosome"))
+			chromosome_ = getSetting("chromosome");
+		if (prop.containsKey("ignoreAllosomes"))
+			ignoreAllosomes_ = getSettingBoolean("ignoreAllosomes");
+		if (prop.containsKey("ignoreChrM"))
+			ignoreChrM_ = getSettingBoolean("ignoreChrM");
+
+		if (prop.containsKey("genomeAnnotation"))
+			genomeAnnotation_ = getSetting("genomeAnnotation");
+		if (prop.containsKey("genecodeAnnotationFile"))
+			gencodeAnnotationFile_ = getFileSetting("genecodeAnnotationFile");
+		if (prop.containsKey("ucscAnnotationFile"))
+			ucscAnnotationFile_ = getFileSetting("ucscAnnotationFile");
+		if (prop.containsKey("bedAnnotationFile"))
+			bedAnnotationFile_ = getFileSetting("bedAnnotationFile");
+		if (prop.containsKey("loadOnlyProteinCodingGenes"))
+			loadOnlyProteinCodingGenes_ = getSettingBoolean("loadOnlyProteinCodingGenes");
+		if (prop.containsKey("geneIdMappingFile"))
+			geneIdMappingFile_ = getFileSetting("geneIdMappingFile");
+
+		if (prop.containsKey("geneWiseSnpWeightsFile"))
+			geneWiseSnpWeightsFile_= getFileSetting("geneWiseSnpWeightsFile");
+		if (prop.containsKey("weightFileFormat"))
+			weightFileFormat_= getSetting("weightFileFormat");
 		
 		// ----------------------------------------------------------------------------
-		// ENRICHMENT ANALYSIS
+		// PARAMETERS
 		
-		// INPUT FILES
-		snpPvalFile_ = getSetting("snpPvalFile");
-		pvalCol_ = getSettingInt("pvalCol");
-		
-		refPopDirectory_ = getSetting("refPopDirectory");
-		refPopFilePrefix_ = getSetting("refPopFilePrefix");
-		refPopFileExtension_ =getSetting("refPopFileExtension");
-		
-		withZScore_ = getSettingBoolean("withZScore");
-		snpFilterFile_ = getSetting("snpFilterFile");
-		dePhase_ = getSettingBoolean("dePhase");
-		
-		genesToBeLoadedFile_ = getSetting("genesToBeLoadedFile");
-		
-		writeDetailedOutput_ = getSettingBoolean("writeDetailedOutput");
-		writeDetailedErrorOutput_ = getSettingBoolean("writeDetailedErrorOutput");
-		writeSnpBedFile_ = getSettingBoolean("writeSnpBedFile");
-		writeTpedFile_ = getSettingBoolean("writeTpedFile");
-		
-		chromosome_ = getSetting("chromosome");
-		ignoreAllosomes_ = getSettingBoolean("ignoreAllosomes");
-		ignoreChrM_ = getSettingBoolean("ignoreChrM");
-		
-		geneWindowUpstream_ = getSettingInt("geneWindowUpstream");
-		geneWindowDownstream_ = getSettingInt("geneWindowDownstream");
-		testStatisticNumSnps_ = getSettingInt("testStatisticNumSnps");
-				
-		maxSnpsPerGene_ = getSettingInt("maxSnpsPerGene");
-		useMafCutoff_ = getSettingDouble("useMafCutoff");
-		
-		useAnalyticVegas_ = getSettingBoolean("useAnalyticVegas");
-		useMaxVegas_ = getSettingBoolean("useMaxVegas");
-		useMaxEffVegas_ = getSettingBoolean("useMaxEffVegas");
-		useSimulationVegas_ = getSettingBoolean("useSimultationVegas");
-		
-		maxPruningCutoff_=getSettingDouble("maxPruningCutoff");
-		externalConvergenceCheck_=getSettingBoolean("externalConvergenceCheck");
-		useFakePhenotype_=getSettingBoolean("useFakePhenotype");
-		useFakeSignal_=getSettingBoolean("useFakeSignal");
-		chanceOfSignal_=getSettingDouble("chanceOfSignal");
-		multipleOfPhenotype_=getSettingInt("multipleOfPhenotype");
-		
-		
+		if (prop.containsKey("geneWindowUpstream"))
+			geneWindowUpstream_ = getSettingInt("geneWindowUpstream");
+		if (prop.containsKey("geneWindowDownstream"))
+			geneWindowDownstream_ = getSettingInt("geneWindowDownstream");
 
-		eigenValueFractionCut_ = getSettingDouble("eigenValueFractionCut");
+		if (prop.containsKey("maxSnpsPerGene"))
+			maxSnpsPerGene_ = getSettingInt("maxSnpsPerGene");
+		if (prop.containsKey("useMafCutoff"))
+			useMafCutoff_ = getSettingDouble("useMafCutoff");
+		if (prop.containsKey("dePhase"))
+			dePhase_ = getSettingBoolean("dePhase");
+		if (prop.containsKey("externalConvergenceCheck"))
+			externalConvergenceCheck_=getSettingBoolean("externalConvergenceCheck");
+		if (prop.containsKey("maxPruningCutoff"))
+			maxPruningCutoff_=getSettingDouble("maxPruningCutoff");
 
-		requestedAbsolutePrecision_ = getSettingDouble("requestedAbsolutePrecision");
-		requestedRelativePrecision_ = getSettingDouble("requestedRelativePrecision");
-		gslIntegrationLimit_ = getSettingInt("gslIntegrationLimit");
+		if (prop.containsKey("useAnalyticVegas"))
+			useAnalyticVegas_ = getSettingBoolean("useAnalyticVegas");
+		if (prop.containsKey("useMaxVegas"))
+			useMaxVegas_ = getSettingBoolean("useMaxVegas");
+		if (prop.containsKey("useMaxEffVegas"))
+			useMaxEffVegas_ = getSettingBoolean("useMaxEffVegas");
+		if (prop.containsKey("useSimultationVegas"))
+			useSimulationVegas_ = getSettingBoolean("useSimultationVegas");
+
+		if (prop.containsKey("eigenValueFractionCut"))
+			eigenValueFractionCut_ = getSettingDouble("eigenValueFractionCut");
+		if (prop.containsKey("useOnlyGwasSnps"))
+			useOnlyGwasSnps_ = getSettingBoolean("useOnlyGwasSnps");
+
+		if (prop.containsKey("requestedAbsolutePrecision"))
+			requestedAbsolutePrecision_ = getSettingDouble("requestedAbsolutePrecision");
+		if (prop.containsKey("requestedRelativePrecision"))
+			requestedRelativePrecision_ = getSettingDouble("requestedRelativePrecision");
+		if (prop.containsKey("gslIntegrationLimit"))
+			gslIntegrationLimit_ = getSettingInt("gslIntegrationLimit");
+
+		if (prop.containsKey("farebrotherMaxIterations"))
+			farebrotherMaxIterations_ = getSettingInt("farebrotherMaxIterations");
+		if (prop.containsKey("farebrotherMode"))
+			farebrotherMode_ = getSettingDouble("farebrotherMode");
+		if (prop.containsKey("useFarebrother"))
+			useFarebrother_ = getSettingBoolean("useFarebrother");
+		if (prop.containsKey("useImhof"))
+			useImhof_ = getSettingBoolean("useImhof");
+		if (prop.containsKey("useDavies"))
+			useDavies_ = getSettingBoolean("useDavies");
+		if (prop.containsKey("daviesErrorBound"))
+			daviesErrorBound_ = getSettingDouble("daviesErrorBound");
+		if (prop.containsKey("daviesIntegrationTerms"))
+			daviesIntegrationTerms_ = getSettingInt("daviesIntegrationTerms");
+
+		if (prop.containsKey("toleratedAbsolutePrecision"))
+			toleratedAbsolutePrecision_ = getSettingDouble("toleratedAbsolutePrecision");
+		if (prop.containsKey("toleratedRelativePrecision"))
+			toleratedRelativePrecision_ = getSettingDouble("toleratedRelativePrecision");
+
+		if (prop.containsKey("snpWeightingDelta"))
+			snpWeightingDelta_ = getSettingDoubleArray("snpWeightingDelta", false, Pascal.log);
+
+		if (prop.containsKey("adaptiveNumSamples"))
+			adaptiveNumSamples_ = getSettingIntArray("adaptiveNumSamples", true, Pascal.log);
+		if (prop.containsKey("numSamplesGreaterCutoff"))
+			numSamplesGreaterCutoff_ = getSettingInt("numSamplesGreaterCutoff");
+
+		if (prop.containsKey("removeCodingSnpsOfOtherGenes"))
+			removeCodingSnpsOfOtherGenes_ = getSettingBoolean("removeCodingSnpsOfOtherGenes");
+		if (prop.containsKey("codingSnpsFile"))
+			codingSnpsFile_ = getSetting("codingSnpsFile");
+
+		// ----------------------------------------------------------------------------
+		// OUTPUT
 		
-		farebrotherMaxIterations_ = getSettingInt("farebrotherMaxIterations");
-		farebrotherMode_ = getSettingDouble("farebrotherMode");
+		if (prop.containsKey("writeDetailedOutput"))
+			writeDetailedOutput_ = getSettingBoolean("writeDetailedOutput");
+		if (prop.containsKey("writeDetailedErrorOutput"))
+			writeDetailedErrorOutput_ = getSettingBoolean("writeDetailedErrorOutput");
+		if (prop.containsKey("writeSnpBedFile"))
+			writeSnpBedFile_ = getSettingBoolean("writeSnpBedFile");
+		if (prop.containsKey("writeTpedFile"))
+			writeTpedFile_ = getSettingBoolean("writeTpedFile");
+		if (prop.containsKey("saveGeneReports"))
+			saveGeneReports_ = getSettingBoolean("saveGeneReports");
+		if (prop.containsKey("writeCorFiles"))
+			writeCorFiles_ = getSettingBoolean("writeCorFiles");
+		if (prop.containsKey("writeGenewiseSnpFiles"))
+			writeGenewiseSnpFiles_=getSettingBoolean("writeGenewiseSnpFiles");
+		if (prop.containsKey("writeUsedSettings"))
+			writeUsedSettings_ = getFileSetting("writeUsedSettings");
+
+		// ----------------------------------------------------------------------------
+		// PATHWAY ANALYSIS
+
+		if (prop.containsKey("runPathwayAnalysis"))
+			runPathwayAnalysis_ = getSettingBoolean("runPathwayAnalysis");
+		if (prop.containsKey("geneSetFile"))
+			geneSetFile_ = getFileSetting("geneSetFile");
+		if (prop.containsKey("excludedGenesFile"))
+			excludedGenesFile_ = getFileSetting("excludedGenesFile");
+		if (prop.containsKey("mergeGenesDistance"))
+			mergeGenesDistance_ = getSettingDouble("mergeGenesDistance");
+
+		if (prop.containsKey("useSimulation"))
+			useSimulation_ = getSettingBoolean("useSimulation");
+		if (prop.containsKey("useSimulationWeightedSampling"))
+			useSimulationWeightedSampling_ = getSettingBoolean("useSimulationWeightedSampling");
+		if (prop.containsKey("maxNrOfSimulationsForEnrichment"))
+			maxNrOfSimulationsForEnrichment_ = getSettingInt("maxNrOfSimulationsForEnrichment");
+		if (prop.containsKey("useChi2"))
+			useChi2_ = getSettingBoolean("useChi2");
+		if (prop.containsKey("useRankSum"))
+			useRankSum_ = getSettingBoolean("useRankSum");
+		if (prop.containsKey("useHypGeom"))
+			useHypGeom_ = getSettingBoolean("useHypGeom");
+		if (prop.containsKey("hypGeomQuantiles"))
+			hypGeomQuantiles_ = getSettingDoubleArray("hypGeomQuantiles", false, Pascal.log);
+		if (prop.containsKey("useGamma"))
+			useGamma_ = getSettingBoolean("useGamma");
+		if (prop.containsKey("gammaShapeParameters"))
+			gammaShapeParameters_ = getSettingDoubleArray("gammaShapeParameters", false, Pascal.log);
+		if (prop.containsKey("useExpHyp"))
+			useExpHyp_ = getSettingBoolean("useExpHyp");
+		if (prop.containsKey("expHypParameters"))
+			expHypParameters_ = getSettingDoubleArray("expHypParameters", false, Pascal.log);
+
+		if (prop.containsKey("loadScoresFromFiles"))
+			loadScoresFromFiles_ = getSettingBoolean("loadScoresFromFiles");
+		if (prop.containsKey("geneScoreFile"))
+			geneScoreFile_ = getFileSetting("geneScoreFile");
+		if (prop.containsKey("metaGeneScoreFile"))
+			metaGeneScoreFile_ = getFileSetting("metaGeneScoreFile");
+
+		if (prop.containsKey("writeSignificanceThreshold"))
+			writeSignificanceThreshold_ = getSettingDouble("writeSignificanceThreshold");
+		if (prop.containsKey("writeGeneScores"))
+			writeGeneScores_ = getSettingBoolean("writeGeneScores");
+
+		// CONCATENATE CHROMOSOME RESULT FILES
+		if (prop.containsKey("runConcatenateChromosomeResults"))
+			runConcatenateChromosomeResults_ = getSettingBoolean("runConcatenateChromosomeResults");
+		if (prop.containsKey("concatenateChromosomeResultsDir"))
+			concatenateChromosomeResultsDir_ = getSetting("concatenateChromosomeResultsDir");
+		if (prop.containsKey("deleteOriginals"))
+			deleteOriginals_ = getSettingBoolean("deleteOriginals");
+
 		
-		useImhof_ = getSettingBoolean("useImhof");		
-		useFarebrother_ = getSettingBoolean("useFarebrother");		
-		useDavies_ = getSettingBoolean("useDavies");		
-		daviesErrorBound_ = getSettingDouble("daviesErrorBound");
-		daviesIntegrationTerms_ = getSettingInt("daviesIntegrationTerms");
+		if (prop.containsKey("useFakePhenotype"))
+			useFakePhenotype_=getSettingBoolean("useFakePhenotype");
+		if (prop.containsKey("useFakeSignal"))
+			useFakeSignal_=getSettingBoolean("useFakeSignal");
+		if (prop.containsKey("chanceOfSignal"))
+			chanceOfSignal_=getSettingDouble("chanceOfSignal");
+		if (prop.containsKey("multipleOfPhenotype"))
+			multipleOfPhenotype_=getSettingInt("multipleOfPhenotype");
 		
-		toleratedAbsolutePrecision_ = getSettingDouble("toleratedAbsolutePrecision");
-		toleratedRelativePrecision_ = getSettingDouble("toleratedRelativePrecision");
+		if (prop.containsKey("deflationRate"))
+			deflationRate_ = getSettingDouble("deflationRate");
+		if (prop.containsKey("deflationDistance"))
+			deflationDist_ = getSettingInt("deflationDistance");
+		if (prop.containsKey("onlyPathwayGenesAsBackground"))
+			onlyPathwayGenesAsBackground_ = getSettingBoolean("onlyPathwayGenesAsBackground");
 		
-		genomeAnnotation_ = getSetting("genomeAnnotation");
-		gencodeAnnotationFile_ = getSetting("genecodeAnnotationFile");
-		ucscAnnotationFile_ = getSetting("ucscAnnotationFile");
-		bedAnnotationFile_ = getSetting("bedAnnotationFile");
-		weightFileFormat_= getSetting("weightFileFormat");
-		//identifyGenesByIdOrSymbol_ = getSetting("identifyGenesByIdOrSymbol");
-		loadOnlyProteinCodingGenes_ = getSettingBoolean("loadOnlyProteinCodingGenes");
-		
-		geneIdMappingFile_ = getSetting("geneIdMappingFile");
-		
-		snpWeightingDelta_ = getSettingDoubleArray("snpWeightingDelta", false);
-		
-		adaptiveNumSamples_ = getSettingIntArray("adaptiveNumSamples", true);
-		numSamplesGreaterCutoff_ = getSettingInt("numSamplesGreaterCutoff");
-		
-		removeCodingSnpsOfOtherGenes_ = getSettingBoolean("removeCodingSnpsOfOtherGenes");
-		codingSnpsFile_ = getSetting("codingSnpsFile");
-		
-		saveGeneReports_ = getSettingBoolean("saveGeneReports");
-		writeCorFiles_ = getSetting("corFilesPath");
-		writeGenewiseSnpFiles_=getSetting("genewiseSnpFilesPath");
-		runPathwayAnalysis_ = getSettingBoolean("runPathwayAnalysis");
-		deflationRate_ = getSettingDouble("deflationRate");
-		deflationDist_ = getSettingInt("deflationDistance");
-		//geneScoreFile_ = getSetting("geneScoreFile");
-		geneSetFile_ = getSetting("geneSetFile");
-		excludedGenesFile_ = getSetting("excludedGenesFile");
-		mergeGenesDistance_ = getSettingDouble("mergeGenesDistance");
-		useSimulation_ = getSettingBoolean("useSimulation");
-		useSimulationWeightedSampling_ = getSettingBoolean("useSimulationWeightedSampling");
-		maxNrOfSimulationsForEnrichment_ = getSettingInt("maxNrOfSimulationsForEnrichment");
-		useChi2_ = getSettingBoolean("useChi2");
-		useRankSum_ = getSettingBoolean("useRankSum");
-		useHypGeom_ = getSettingBoolean("useHypGeom");
-		hypGeomQuantiles_ = getSettingDoubleAr("hypGeomQuantiles");
-		useGamma_ = getSettingBoolean("useGamma");
-		gammaShapeParameters_ = getSettingDoubleAr("gammaShapeParameters");
-		useExpHyp_ = getSettingBoolean("useExpHyp");
-		expHypParameters_ = getSettingDoubleAr("expHypParameters");
-		
-		loadScoresFromFiles_ = getSettingBoolean("loadScoresFromFiles");
-		geneScoreFile_ = getSetting("geneScoreFile");
-		metaGeneScoreFile_ = getSetting("metaGeneScoreFile");
-		onlyPathwayGenesAsBackground_ = getSettingBoolean("onlyPathwayGenesAsBackground");
-		
-		
-		writeSignificanceThreshold_ = getSettingDouble("writeSignificanceThreshold");
-		writeGeneScores_ = getSettingBoolean("writeGeneScores");
-		writeUsedSettings_ = getSetting("writeUsedSettings");
-	
-		runConcatenateChromosomeResults_ = getSettingBoolean("runConcatenateChromosomeResults");
-		concatenateChromosomeResultsDir_ = getSetting("concatenateChromosomeResultsDir");
-		deleteOriginals_ = getSettingBoolean("deleteOriginals");
-		
-		gwasName_ = Utils.extractBasicFilename(PascalSettings.snpPvalFile_, false);
-		chromFileExtension_ = PascalSettings.chromosome_.equals("") ? "" : "." + PascalSettings.chromosome_;
+		// PROCESSED FIELDS
+		gwasName_ = Pascal.utils.extractBasicFilename(snpPvalFile_.getName(), false);
+		chromFileExtension_ = chromosome_.equals("") ? "" : "." + chromosome_;
 	}
 	
-	
+
 	// ----------------------------------------------------------------------------
 
-	/** Check if the parameters are valid */
-	static private void checkParamBounds() {
-				
+	/** Check if selected options / settings are valid */
+	public void checkOptions(){
+
 		if (runPathwayAnalysis_) {
 			// At least one enrichment evaluation method must be selected
 			if (!useSimulation_ && !useChi2_ && !useRankSum_)
 				throw new IllegalArgumentException("Set either 'useRankSum' and/or 'useChi2' and/or useSimulation to true");
 		}
 		checkBounds(writeSignificanceThreshold_, 0, 1, "writeSignificanceThreshold");
-
-	}
-
-	
-	// ----------------------------------------------------------------------------
-
-	/** Check if the parameters are valid */
-	static private void checkBounds(double param, double min, double max, String paramName) {
-
-		if (param < min || param > max)
-			throw new IllegalArgumentException("Parameter " + paramName + "=" + param + " is outside of its valid range [" + min + ", " + max + "]");
-	}
-
-		
-	// ----------------------------------------------------------------------------
-
-	/** Get the string value of a parameter from the setting file */
-	static private String getSetting(String param) {
-		
-		String value = set_.getProperty(param);
-		if (value == null)
-			Pascal.error("Parameter not found in setting file: " + param);
-		
-		return value; 
-	}
-
-	
-	// ----------------------------------------------------------------------------
-
-	/** Get the integer value of a parameter from the setting file */
-	static private int getSettingInt(String param) {
-		return Integer.valueOf(getSetting(param)); 
-	}
-
-	/** Get the double value of a parameter from the setting file */
-	static private double getSettingDouble(String param) {
-		return Double.valueOf(getSetting(param)); 
-	}
-
-	// ----------------------------------------------------------------------------
-
-	/** Parse a boolean property */
-	static private boolean getSettingBoolean(String name) {
-		
-		String value = getSetting(name);
-		if (value.equals("1") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("t"))
-			return true;
-		else if (value.equals("0") || value.equalsIgnoreCase("false") || value.equalsIgnoreCase("f"))
-			return false;
-		else
-			throw new IllegalArgumentException("Parse error for boolean parameter '" + name + "': expected '1' or '0', found '" + value + "'");
-	}
-
-	/** Parse a double array comma separated*/
-	protected static double[] getSettingDoubleAr(String param) {
-		
-		String value = getSetting(param);
-		String[] strAr= value.split(",");
-		double[] myAr = new double[strAr.length];
-		for (int i=0;i<strAr.length;i++){
-			myAr[i]=Double.valueOf(strAr[i]);
-		}
-		return(myAr);
-	}
-
-	// ----------------------------------------------------------------------------
-
-	/** Parse an int array property */
-	static private ArrayList<Integer> getSettingIntArray(String name, boolean positiveSorted) {
-		
-		String[] propStr = getSetting(name).split(",");
-		ArrayList<Integer> prop = new ArrayList<Integer>();
-		
-		if (propStr.length == 1 && propStr[0].compareTo("") == 0)
-			return prop;
-
-		for (int i=0; i<propStr.length; i++)
-			prop.add(Integer.valueOf(propStr[i]));
-			
-		if (positiveSorted && !Utils.posIntIncreasing(prop))
-			Pascal.error("Error parsing settings file, " + name + " has to be an ordered list of positive integers, given in increasing order");
-		
-		return prop;
-	}
-
-
-	// ----------------------------------------------------------------------------
-
-	/** Parse an double array property */
-	static private ArrayList<Double> getSettingDoubleArray(String name, boolean positiveSorted) {
-		
-		String[] propStr = getSetting(name).split(",");
-		ArrayList<Double> prop = new ArrayList<Double>();
-		
-		if (propStr.length == 1 && propStr[0].compareTo("") == 0)
-			return prop;
-
-		for (int i=0; i<propStr.length; i++)
-			prop.add(Double.valueOf(propStr[i]));
-			
-		if (positiveSorted && !Utils.posDoubleIncreasing(prop))
-			Pascal.error("Error parsing settings file, " + name + " has to be an ordered list of positive numbers, given in increasing order");
-		
-		return prop;
-	}
-
-	
-	// ----------------------------------------------------------------------------
-	
-	
-	/** Parse a string array property */
-	@SuppressWarnings("unused")
-	static private String[] getStringArraySetting(Properties set, String name) {
-		
-		return set.getProperty(name).split(",");
-	}
-	public static void checkOptions(){
 
 		int int1 = (useAnalyticVegas_) ? 1 : 0;
 		int int2 = (useMaxVegas_) ? 1 : 0;
@@ -696,15 +725,36 @@ public class PascalSettings {
 			throw new RuntimeException("error: more than 1 algorithm option active");
 		}
 	}
-public static void warnOptions(){
+	
+	
+	// ----------------------------------------------------------------------------
+
+	/** Check if the parameters are valid */
+	private void checkBounds(double param, double min, double max, String paramName) {
+
+		if (param < min || param > max)
+			throw new IllegalArgumentException("Parameter " + paramName + "=" + param + " is outside of its valid range [" + min + ", " + max + "]");
+	}
+
+	
+	// ----------------------------------------------------------------------------
+
+	/** Create new instances for the random number generators, initialize with randomSeed_ */
+	public void setRandomSeed(int seed) {
 		
-		if (useOnlyGwasSnps_){
-			System.out.println("WARNING: <useonlygwassnps> option selected in file:");
-			try {
-				Thread.sleep(2400);
-			} catch(InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
+		randomSeed_ = seed;
+		if (randomSeed_ == -1) {
+			//mersenneTwisterRng_ = new MersenneTwister();
+			wellRng_ = new Well19937c();
+			jdkRng_ = new Random();
+		} else {
+			//mersenneTwisterRng_ = new MersenneTwister(randomSeed_);
+			wellRng_ = new Well19937c(randomSeed_);
+			jdkRng_ = new Random(randomSeed_);
 		}
 	}
+	
+	public int getRandomSeed() { return randomSeed_; }
+
+
 }

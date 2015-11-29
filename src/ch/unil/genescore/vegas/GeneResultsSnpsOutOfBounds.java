@@ -21,12 +21,12 @@
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 
 import ch.unil.genescore.gene.Gene;
-import ch.unil.genescore.main.FileExport;
 import ch.unil.genescore.main.Pascal;
-import ch.unil.genescore.main.Settings;
+import ch.unil.gpsutils.FileExport;
 
 
 public class GeneResultsSnpsOutOfBounds {
@@ -35,7 +35,7 @@ public class GeneResultsSnpsOutOfBounds {
 	private FileExport exporter_ = null;
 	
 	public GeneResultsSnpsOutOfBounds(){
-		exporter_ = new FileExport();
+		//exporter_ = new FileExport();
 		zeroSnpsOrAboveSnpLimit_ = new LinkedHashMap<Gene, Integer>(); 
 	}
 
@@ -75,8 +75,10 @@ public class GeneResultsSnpsOutOfBounds {
 	}
 	
 	public void setExporter(String additionalOutputFileSuffix) {
-		String filename = Settings.outputDirectory_ + "/" + Settings.gwasName_ + additionalOutputFileSuffix + ".numSnpError" + Settings.chromFileExtension_ + ".txt";
-		exporter_.setWriter(filename);		
+		File file = new File(Pascal.set.outputDirectory_,
+				Pascal.set.gwasName_ + additionalOutputFileSuffix + ".numSnpError" + Pascal.set.chromFileExtension_ + ".txt");
+		//exporter_.setWriter(filename);
+		exporter_ = new FileExport(Pascal.log, file);
 	}
 
 	public void addToMap(GeneWithItsSnps geneWithItsSnps) {

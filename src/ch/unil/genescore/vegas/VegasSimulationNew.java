@@ -23,15 +23,13 @@ package ch.unil.genescore.vegas;
 
 import java.util.ArrayList;
 
+import ch.unil.genescore.main.Pascal;
 import no.uib.cipr.matrix.DenseCholesky;
 import no.uib.cipr.matrix.DenseMatrix;
 import no.uib.cipr.matrix.DenseVector;
-import no.uib.cipr.matrix.LowerTriangDenseMatrix;
-import no.uib.cipr.matrix.SymmDenseEVD;
 import no.uib.cipr.matrix.UpperSymmDenseMatrix;
 import no.uib.cipr.matrix.UpperTriangDenseMatrix;
 import no.uib.cipr.matrix.Vector.Norm;
-import ch.unil.genescore.main.Settings;
 
 import java.util.*;
 
@@ -56,7 +54,7 @@ public class VegasSimulationNew extends AnalyticVegas {
 	@Override
 	protected double computeTestStatisticRealSubclass() {
 		maxStat_=0;
-		if (Settings.withZScore_){
+		if (Pascal.set.withZScore_){
 			for (int i=0; i<snpScores_.size(); i++){				
 				maxStat_=Math.max(Math.abs(snpScores_.get(i)),maxStat_);
 			}
@@ -73,7 +71,7 @@ public class VegasSimulationNew extends AnalyticVegas {
 	
 	protected double computeTestStatisticSimul(DenseVector w ) {
 		double maxStat_=0;
-		if (Settings.withZScore_){
+		if (Pascal.set.withZScore_){
 			for (int i=0; i<snpScores_.size(); i++){
 				maxStat_=Math.max(Math.abs(snpScores_.get(i)),maxStat_);
 			}

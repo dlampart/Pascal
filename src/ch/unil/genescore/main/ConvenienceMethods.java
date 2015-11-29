@@ -68,4 +68,31 @@ public class ConvenienceMethods {
 		}
 		return arOut;
 	}
+	
+	// ----------------------------------------------------------------------------
+
+	/** Fixed length string (pad with white space if shorter) */
+	public static String padRight(String s, int n) {
+
+		return String.format("%1$-" + n + "s", s);  
+	}
+	
+	// ----------------------------------------------------------------------------
+	
+	/** String representation of array, separate */
+	public static String array2string(ArrayList<Double> v, String sep) {	
+		
+		if (v == null || v.size() == 0)
+			return "";
+		
+		// The first element
+		String str = Double.toString(v.get(1));
+		if (v.size() == 1)
+			return str;
+		
+		for (int i=1; i<v.size(); i++)
+			str += sep + v.get(i);
+		
+		return str;
+	}
 }

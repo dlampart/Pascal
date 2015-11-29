@@ -21,9 +21,10 @@
  *******************************************************************************/
 package ch.unil.genescore.vegas;
 
+import java.io.File;
 import java.util.ArrayList;
 
-import ch.unil.genescore.main.Settings;
+import ch.unil.genescore.main.Pascal;
 import no.uib.cipr.matrix.DenseMatrix;
 
 public class GeneData implements GeneDataInterface {
@@ -39,7 +40,7 @@ public class GeneData implements GeneDataInterface {
 	
 	protected void setSnpScores(){
 		snpScores_ = new ArrayList<Double>();
-		if (Settings.withZScore_){
+		if (Pascal.set.withZScore_){
 			for (Snp snp : snpList_){
 				snpScores_.add(snp.getZscore());				
 			}
@@ -55,33 +56,23 @@ public class GeneData implements GeneDataInterface {
 	public DenseMatrix getCorr(){return cov_;}
 	public ArrayList<Double> getScores(){return snpScores_;}
 		
-	 public void writeCovMatToFile(String fileName){
+	 public void writeCovMatToFile(File file){
 	    	
-		 //ArrayList<String> valStrings = new ArrayList<String>(); 
-	    	 
-	    //for (int i=0 ; i < snpList_.size() ; i++){
-	    //	String currentString = "";
-	   // 	currentString += String.valueOf(snpScores_);	    		
-	  //  	valStrings.add(currentString);
-	//    }
-	    String header="scores";
-	  //  WritingMethods.writeSnpPosWithValToFile(snpList_, valStrings,header, fileName,Settings.writeGenewiseSnpFiles_);
-	    //String corfileName = "corMat_" + fileName;
-    	WritingMethods.writeMTJ(cov_, fileName,Settings.writeGenewiseSnpFiles_);
+    	WritingMethods.writeMTJ(cov_, file);
 	 }
 	 
 	 
-	 public void writeGeneSnpsToFile(String fileName){
+	 public void writeGeneSnpsToFile(File file){
 	    	
 		 ArrayList<String> valStrings = new ArrayList<String>(); 
 	    	 
-	    for (int i=0 ; i < snpScores_.size() ; i++){
-	    	String currentString = "";
-	    	currentString = String.valueOf(snpScores_.get(i));	    		
-	    	valStrings.add(currentString);
-	    }
-	    String header="scores";
-	    WritingMethods.writeSnpPosWithValToFile(snpList_, valStrings,header, fileName,Settings.writeGenewiseSnpFiles_);
+		 for (int i=0 ; i < snpScores_.size() ; i++){
+			 String currentString = "";
+			 currentString = String.valueOf(snpScores_.get(i));	    		
+			 valStrings.add(currentString);
+		 }
+		 String header="scores";
+		 WritingMethods.writeSnpPosWithValToFile(snpList_, valStrings, header, file);
 	 }
 	 
 	 public void processData(){
