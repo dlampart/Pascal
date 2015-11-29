@@ -287,11 +287,11 @@ public class ReferencePopulation {
 		System.out.println(relevantSnps_.size());
 		
 	}
+	
+	
 	// ----------------------------------------------------------------------------
 
-
 	/** Load the snp pvals and positions */
-
 	public void loadGwasAndRelevantSnps(){
 		// Initialize reference population instance
 			

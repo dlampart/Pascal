@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GeneAnnotation;
+import ch.unil.genescore.main.ConvenienceMethods;
 import ch.unil.genescore.main.Pascal;
 import ch.unil.genescore.vegas.GenomeWideScoring;
 import ch.unil.genescore.vegas.ReferencePopulation;
@@ -262,9 +263,6 @@ public class PathwayMain {
 				int numRemoved = annot.removeGenes(Pascal.set.excludedGenesFile_);
 				Pascal.println("- " + numRemoved + " genes removed because they are in the excluded genes file");
 			}
-
-		
-	
 		return genes;
 	}
 	
@@ -279,11 +277,8 @@ public class PathwayMain {
 		
 		functName = functName.replace("_nodeProperties", "");
 		functName = functName.replace("_undir", "");
-		String condDot="";
-		if (!Pascal.set.outputSuffix_.equals("")){
-			condDot=".";
-		}
-		return gwasName + ".PathwaySet--" + functName + "--" + Pascal.set.outputSuffix_ + condDot + pascal.getGenomeWideScoring().getEvaluator().getTypeString() + Pascal.set.chromFileExtension_;
+		return gwasName + ".PathwaySet--" + functName + "--" + ConvenienceMethods.addDotAfter(Pascal.set.outputSuffix_) 
+		+ pascal.getGenomeWideScoring().getEvaluator().getTypeString() + Pascal.set.chromFileExtension_;
 	}
 	
 	

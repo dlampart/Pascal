@@ -69,6 +69,7 @@ public class ConvenienceMethods {
 		return arOut;
 	}
 	
+	
 	// ----------------------------------------------------------------------------
 
 	/** Fixed length string (pad with white space if shorter) */
@@ -76,6 +77,7 @@ public class ConvenienceMethods {
 
 		return String.format("%1$-" + n + "s", s);  
 	}
+	
 	
 	// ----------------------------------------------------------------------------
 	
@@ -95,4 +97,25 @@ public class ConvenienceMethods {
 		
 		return str;
 	}
+	
+	
+	// ----------------------------------------------------------------------------
+
+	/** Add a dot before the string if it is not empty */
+	public static String addDotBefore(String withoutDot){
+		if (withoutDot.isEmpty())
+			return withoutDot;
+		else
+			return "." + withoutDot;
+	}
+
+	/** Add a dot after the string if it is not empty */
+	public static String addDotAfter(String withoutDot){
+		if (withoutDot.isEmpty())
+			return withoutDot;
+		else
+			return withoutDot + ".";
+	}
+
+
 }

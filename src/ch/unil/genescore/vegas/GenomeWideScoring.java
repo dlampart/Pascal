@@ -53,13 +53,9 @@ public class GenomeWideScoring {
 	
 	/** Computes the gene scores */
 	protected GeneScoreEvaluator evaluator;
-	
-	/** The genes for which the number of snps was above the limit */	
-	private GeneResultsSnpsOutOfBounds GeneResultsSnpsOutOfBounds_ =  null;
-	
-	/** The genes for which no score could be computed */	
-	protected GeneResultsNoScore noScores_ = null;
-	private  GeneResultsScore scores_ = null;
+
+	/** Writes gene scoring results */
+	private GeneScoreWriter geneScoreWriter;
 	
 	/** Flag set false when computeScore() has been run first time (to display info only on first run) */
 	private boolean firstRun_ = true;		
@@ -69,7 +65,7 @@ public class GenomeWideScoring {
 	private File corMatDir;
 	/** Directory where gene SNPs are saved */
 	private File geneSnpsDir;
-
+	
 	
 	// ============================================================================
 	// PUBLIC METHODS
@@ -87,13 +83,7 @@ public class GenomeWideScoring {
         else
 			throw new RuntimeException("No gene scoring method selected");
 		
-		String condDot="";
-		if (!Pascal.set.outputSuffix_.equals("")){
-			condDot=".";
-		}
-		additionalOutputFileSuffix_ = Pascal.set.outputSuffix_ + condDot + evaluator.getTypeString();
-		GeneResultsSnpsOutOfBounds_ =  new GeneResultsSnpsOutOfBounds();
-		noScores_ = new GeneResultsNoScore();
+		additionalOutputFileSuffix_ = ConvenienceMethods.addDotAfter(Pascal.set.outputSuffix_) + evaluator.getTypeString();
 		if(Pascal.set.useFakeSignal_){
 			ReferencePopulationFakeSignal fakeSignalGenerator = new ReferencePopulationFakeSignal();
 			fakeSignalGenerator.runFakeSignal();
@@ -145,17 +135,14 @@ public class GenomeWideScoring {
 	 * Gene scores are saved in the gene instances (Gene.score_).
 	 * Results are written to file if the flag is set.
 	 */
-	
 	public void computeScores() {
 
-		boolean writeFile=true;
-		//genes_ = genes;
 		if (genes_ == null || genes_.size() == 0) {
 			Pascal.warning("GenomeWideScoring.computeScores(): No genes specified");
 			return;
 		}
 		
-		GeneResultsSnpsOutOfBounds_ =  new GeneResultsSnpsOutOfBounds();
+		//GeneResultsSnpsOutOfBounds_ =  new GeneResultsSnpsOutOfBounds();
 		
 		if (firstRun_) {
 			// Print info on method and parameters used to console
@@ -167,11 +154,8 @@ public class GenomeWideScoring {
 			//}
 		}
 		// Open output file
-		scores_ =  new GeneResultsScore();						
-		if (writeFile) {			
-			scores_.setExporter(additionalOutputFileSuffix_);						
-		}
-
+		geneScoreWriter = new GeneScoreWriter(evaluator, additionalOutputFileSuffix_);
+		
 		// Print header for results displayed on console
 		if (Pascal.set.verbose_)
 			printConsoleHeader();
@@ -187,7 +171,7 @@ public class GenomeWideScoring {
 			switchChecker.check(gene, refpop_);
 			// Compute the score
 			if (computeScore(gene))
-				scores_.writeLine(evaluator, gene);
+				geneScoreWriter.writeScore(evaluator, gene);
 			
 // TODO @David refactoring
 //			GeneScoreEvaluator evaluator = null;
@@ -197,9 +181,7 @@ public class GenomeWideScoring {
 //				continue;			
 //			scores_.writeLine(evaluator, gene);
 		}
-		scores_.getExporter().close();
-		GeneResultsSnpsOutOfBounds_.writeResultsToFile("."+additionalOutputFileSuffix_);
-		noScores_.writeResultsToFile("."+additionalOutputFileSuffix_);
+		geneScoreWriter.close();
 		firstRun_ = false;
 	}
 
@@ -222,15 +204,18 @@ public class GenomeWideScoring {
 	protected boolean computeScore(Gene gene) {				
 		
 		// Get the snps that are in the window around the given gene			
-		GeneWithItsSnps geneAndSnps = new GeneWithItsSnps(gene,refpop_.findSnps(gene));
+		GeneWithItsSnps geneAndSnps = new GeneWithItsSnps(gene, refpop_.findSnps(gene));
 					
 		if (Pascal.set.verbose_) 
 			 geneAndSnps.printGeneNameAndNrOfSnps();			
 		
 		refpop_.updateLoadedGenotypes(gene);				
 		removeLowMafSnps(geneAndSnps.getSnpList());				
-		if (!geneAndSnps.checkNrOfSnps(GeneResultsSnpsOutOfBounds_))
+		if (!geneAndSnps.checkNrOfSnps()) {
+			String line = gene.id_ + "\t" + gene.getSymbolOrNA() + "\t" + geneAndSnps.getNrOfSnps();
+			geneScoreWriter.writeSnpsOutOfBounds(line);
 			return false;
+		}
 		
 		GeneData currentGeneData = setupGeneData(geneAndSnps);			
 		currentGeneData.processData();	
@@ -274,7 +259,8 @@ public class GenomeWideScoring {
 		if (!success) {
 			String str = gene.toString();
 			str += "\t" + evaluator.getNoScoreOutput();
-			noScores_.add(str);			
+			//noScores_.add(str);
+			geneScoreWriter.writeNoScore(str);
 			if (Pascal.set.verbose_)
 				Pascal.println(str);
 		}

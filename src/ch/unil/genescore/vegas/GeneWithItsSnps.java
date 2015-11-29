@@ -70,14 +70,12 @@ public class GeneWithItsSnps {
 		}
 	}
 	
-	public boolean checkNrOfSnps(GeneResultsSnpsOutOfBounds GeneResultsZeroOrAboveLimit_){
-		if (getNrOfSnps() == 0 || (Pascal.set.maxSnpsPerGene_ > 0 && getNrOfSnps() > Pascal.set.maxSnpsPerGene_)) {
-		
-			GeneResultsZeroOrAboveLimit_.addToMap(this);
-					
+	/** Check if gene has greater than zero and smaller than maxSnpsPerGene SNPs */
+	public boolean checkNrOfSnps() {
+		if (snpList_.size() == 0 || (Pascal.set.maxSnpsPerGene_ > 0 && snpList_.size() > Pascal.set.maxSnpsPerGene_)) {
 			if (Pascal.set.verbose_) {
 				Pascal.print("\t" + ConvenienceMethods.padRight("0h 0min 0s 0ms", 22));
-				if (getNrOfSnps() == 0)
+				if (snpList_.size() == 0)
 					Pascal.print("Gene has no SNPs\n");
 				else
 					Pascal.print("Gene exceeds max number of SNPs defined in settings file\n");			
@@ -88,6 +86,8 @@ public class GeneWithItsSnps {
 		return true;
 	}		
 	
+	
+	/** Print the gene name and number of SNPs to the console */
 	public void printGeneNameAndNrOfSnps(){
 		String symb = ConvenienceMethods.padRight(((gene_.symbol_ == null) ? "NA" : gene_.symbol_), 16);
 		Pascal.print(ConvenienceMethods.padRight(gene_.id_, 18) + symb);
