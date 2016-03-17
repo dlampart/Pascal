@@ -102,6 +102,11 @@ loadOnlyProteinCodingGenes = 1
 # Mapping file to convert Entrez IDs, ENSEMBL IDs and gene symbols
 geneIdMappingFile = resources/annotation/gencode/ensembl_entrez_hugo_ids.txt
 
+# Files with recombination rates (files have to add suffix e.g.: chr1.txt )
+# Format:Chromosome\tPosition(bp)\tRate(cM/Mb)\tMap(cM)
+recombinationRateFiles  = resources/recombinationRates/HapmapII_GRCh37_RecombinationHotspots/genetic_map_GRCh37_
+
+
 # ========================================================================
 # PARAMETERS for weighting
 
@@ -133,7 +138,9 @@ maxSnpsPerGene = 1500
 #maxSnpsPerGene = 170
 # only use snps that have maf above this value in refererence population 
 useMafCutoff = 0.05
-#useMafCutoff = 0.0
+# only use snps that have maf below this value in refererence population 
+useMaxMafCutoff = 1
+
 
 # If the genotypes are phased, this option converts them to unphased
 dePhase = 1

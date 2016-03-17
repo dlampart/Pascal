@@ -166,7 +166,7 @@ public class GeneScoreOptionParser extends Settings {
 			useSimulation_ = true;
 		
 		if (options.has("loadscores"))
-			loadScoresFromFiles_= true;
+			loadAllScoresFromFiles_= true;
 		
 		if (options.has("scores"))
 			geneScoreFile_ = (String) options.valueOf("scores");

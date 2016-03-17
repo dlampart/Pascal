@@ -28,6 +28,7 @@ import java.util.Collections;
 
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.vegas.Snp;
@@ -108,6 +109,19 @@ public class Gene extends GenomicElement {
 		
 		return (symbol_ == null) ? "NA" : symbol_;
 	}
+	
+	/** Remove Snps in gene body region */
+	public void removeSnpsInGeneBody(ArrayList<Snp> snpList) {		
+		Iterator<Snp> it = snpList.iterator();
+		while (it.hasNext()){
+			Snp snp = it.next();		
+			if(snp.chr_.equals(chr_) &&  snp.start_ >= start_ &&  snp.end_ <= end_){
+				it.remove();				
+			}	
+		}				
+	}
+		
+	
 
 	
 	// ----------------------------------------------------------------------------

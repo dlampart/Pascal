@@ -110,6 +110,10 @@ public class Settings {
 	static public String bedAnnotationFile_ = null;
 	/** File with Snp-weights for each gene */ 
 	static public String geneWiseSnpWeightsFile_ = null;
+	/** Files with recombination rates  (files have to add suffix e.g.: chr1.txt )
+	 * Format:Chromosome\tPosition(bp)\tRate(cM/Mb)\tMap(cM)*/ 
+	static public String recombinationRateFiles_ = null;
+	
 	/** File format Snp-weights*/ 
 	static public String weightFileFormat_ = null;
 	//static public String identifyGenesByIdOrSymbol_ = null; 
@@ -133,6 +137,13 @@ public class Settings {
 	static public int maxSnpsPerGene_ = -1;
 	/** only use snps that have maf above this value in refererence population*/
 	static public double useMafCutoff_ = 0;
+	
+	/** only use snps that have maf below this value in refererence population*/
+	static public double useMaxMafCutoff_ = 1;
+	
+	/** only use snps that have maf below this value in refererence population*/
+	static public boolean removeSnpsInBody_ = false;
+	
 	/**check converge of Max vegas externally */
 	static  public boolean externalConvergenceCheck_ = false;
 	/** matrix in maxvegas approach*/
@@ -247,7 +258,8 @@ public class Settings {
 	/** shape parameter to use for gamma distribution (lower tail)*/
 	static public double[] expHypParameters_ = {0.5,0.75,0.85,0.9};
 	
-	static public boolean loadScoresFromFiles_ = false; 
+	static public boolean loadAllScoresFromFiles_ = false; 
+	static public boolean loadSingleGeneScoresFromFiles_ = false; 
 	static public String geneScoreFile_ = null; 
 	static public String metaGeneScoreFile_ = null; 
 	
@@ -493,6 +505,7 @@ public class Settings {
 				
 		maxSnpsPerGene_ = getSettingInt("maxSnpsPerGene");
 		useMafCutoff_ = getSettingDouble("useMafCutoff");
+		useMaxMafCutoff_ = getSettingDouble("useMaxMafCutoff");
 		
 		useAnalyticVegas_ = getSettingBoolean("useAnalyticVegas");
 		useMaxVegas_ = getSettingBoolean("useMaxVegas");
@@ -530,7 +543,8 @@ public class Settings {
 		gencodeAnnotationFile_ = getSetting("genecodeAnnotationFile");
 		ucscAnnotationFile_ = getSetting("ucscAnnotationFile");
 		bedAnnotationFile_ = getSetting("bedAnnotationFile");
-		weightFileFormat_= getSetting("weightFileFormat");
+		weightFileFormat_= getSetting("weightFileFormat");		
+		recombinationRateFiles_ = getSetting("recombinationRateFiles");		
 		//identifyGenesByIdOrSymbol_ = getSetting("identifyGenesByIdOrSymbol");
 		loadOnlyProteinCodingGenes_ = getSettingBoolean("loadOnlyProteinCodingGenes");
 		
@@ -543,7 +557,7 @@ public class Settings {
 		
 		removeCodingSnpsOfOtherGenes_ = getSettingBoolean("removeCodingSnpsOfOtherGenes");
 		codingSnpsFile_ = getSetting("codingSnpsFile");
-		
+		removeSnpsInBody_ = getSettingBoolean("removeSnpsInBody");
 		saveGeneReports_ = getSettingBoolean("saveGeneReports");
 		writeCorFiles_ = getSetting("corFilesPath");
 		writeGenewiseSnpFiles_=getSetting("genewiseSnpFilesPath");
@@ -556,7 +570,7 @@ public class Settings {
 		mergeGenesDistance_ = getSettingDouble("mergeGenesDistance");
 		useSimulation_ = getSettingBoolean("useSimulation");
 		useSimulationWeightedSampling_ = getSettingBoolean("useSimulationWeightedSampling");
-		maxNrOfSimulationsForEnrichment_ = getSettingInt("maxNrOfSimulationsForEnrichment");
+		maxNrOfSimulationsForEnrichment_ = getSettingInt("maxNrOfSimulationsForEnrichment");				
 		useChi2_ = getSettingBoolean("useChi2");
 		useRankSum_ = getSettingBoolean("useRankSum");
 		useHypGeom_ = getSettingBoolean("useHypGeom");
@@ -566,7 +580,8 @@ public class Settings {
 		useExpHyp_ = getSettingBoolean("useExpHyp");
 		expHypParameters_ = getSettingDoubleAr("expHypParameters");
 		
-		loadScoresFromFiles_ = getSettingBoolean("loadScoresFromFiles");
+		loadAllScoresFromFiles_ = getSettingBoolean("loadScoresFromFiles");
+		loadSingleGeneScoresFromFiles_= getSettingBoolean("loadSingleGeneScoresFromFiles");		
 		geneScoreFile_ = getSetting("geneScoreFile");
 		metaGeneScoreFile_ = getSetting("metaGeneScoreFile");
 		onlyPathwayGenesAsBackground_ = getSettingBoolean("onlyPathwayGenesAsBackground");

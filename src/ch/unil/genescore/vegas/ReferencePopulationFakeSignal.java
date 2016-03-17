@@ -114,7 +114,7 @@ public class ReferencePopulationFakeSignal  {
 		currentSnp_.computeAlleleStats();		
 		maf = currentSnp_.getMaf();
 		sd = currentSnp_.getAlleleSd();
-		if (maf > Settings.useMafCutoff_ || sd==0){
+		if (maf > Settings.useMafCutoff_ & maf <= Settings.useMaxMafCutoff_ || sd==0){
 			rndNr = rnd.nextDouble();
 			if (rndNr < Settings.chanceOfSignal_){
 				beta = 10;//rnd.nextGaussian()*10;

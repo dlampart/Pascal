@@ -35,6 +35,8 @@ import ch.unil.genescore.gene.GenomicElement;
 import ch.unil.genescore.main.Main;
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.main.Utils;
+import ch.unil.genescore.recombRate.GeneDataWithRecombination;
+import ch.unil.genescore.recombRate.RecombinationRateMap;
 
 
 /**
@@ -51,6 +53,9 @@ public class GenomeWideScoring {
 	
 	/** The reference population instance, used to load snp positions and genotypes */
 	protected ReferencePopulation refpop_ = null;
+	
+	/** the recombination rate map  */
+	protected RecombinationRateMap recombinationRateMap_ = null;
 		
 	
 	
@@ -120,10 +125,8 @@ public class GenomeWideScoring {
 	 * Results are written to file if the flag is set.
 	 */
 	
-	public void computeScores() {
+	public void computeScores(boolean writeFile) {
 
-		boolean writeFile=true;
-		//genes_ = genes;
 		if (genes_ == null || genes_.size() == 0) {
 			Main.warning("GenomeWideScoring.computeScores(): No genes specified");
 			return;
@@ -159,12 +162,16 @@ public class GenomeWideScoring {
 			evaluator = computeScore(gene);
 			// Evaluator is only null if the gene should be skipped (zero snps or exceeding max number of snps)
 			if (evaluator == null)
-				continue;			
-			scores_.writeLine(evaluator, gene);
+				continue;
+			if(writeFile){
+				scores_.writeLine(evaluator, gene);
+			}
 		}
-		scores_.getExporter().close();
-		GeneResultsSnpsOutOfBounds_.writeResultsToFile("."+additionalOutputFileSuffix_);
-		noScores_.writeResultsToFile("."+additionalOutputFileSuffix_);
+		if(writeFile){
+			scores_.getExporter().close();
+			GeneResultsSnpsOutOfBounds_.writeResultsToFile("."+additionalOutputFileSuffix_);
+			noScores_.writeResultsToFile("."+additionalOutputFileSuffix_);
+		}
 		firstRun_ = false;
 	}
 
@@ -173,14 +180,25 @@ public class GenomeWideScoring {
 	private GeneData setupGeneData(GeneWithItsSnps gene){
 		GeneData currentGeneData = null;
 		if (Settings.useFakePhenotype_){				
-				currentGeneData = new GeneDataFakePhenotype(gene.getSnpList(), fakeSignal_);
-			}
-			else{
+			currentGeneData = new GeneDataFakePhenotype(gene.getSnpList(), fakeSignal_);
+			}else if(!Settings.recombinationRateFiles_.equals("")){
+				currentGeneData = new GeneDataWithRecombination(gene.getSnpList(), getRecombinationMap());
+			}				
+			else{				
 				currentGeneData = new GeneData(gene.getSnpList());			
 			}
+		
 		return(currentGeneData);
 		
 	}	
+	
+	private RecombinationRateMap getRecombinationMap(){
+		if(recombinationRateMap_ == null){
+			recombinationRateMap_  = new  RecombinationRateMap();
+			recombinationRateMap_.loadDataFromSettingsFile();
+		}
+		return recombinationRateMap_;
+	}
 		
 	
 	/** Compute score for the given gene */
@@ -194,7 +212,12 @@ public class GenomeWideScoring {
 			 geneAndSnps.printGeneNameAndNrOfSnps();			
 		}
 		refpop_.updateLoadedGenotypes(gene);				
-		removeLowMafSnps(geneAndSnps.getSnpList());				
+		removeLowMafSnps(geneAndSnps.getSnpList());
+		removeHighMafSnps(geneAndSnps.getSnpList());
+		if(Settings.removeSnpsInBody_){
+			gene.removeSnpsInGeneBody(geneAndSnps.getSnpList());
+		}
+		
 		if (!geneAndSnps.checkNrOfSnps(GeneResultsSnpsOutOfBounds_)){
 			return null;
 		}		
@@ -203,12 +226,13 @@ public class GenomeWideScoring {
 			
 									
 		if (!Settings.writeGenewiseSnpFiles_.equals(""))	{		
-      	  String fileNameStr="snpVals_gene" +"_"+ gene.symbol_ + "_" + gene.id_ + ".txt";
+      	  String fileNameStr=Settings.writeGenewiseSnpFiles_ +"_"+ gene.symbol_ + "_" + gene.id_ + ".txt";
       	  currentGeneData.writeGeneSnpsToFile(fileNameStr);
         }		
 		
 		 if (!Settings.writeCorFiles_.equals("")){
-			 String fileNameString="corMat_snpVals_gene" + "_" + gene.symbol_ +"_"+ gene.getId() + ".txt";
+			 //String fileNameString="corMat_snpVals_gene" + "_" + gene.symbol_ +"_"+ gene.getId() + ".txt";
+			 String fileNameString=Settings.writeCorFiles_ + "_" + gene.symbol_ +"_"+ gene.getId() + ".txt";
        	  currentGeneData.writeCovMatToFile(fileNameString);
 		// Computes gene scores		
 		 }		 
@@ -345,6 +369,18 @@ public class GenomeWideScoring {
 		}
 		
 	}
+
+	public void removeHighMafSnps(Collection<Snp> snpList){
+		if(Settings.useMaxMafCutoff_ < 0.5){
+			Iterator<Snp> it = snpList.iterator();
+			while (it.hasNext()){
+				Snp snp = it.next();
+				if (snp.getMaf() > Settings.useMaxMafCutoff_ || snp.getAlleleSd()==0)
+					it.remove();
+			}
+		}
+	}
+	
 	// ============================================================================
 	// GETTERS AND SETTERS
 	public void addAdditionalOutputFileSuffix(String ext) { additionalOutputFileSuffix_ = additionalOutputFileSuffix_ + ext; }

@@ -172,7 +172,7 @@ public class Main {
 		Main.println("COMPUTING GENE SCORES");
 		Main.println("---------------------\n");		
 		
-		geneScore.computeScores();
+		geneScore.computeScores(true);
 	}
 
 

@@ -90,22 +90,62 @@ public class PathwayMain {
 			Main.println("COMPUTING GENE SCORES");
 			Main.println("---------------------\n");		
 
-			// Sort genes by position 	
-			if (!Settings.loadScoresFromFiles_){
+			
+			
+			if(Settings.loadAllScoresFromFiles_ || Settings.loadSingleGeneScoresFromFiles_) {
+				Main.println("Loading genescores form files:");
+				Main.println("calculate a couple of genescores to compare to file");
+				Main.println(Settings.geneScoreFile_);
+				Main.println(Settings.metaGeneScoreFile_);
+				LinkedHashMap<String, Gene> genesEmpty = genes_;
+				ArrayList<Gene> genes = new ArrayList<Gene>(genesEmpty.values());
+				Collections.sort(genes);
+				int checkerLength=20;
+				ArrayList<Gene> genesSubList = new ArrayList<Gene>(genes.subList(0, checkerLength));
+				geneScorer_.setGenes(genesSubList);			
+				geneScorer_.computeScores(false);
+				double[] pvals= new double[checkerLength];
+				int[] tss = new int[checkerLength];
+				String[] geneIds = new String[checkerLength];
+				int count = 0;
+				int innerCount = 0;
+				while (innerCount<checkerLength){					
+					System.out.println(innerCount);
+					double[] curVals = genesSubList.get(innerCount).getScore();
+					if(curVals!=null){						
+						pvals[count]=curVals[0];
+						tss[count] = genesSubList.get(innerCount).getTss();
+						geneIds[count] = genesSubList.get(innerCount).getId();
+						count++;
+					}
+					innerCount++;
+				}				
+								
+				genes_=loadScoresFromFile(Settings.geneScoreFile_);	
+				Main.println("calculate a couple of genescores to compare genes");				
+				genes = new ArrayList<Gene>(genes_.values());
+				Collections.sort(genes);				
+				for (int i=0; i<count; i++){
+					double err = Math.abs(pvals[i]- genes.get(i).getScore(0))/pvals[i];
+					if(err>0.0001){
+						throw new RuntimeException("loaded genescore list does not agree with the annotation p-value files");
+					}
+					if(!((tss[i]) == genes.get(i).getTss())){
+						throw new RuntimeException("loaded genescore list does not agree with the annotation p-value files");
+					}
+					if(!((geneIds[i]).equals(genes.get(i).id_))){
+						throw new RuntimeException("loaded genescore list does not agree with the annotation p-value files");
+					}
+				}									
+			}else{			
 				
 				ArrayList<Gene> genes = new ArrayList<Gene>(genes_.values());
 				Collections.sort(genes);
 			// Compute scores for individual genes (even those that may later be merged, useful for output)
 				geneScorer_.setGenes(genes);			
-				geneScorer_.computeScores();
+				geneScorer_.computeScores(true);
 			}
-			else {
-				Main.println("Loading genescores form files:");
-				Main.println(Settings.geneScoreFile_);
-				Main.println(Settings.metaGeneScoreFile_);
-				genes_=loadScoresFromFile(Settings.geneScoreFile_);
-				
-			}
+			
 			geneSetLib_ = new GeneSetLibrary(Settings.geneSetFile_, genes_);
 			
 			// Print info on gene overlap
@@ -135,12 +175,12 @@ public class PathwayMain {
 
 			// Sort meta-genes by position
 			ArrayList<Gene> metagenes = new ArrayList<Gene>(geneSetLib_.getMetaGenes());
-			if (!Settings.loadScoresFromFiles_){
+			if (!Settings.loadAllScoresFromFiles_){
 				Collections.sort(metagenes);
 				// Compute scores
 				geneScorer_.setGenes(metagenes);
 				geneScorer_.addAdditionalOutputFileSuffix(".fusion");
-				geneScorer_.computeScores();
+				geneScorer_.computeScores(true);
 				}
 			else if(Settings.mergeGenesDistance_ >= 0){
 				LinkedHashMap<String, Gene> metaGenesFromFile;

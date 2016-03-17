@@ -22,11 +22,13 @@
 package ch.unil.genescore.pathway;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
 
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.Genome;
+import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.vegas.Snp;
 
 
@@ -105,7 +107,31 @@ public class MetaGene extends Gene {
 		
 		}
 	}
-		
+	
+	/** Remove Snps in gene body region */
+	public void removeSnpsInGeneBody(ArrayList<Snp> snpList) {
+		Iterator<Snp> it = snpList.iterator();
+		while (it.hasNext()){
+			Snp snp = it.next();		
+			for(Gene gene : genes_){
+				if(snp.chr_.equals(gene.chr_) &&  snp.start_ >= gene.start_ &&  snp.end_ <= gene.end_){
+					it.remove();
+					break;
+				}	
+			}				
+		}
+	}
+	
+//	public void removeHighMafSnps(Collection<Snp> snpList){
+//		if(Settings.useMaxMafCutoff_ < 0.5){
+//			Iterator<Snp> it = snpList.iterator();
+//			while (it.hasNext()){
+//				Snp snp = it.next();
+//				if (snp.getMaf() > Settings.useMaxMafCutoff_ || snp.getAlleleSd()==0)
+//					it.remove();
+//			}
+//		}
+//	}
 	
 	// ============================================================================
 	// GETTERS AND SETTERS

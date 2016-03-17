@@ -38,10 +38,8 @@ import ch.unil.genescore.main.Main;
 public class LinkageDisequilibrium {
 
 	
-	
 	// ============================================================================
 		// PUBLIC METHODS
-			
 	
 	// ============================================================================
 		// STATIC METHODS
@@ -144,12 +142,15 @@ public class LinkageDisequilibrium {
 		return new DenseMatrix(dataArray);
 	}
 	static public DenseMatrix computeCorrelationMatrixMTJ(ArrayList<Snp> geneSnps){
+
 		DenseMatrix normalizedDataMat = loadGenotypeIntoDenseMatrix(geneSnps);
 		DenseMatrix  correlationMat = new DenseMatrix(geneSnps.size(),geneSnps.size());
 		double invNumberOfRows = 1.0/((double) normalizedDataMat.numRows());		
 		normalizedDataMat.transAmult(invNumberOfRows, normalizedDataMat, correlationMat);		
 		return correlationMat;
 	} 
+	
+	
 	static public DenseMatrix computeCrossCorrelationMatrixMTJ(ArrayList<Snp> geneSnpsDesired, ArrayList<Snp> geneSnpsKnown) {
 		DenseMatrix normalizedGenotypeMatKnown = loadGenotypeIntoDenseMatrix(geneSnpsKnown);
 		DenseMatrix normalizedGenotypeMatDesired = loadGenotypeIntoDenseMatrix(geneSnpsDesired);
