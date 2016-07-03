@@ -37,7 +37,7 @@ import java.util.*;
 
 public class VegasSimulationNew extends AnalyticVegas {
 
-	static Random r = new Random();
+	static Random r = new Random(Settings.randomSeed_);
 	double maxStat_;
 	boolean tooManySimuls_ = false;
 	double simulRuns_ = 0;

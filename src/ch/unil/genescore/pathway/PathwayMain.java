@@ -125,7 +125,7 @@ public class PathwayMain {
 				Main.println("calculate a couple of genescores to compare genes");				
 				genes = new ArrayList<Gene>(genes_.values());
 				Collections.sort(genes);				
-				for (int i=0; i<count; i++){
+				for (int i=0; i<count; i++){					
 					double err = Math.abs(pvals[i]- genes.get(i).getScore(0))/pvals[i];
 					if(err>0.0001){
 						throw new RuntimeException("loaded genescore list does not agree with the annotation p-value files");
