@@ -168,6 +168,9 @@ public class GeneScoreOptionParser extends Settings {
 		if (options.has("loadscores"))
 			loadAllScoresFromFiles_= true;
 		
+		if (options.has("loadsinglescores"))
+			loadSingleGeneScoresFromFiles_= true;
+		
 		if (options.has("scores"))
 			geneScoreFile_ = (String) options.valueOf("scores");
 		
@@ -293,6 +296,8 @@ public class GeneScoreOptionParser extends Settings {
 		parser_.accepts("hypgeomquantiles").withRequiredArg();
 		parser_.accepts("simulated");
 		parser_.accepts("loadscores");
+		parser_.accepts("loadsinglescores");
+		
 		parser_.accepts("scores").withRequiredArg();
 		parser_.accepts("metascores").withRequiredArg();
 		parser_.accepts("deflationrate").withRequiredArg().ofType(Double.class);
