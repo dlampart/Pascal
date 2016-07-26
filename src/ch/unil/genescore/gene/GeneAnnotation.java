@@ -255,6 +255,8 @@ abstract public class GeneAnnotation {
 			return "UCSC known genes";
 		else if (Settings.genomeAnnotation_.equalsIgnoreCase("gencode"))
 			return "GENCODE genes";
+		else if (Settings.genomeAnnotation_.equalsIgnoreCase("bed"))
+			return "custom bed genes";
 		else
 			throw new RuntimeException("Unknown genomeAnnotation:" + Settings.genomeAnnotation_);
 	}

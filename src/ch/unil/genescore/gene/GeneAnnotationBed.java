@@ -72,7 +72,7 @@ public class GeneAnnotationBed extends GeneAnnotation {
 			}
 			
 			// Gene id and name
-			String geneId = nextLine[3];
+			String geneId = nextLine[4];
 			String geneName = nextLine[3];
 
 			// If a gene set to be loaded was specified and this gene is NOT in this set, continue
