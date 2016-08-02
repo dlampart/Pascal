@@ -260,6 +260,7 @@ public class Settings {
 	
 	static public boolean loadAllScoresFromFiles_ = false; 
 	static public boolean loadSingleGeneScoresFromFiles_ = false; 
+	static public boolean doNotCheckGenescoreFile_ = false; 
 	static public String geneScoreFile_ = null; 
 	static public String metaGeneScoreFile_ = null; 
 	
@@ -581,7 +582,8 @@ public class Settings {
 		expHypParameters_ = getSettingDoubleAr("expHypParameters");
 		
 		loadAllScoresFromFiles_ = getSettingBoolean("loadScoresFromFiles");
-		loadSingleGeneScoresFromFiles_= getSettingBoolean("loadSingleGeneScoresFromFiles");		
+		loadSingleGeneScoresFromFiles_ = getSettingBoolean("loadSingleGeneScoresFromFiles");		
+		doNotCheckGenescoreFile_ = getSettingBoolean("doNotCheckGenescoreFile");		
 		geneScoreFile_ = getSetting("geneScoreFile");
 		metaGeneScoreFile_ = getSetting("metaGeneScoreFile");
 		onlyPathwayGenesAsBackground_ = getSettingBoolean("onlyPathwayGenesAsBackground");

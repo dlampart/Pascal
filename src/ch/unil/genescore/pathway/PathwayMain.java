@@ -121,24 +121,26 @@ public class PathwayMain {
 					innerCount++;
 				}				
 								
-				genes_=loadScoresFromFile(Settings.geneScoreFile_);	
-				Main.println("calculate a couple of genescores to compare genes");				
+				genes_=loadScoresFromFile(Settings.geneScoreFile_);
 				genes = new ArrayList<Gene>(genes_.values());
 				Collections.sort(genes);				
-				for (int i=0; i<count; i++){					
-					double err = Math.abs(pvals[i]- genes.get(i).getScore(0))/pvals[i];
-					if(err>0.0001){
-						throw new RuntimeException("loaded genescore list does not agree with the annotation p-value files");
-					}
-					if(!((tss[i]) == genes.get(i).getTss())){
-						throw new RuntimeException("loaded genescore list does not agree with the annotation p-value files");
-					}
-					if(!((geneIds[i]).equals(genes.get(i).id_))){
-						throw new RuntimeException("loaded genescore list does not agree with the annotation p-value files");
-					}
-				}									
-			}else{			
 				
+				if(!Settings.doNotCheckGenescoreFile_){
+					Main.println("calculate a couple of genescores to compare genes");
+					for (int i=0; i<count; i++){					
+						double err = Math.abs(pvals[i]- genes.get(i).getScore(0))/pvals[i];
+						if(err>0.0001){
+							throw new RuntimeException("loaded genescore list does not agree with the annotation p-value files");
+						}
+						if(!((tss[i]) == genes.get(i).getTss())){
+							throw new RuntimeException("loaded genescore list does not agree with the annotation p-value files");
+						}
+						if(!((geneIds[i]).equals(genes.get(i).id_))){
+							throw new RuntimeException("loaded genescore list does not agree with the annotation p-value files");
+						}
+					}
+				}
+			}else{						
 				ArrayList<Gene> genes = new ArrayList<Gene>(genes_.values());
 				Collections.sort(genes);
 			// Compute scores for individual genes (even those that may later be merged, useful for output)
