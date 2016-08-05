@@ -60,7 +60,6 @@ public class GeneScoreOptionParser extends Settings {
 		if (options.has("set"))
 			settingsFile_ = (String) options.valueOf("set");
 
-		// (3) Load the settings file
 		loadSettings();
 
 		// (4) Set command-line options (default is what has been loaded from
@@ -73,6 +72,8 @@ public class GeneScoreOptionParser extends Settings {
 			writeSnpBedFile_ = true;
 		if (options.has("ucscdir"))
 			ucscAnnotationFile_ = (String) options.valueOf("ucscdir");
+		if (options.has("beddir"))
+			bedAnnotationFile_ = (String) options.valueOf("beddir");
 		if (options.has("refpopdir"))
 			refPopDirectory_ = (String) options.valueOf("refpopdir");
 		if (options.has("genestobeloaded"))
@@ -127,7 +128,8 @@ public class GeneScoreOptionParser extends Settings {
 			useMaxVegas_ = true;
 		if (options.has("maxeffvegas"))
 		useMaxEffVegas_ = true;
-
+		if (options.has("maxreg"))
+			regFactorMax_ = (Double) options.valueOf("maxreg");
 		if (options.has("withzscore"))
 			withZScore_ = true;
 		if (options.has("prunelist"))
@@ -245,11 +247,12 @@ public class GeneScoreOptionParser extends Settings {
 		// maxSnpsPerGene_
 		parser_.accepts("maxsnp").withRequiredArg().ofType(Integer.class);
 		parser_.accepts("mafcutoff").withRequiredArg().ofType(Double.class);
-		
+
 		parser_.accepts("usedavies");
 		parser_.accepts("usefarebrother");
 		parser_.accepts("useimhof");
-		parser_.accepts("ucscdir").withRequiredArg();			
+		parser_.accepts("ucscdir").withRequiredArg();
+		parser_.accepts("beddir").withRequiredArg();
 
 		// useAnalyticVegas_				
 		parser_.accepts("analyticvegas");
@@ -258,6 +261,7 @@ public class GeneScoreOptionParser extends Settings {
 		parser_.accepts("analyticvegasweighted");
 		parser_.accepts("analyticvegasweightedwrapped");
 		parser_.accepts("orthostat");
+		parser_.accepts("maxreg");
 		parser_.accepts("orthostatwrapped");
 		parser_.accepts("orthosum");
 		parser_.accepts("projectionvegas");

@@ -232,14 +232,21 @@ public class MaxVegas extends AnalyticVegas {
 		return status_ != Status.FAIL;
 	}
 	public void runGenescoreCalculation(){
-		
-		calculateGenescore();
-		if (status_==Status.NOT_POSDEF){
-			correl_= MTJConvenienceMethods.regularizeMat(correl_, 0.0001);
+		if(Settings.regFactorMax_==0){
+			calculateGenescore();
+			if (status_==Status.NOT_POSDEF){
+				correl_= MTJConvenienceMethods.regularizeMat(correl_, 0.0001);
+				correl_= MTJConvenienceMethods.scaleToDiagOne(correl_);
+				calculateGenescore();
+			}
+		}else{
+			if(Settings.regFactorMax_<0){
+				throw new RuntimeException("reg factor can't be smaller than 0.");
+			}
+			correl_= MTJConvenienceMethods.regularizeMat(correl_,Settings.regFactorMax_);
 			correl_= MTJConvenienceMethods.scaleToDiagOne(correl_);
 			calculateGenescore();
 		}
-		
 	}
 	
 	protected void calculateGenescore(){	

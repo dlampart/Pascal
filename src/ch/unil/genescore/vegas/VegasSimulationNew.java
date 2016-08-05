@@ -90,13 +90,16 @@ public class VegasSimulationNew extends AnalyticVegas {
 	@Override
 	public boolean computeScore() {
 		computeTestStatisticRealSubclass();
-		matToDecomposeMTJ_ = MTJConvenienceMethods.regularizeMat(covariance_, 0.0001);
-		
+		if(Settings.regFactorMax_==0){
+			matToDecomposeMTJ_ = MTJConvenienceMethods.regularizeMat(covariance_, 0.0001);
+		}else{
+			matToDecomposeMTJ_ = MTJConvenienceMethods.regularizeMat(covariance_,Settings.regFactorMax_);
+			matToDecomposeMTJ_= MTJConvenienceMethods.scaleToDiagOne(matToDecomposeMTJ_);
+		}
 		DenseCholesky chol = DenseCholesky.factorize(matToDecomposeMTJ_);
 		UpperTriangDenseMatrix U = chol.getU();
 		
-		DenseVector normVect = new DenseVector(matToDecomposeMTJ_.numColumns());
-		
+		DenseVector normVect = new DenseVector(matToDecomposeMTJ_.numColumns());		
 		DenseVector corVect = new DenseVector(matToDecomposeMTJ_.numColumns());
 		double count=0;
 		simulRuns_=100;

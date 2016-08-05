@@ -155,6 +155,8 @@ public class Settings {
 	static public boolean useMaxEffVegas_ = false;
 	/** Original version of Vegas with Monte Carlo simulation */
 	static public boolean useSimulationVegas_ = false;
+	/** regularization factor for max method if 0 no regularization is applied*/
+	static public double regFactorMax_ = 0; 
 	
 	/**
 	
@@ -512,6 +514,7 @@ public class Settings {
 		useMaxVegas_ = getSettingBoolean("useMaxVegas");
 		useMaxEffVegas_ = getSettingBoolean("useMaxEffVegas");
 		useSimulationVegas_ = getSettingBoolean("useSimultationVegas");
+		regFactorMax_ = getSettingDouble("regFactorMax");
 		
 		maxPruningCutoff_=getSettingDouble("maxPruningCutoff");
 		externalConvergenceCheck_=getSettingBoolean("externalConvergenceCheck");
