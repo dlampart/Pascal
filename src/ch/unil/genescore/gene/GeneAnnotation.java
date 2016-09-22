@@ -287,5 +287,7 @@ abstract public class GeneAnnotation {
 			return false;
 		}
 	}
-	
+	public void setGeneAnnotationFile(String setGeneAnnotationFile){
+		annotationFile_ = setGeneAnnotationFile;
+	}
 }

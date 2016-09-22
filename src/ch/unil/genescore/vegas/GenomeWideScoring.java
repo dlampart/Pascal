@@ -338,25 +338,17 @@ public class GenomeWideScoring {
 	/** Load MTJ and display info */
 	private void initializeMtj() {
 		// This is just some bogus operation to load MTJ jni so that potential warning msgs are displayed here
-		// TODO is there a way to check if the native libs could be loaded and display a more understandable msg for the user?		
-		ConsoleHandler handler = new ConsoleHandler();				
-			
-			handler.setLevel(Level.FINEST);		
-			Logger.getLogger("com.github.fommil.jni.JniLoader").addHandler(handler);
-			Logger log =Logger.getLogger("com.github.fommil.jni.JniLoader");
-		//		log.addHandler(handler);
-			log.setLevel(Level.FINEST);
-		
-		
+		ConsoleHandler handler = new ConsoleHandler();							
+		handler.setLevel(Level.FINEST);		
+		Logger.getLogger("com.github.fommil.jni.JniLoader").addHandler(handler);
+		Logger log =Logger.getLogger("com.github.fommil.jni.JniLoader");			
+		log.addHandler(handler);		
+		log.setLevel(Level.FINEST);
 		Main.println("- Attempting to load native matrix library");
 		try {
 			SymmDenseEVD.factorize(new UpperSymmDenseMatrix(1));
 		} catch (Exception e) { }
 		Main.println();
-		//handler.setLevel(Level.SEVERE);
-		//Do not display further info from MTJ		
-		//Logger.getLogger("com.github.fommil.jni.JniLoader").setLevel(Level.WARNING);		
-		//Logger.getLogger("com.github.fommil.jni.JniLoader").setLevel(Level.FINEST);
 	}
 	
 	public void removeLowMafSnps(Collection<Snp> snpList){

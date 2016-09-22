@@ -63,6 +63,20 @@ public class GeneResultsScore {
 		getExporter().flush();
 	}
 	
+	public void writeDoubleLine(Gene gene,  String id2, int tss2,double pval2){
+
+		if (!getHeaderWritten()) {
+			getExporter().println("chromosome1\tstart1\tend1\tstrand1\tgene_id1\tgene_symbol1\tpval1\tid2\tstart2\tpval2");
+			setHeaderWritten(true);
+		}
+	// Write results for this gene to file
+		String nextLine = gene.toString();
+		nextLine += "\t" + gene.getScore(0) + "\t";
+		nextLine += id2 + "\t" + tss2 + "\t" + pval2;
+		getExporter().println(nextLine);
+		getExporter().flush();
+	}
+	
 	/**write GeneScoreEvaluator output directly without gene information.*/
 	public void writeLine(GeneScoreEvaluator evaluator){
 

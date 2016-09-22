@@ -188,6 +188,8 @@ public class GeneScoreOptionParser extends Settings {
 			writeDetailedOutput_ = true;
 		if (options.has("rewritesettings"))
 		writeUsedSettings_ = (String) options.valueOf("scores");
+		if (options.has("backgroundannotation"))
+			backgroundAnnotationFile_ = (String) options.valueOf("backgroundannotation");
 		//path to pathway
 
 	
@@ -309,6 +311,7 @@ public class GeneScoreOptionParser extends Settings {
 		parser_.accepts("metascores").withRequiredArg();
 		parser_.accepts("deflationrate").withRequiredArg().ofType(Double.class);
 		
+		parser_.accepts("backgroundannotation").withRequiredArg();
 		parser_.accepts("genesetfile").withRequiredArg();
 		parser_.accepts("detailed");
 		parser_.accepts("eqtlfile").withRequiredArg();

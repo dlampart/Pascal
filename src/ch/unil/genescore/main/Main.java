@@ -111,7 +111,11 @@ public class Main {
 		optionParser.firstProcessingOfSettings();
 				
 		// set jna path
-		System.setProperty("jna.library.path", "jars/lib/");
+		//System.setProperty("jna.library.path", "jars/lib/");		
+		if(Settings.writeDetailedErrorOutput_){
+			System.setProperty("jna.debug_load", "true");
+		}
+		System.setProperty("jna.library.path", "lib/fortranlibs/");
 		// Create output directory
 		File outputDir = new File(Settings.outputDirectory_);
 		if (!outputDir.exists())

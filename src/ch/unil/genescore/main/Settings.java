@@ -263,6 +263,8 @@ public class Settings {
 	static public boolean loadAllScoresFromFiles_ = false; 
 	static public boolean loadSingleGeneScoresFromFiles_ = false; 
 	static public boolean doNotCheckGenescoreFile_ = false; 
+	static public boolean softCheckGenescoreFile_ = false;
+	static public boolean outputCheckingFiles_ = false; 
 	static public String geneScoreFile_ = null; 
 	static public String metaGeneScoreFile_ = null; 
 	
@@ -272,8 +274,8 @@ public class Settings {
 	/** Set true to write gene and meta-gene scores to a file */ 
 	static public boolean writeGeneScores_ = false;
 
-	
-	
+	/** must have same format as active gene annotation. */
+	static public String backgroundAnnotationFile_ = "";
 	
 	// CONCATENATE CHROMOSOME RESULT FILES
 	/** Set true to run concatenate chromosome results */
@@ -475,7 +477,6 @@ public class Settings {
 			outputDirectory_ = System.getProperty("user.dir");
 		outputSuffix_ = getSetting("outputSuffix");
 		verbose_ = getSettingBoolean("verbose");
-		
 		// ----------------------------------------------------------------------------
 		// ENRICHMENT ANALYSIS
 		
@@ -585,10 +586,13 @@ public class Settings {
 		expHypParameters_ = getSettingDoubleAr("expHypParameters");
 		
 		loadAllScoresFromFiles_ = getSettingBoolean("loadScoresFromFiles");
-		loadSingleGeneScoresFromFiles_ = getSettingBoolean("loadSingleGeneScoresFromFiles");		
-		doNotCheckGenescoreFile_ = getSettingBoolean("doNotCheckGenescoreFile");		
+		loadSingleGeneScoresFromFiles_ = getSettingBoolean("loadSingleGeneScoresFromFiles");
+		doNotCheckGenescoreFile_ = getSettingBoolean("doNotCheckGenescoreFile");
+		softCheckGenescoreFile_ = getSettingBoolean("softCheckGenescoreFile");
+		
 		geneScoreFile_ = getSetting("geneScoreFile");
 		metaGeneScoreFile_ = getSetting("metaGeneScoreFile");
+		backgroundAnnotationFile_ = getSetting("backgroundAnnotationFile");
 		onlyPathwayGenesAsBackground_ = getSettingBoolean("onlyPathwayGenesAsBackground");
 		
 		

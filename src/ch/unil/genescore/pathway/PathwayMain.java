@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import ch.unil.genescore.gene.Gene;
 import ch.unil.genescore.gene.GeneAnnotation;
@@ -33,6 +34,7 @@ import ch.unil.genescore.main.FileParser;
 import ch.unil.genescore.main.Main;
 import ch.unil.genescore.main.Settings;
 import ch.unil.genescore.main.Utils;
+import ch.unil.genescore.vegas.GeneResultsScore;
 import ch.unil.genescore.vegas.GenomeWideScoring;
 import ch.unil.genescore.vegas.ReferencePopulation;
 
@@ -122,11 +124,13 @@ public class PathwayMain {
 				}				
 								
 				genes_=loadScoresFromFile(Settings.geneScoreFile_);
+				genes_= filterGenesInAnnotatedFiles(genes_);				
 				genes = new ArrayList<Gene>(genes_.values());
 				Collections.sort(genes);				
 				
-				if(!Settings.doNotCheckGenescoreFile_){
+				if(!Settings.doNotCheckGenescoreFile_ && !Settings.softCheckGenescoreFile_){
 					Main.println("calculate a couple of genescores to compare genes");
+					
 					for (int i=0; i<count; i++){					
 						double err = Math.abs(pvals[i]- genes.get(i).getScore(0))/pvals[i];
 						if(err>0.0001){
@@ -140,6 +144,18 @@ public class PathwayMain {
 						}
 					}
 				}
+				
+				if(Settings.softCheckGenescoreFile_){
+					GeneResultsScore checkscores_ =  new GeneResultsScore();											 			
+					checkscores_.setExporter(Settings.outputSuffix_ +"_COMPARISON_LOADED_VS_COMPUTED_GENESCORES_");						
+					
+					Main.println("calculate a couple of genescores to compare genes");
+					for (int i=0; i<count; i++){	
+						checkscores_.writeDoubleLine(genes.get(i), geneIds[i], tss[i], pvals[i]);
+					}
+				}
+				
+				
 			}else{						
 				ArrayList<Gene> genes = new ArrayList<Gene>(genes_.values());
 				Collections.sort(genes);
@@ -325,7 +341,27 @@ public class PathwayMain {
 		return gwasName + ".PathwaySet--" + functName + "--" + Settings.outputSuffix_ + condDot + Settings.getGeneScoreEvaluator().getTypeString() + Settings.chromFileExtension_;
 	}
 	
-	
+	protected LinkedHashMap<String, Gene> filterGenesInAnnotatedFiles(LinkedHashMap<String, Gene> genes){
+		if(Settings.backgroundAnnotationFile_.equals("")){
+			return(genes);
+		}else{
+			// The genes from the genome annotation
+			LinkedHashMap<String, Gene> loaded_genes;		
+				// Load genome annotation (genes without scores)
+			GeneAnnotation annot = GeneAnnotation.createAnnotationInstance();
+			annot.setGeneAnnotationFile(Settings.backgroundAnnotationFile_);
+			loaded_genes = annot.loadAnnotation();
+												
+			for(Iterator<Map.Entry<String, Gene>> it = genes.entrySet().iterator(); it.hasNext(); ) {
+				Map.Entry<String, Gene> entry = it.next();
+				if(!loaded_genes.containsKey(entry.getKey())) {
+					it.remove();
+				}
+			}
+		}
+		return genes;
+		
+	}	
 	// ============================================================================
 	// SETTERS AND GETTERS
 	

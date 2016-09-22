@@ -105,19 +105,13 @@ public class MaxVegas extends AnalyticVegas {
 		public MaxVegas(ArrayList<Double> snpScores, UpperSymmDenseMatrix ld, double[] weights) {			
 			super(snpScores, ld);			
 			pruningCutoff_=Settings.maxPruningCutoff_;		
-			weights_ = weights;
-			System.setProperty("jna.library.path", "lib/fortranlibs/");
-			
-			
-			
-			
-					
+			weights_ = weights;																	
 		}	
 		
 	public MaxVegas(ArrayList<Double> snpScores, DenseMatrix ld, double pruningCutoff) {			
 		super(snpScores, ld);
 		pruningCutoff_=pruningCutoff;		
-		System.setProperty("jna.debug_load", "true");	
+		//System.setProperty("jna.debug_load", "true");	
 		//INSTANCE = (MvnPack) Native.loadLibrary("/Users/dlampart/Documents/workspace/genescore/fortranlibs/libmvtpack.dlyb", MvnPack.class);
 		//INSTANCE = (MvnPack) Native.loadLibrary("fortranlibs/libmvtpack.dlyb", MvnPack.class);
 		INSTANCE = (MvnPack) Native.loadLibrary("fortranlibs/mvtpack", MvnPack.class);
