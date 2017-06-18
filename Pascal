@@ -1,0 +1,479 @@
+#!/bin/bash
+
+set -e
+echo "Hello I'm Pascal"
+#######################################################
+#######################################################
+### COMMAND-LINE ARGUMENT PARSING
+#######################################################
+#######################################################
+scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+workdir=`pwd`
+
+#echo $scriptdir
+#echo $workdir
+
+
+function get_full_or_rel {
+    fullorrel=`echo $1 | perl -ne 'if(/^(^\~|\/)/){print "full"}else{print "rel"}'`
+    if [ "$fullorrel" == "full" ]
+    then
+        add_path=""
+    else
+        add_path="$workdir/"
+    fi
+}
+
+
+genescoringSet=0
+
+while [ "$#" -gt 0 ]; do
+   case $1 in
+       -h|-\?|--help)   # Call a "show_help" function to display a synopsis, then exit.
+       show_help
+       exit
+       ;;
+
+#######option pval#########      
+       --pval)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               pval=$2
+               get_full_or_rel "${pval}"
+    
+               commandStr="${commandStr} --pval=${add_path}${pval}"
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--pval" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --pval=?*)
+       pval=${1#*=} # Delete everything up to "=" and assign the remainder.
+       get_full_or_rel "${pval}"
+       commandStr="${commandStr} --pval=${add_path}${pval}"
+       ;;
+       --pval=)         # Handle the case of an empty --pval=
+       echo 'ERROR: Must specify a non-empty "--pval" argument.' >&2
+       exit 1
+       ;;
+
+#######option chr#########      
+       --chr)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               chr=$2
+               commandStr="${commandStr} --chr=${chr}"
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--chr" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --chr=?*)
+       chr=${1#*=} # Delete everything up to "=" and assign the remainder.
+       commandStr="${commandStr} --chr=${chr}"
+       ;;
+       --chr=)         # Handle the case of an empty --chr=
+       echo 'ERROR: Must specify a non-empty "--chr" argument.' >&2
+       exit 1
+       ;;
+
+
+#######option set#########      
+       --set)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               set=$2
+               get_full_or_rel "${set}"
+               commandStr="${commandStr} --set=${add_path}${set}"
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--set" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --set=?*)
+       set=${1#*=} # Delete everything up to "=" and assign the remainder.
+       get_full_or_rel "${set}"
+       commandStr="${commandStr} --set=${add_path}${set}"
+       ;;
+       --set=)         # Handle the case of an empty --set=
+       echo 'ERROR: Must specify a non-empty "--set" argument.' >&2
+       exit 1
+       ;;
+
+
+#######option outdir#########      
+       --outdir)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               outdir=$2
+               get_full_or_rel "${set}"
+               commandStr="${commandStr} --outdir=${add_path}${outdir}"
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--outdir" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --outdir=?*)
+       outdir=${1#*=} # Delete everything up to "=" and assign the remainder.
+       get_full_or_rel "${set}"
+       commandStr="${commandStr} --outdir=${add_path}${outdir}"
+       ;;
+       --outdir=)         # Handle the case of an empty --outdir=
+       echo 'ERROR: Must specify a non-empty "--outdir" argument.' >&2
+       exit 1
+       ;;
+
+#######option up#########      
+       --up)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               up=$2
+               commandStr="${commandStr} --up=${up}"
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--up" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --up=?*)
+       up=${1#*=} # Delete everything up to "=" and assign the remainder.
+       commandStr="${commandStr} --up=${up}"
+       ;;
+       --up=)         # Handle the case of an empty --up=
+       echo 'ERROR: Must specify a non-empty "--up" argument.' >&2
+       exit 1
+       ;;
+
+
+#######option down#########      
+       --down)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               down=$2
+               commandStr="${commandStr} --down=${down}"
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--down" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --down=?*)
+       down=${1#*=} # Delete everything down to "=" and assign the remainder.
+       commandStr="${commandStr} --down=${down}"
+       ;;
+       --down=)         # Handle the case of an empty --down=
+       echo 'ERROR: Must specify a non-empty "--down" argument.' >&2
+       exit 1
+       ;;
+
+
+#######option maxsnp#########      
+       --maxsnp)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               maxsnp=$2
+               commandStr="${commandStr} --maxsnp=${maxsnp}"
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--maxsnp" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --maxsnp=?*)
+       maxsnp=${1#*=} # Delete everything maxsnp to "=" and assign the remainder.
+       commandStr="${commandStr} --maxsnp=${maxsnp}"
+       ;;
+       --maxsnp=)         # Handle the case of an empty --maxsnp=
+       echo 'ERROR: Must specify a non-empty "--maxsnp" argument.' >&2
+       exit 1
+       ;;
+
+
+
+#######option runpathway#########      
+       --runpathway)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               runpathway=$2
+                      if [ ${runpathway} == "off" ];then
+           commandStr="${commandStr}"       
+       elif [ ${runpathway} == "on" ];then
+           commandStr="${commandStr} --runpathway"
+       else
+           echo 'ERROR: option runpathway not correctly specified, must be either on or off' >&2
+           exit 1
+       fi
+
+
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--runpathway" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --runpathway=?*)
+       runpathway=${1#*=} # Delete everything runpathway to "=" and assign the remainder.
+       if [ ${runpathway} == "off" ];then
+           commandStr="${commandStr}"       
+       elif [ ${runpathway} == "on" ];then
+           commandStr="${commandStr} --runpathway"
+       else
+           echo 'ERROR: option runpathway not correctly specified, must be either on or off' >&2
+           exit 1
+       fi
+       ;;
+       --runpathway=)         # Handle the case of an empty --runpathway=
+       echo 'ERROR: Must specify a non-empty "--runpathway" argument.' >&2
+       exit 1
+       ;;
+
+
+#######option mergedistance#########      
+       --fusedistance)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               mergedistance=$2
+               commandStr="${commandStr} --mergedistance=${mergedistance}"
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--fusedistance" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --fusedistance=?*)
+       fusedistance=${1#*=} # Delete everything mergedistance to "=" and assign the remainder.
+       commandStr="${commandStr} --mergedistance=${mergedistance}"
+       ;;
+       --fusedistance=)         # Handle the case of an empty --mergedistance=
+       echo 'ERROR: Must specify a non-empty "--fusedistance" argument.' >&2
+       exit 1
+       ;;
+
+
+#######option outsuffix#########      
+       --outsuffix)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               outsuffix=$2
+               commandStr="${commandStr} --outsuffix=${outsuffix}"
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--outsuffix" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --outsuffix=?*)
+       outsuffix=${1#*=} # Delete everything outsuffix to "=" and assign the remainder.
+       commandStr="${commandStr} --outsuffix=${outsuffix}"
+       ;;
+       --outsuffix=)         # Handle the case of an empty --outsuffix=
+       echo 'ERROR: Must specify a non-empty "--outsuffix" argument.' >&2
+       exit 1
+       ;;
+
+
+#######option genesetfile#########      
+       --genesetfile)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               genesetfile=$2
+               get_full_or_rel "${genesetfile}"
+               commandStr="${commandStr} --genesetfile=${add_path}${genesetfile}"
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--genesetfile" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --genesetfile=?*)
+       genesetfile=${1#*=} # Delete everything genesetfile to "=" and assign the remainder.
+       get_full_or_rel "${genesetfile}"
+       commandStr="${commandStr} --genesetfile=${add_path}${genesetfile}"
+       ;;
+       --genesetfile=)         # Handle the case of an empty --genesetfile=
+       echo 'ERROR: Must specify a non-empty "--genesetfile" argument.' >&2
+       exit 1
+       ;;
+
+#######option genescoring#########      
+       --genescoring)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               genescoring=$2
+               genescoringSet=1
+       if [ ${genescoring} == "max" ];then
+           commandStr="${commandStr} --maxvegas"       
+       elif [ ${genescoring} == "sum" ];then
+           commandStr="${commandStr} --analyticvegas"
+       else
+           echo 'ERROR: option genescoring not correctly specified, must be either sum or max' >&2
+           exit 1
+       fi
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--genescoring" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --genescoring=?*)
+       genescoringSet=1
+       genescoring=${1#*=} # Delete everything genescoring to "=" and assign the remainder.
+       if [ ${genescoring} == "max" ];then
+           commandStr="${commandStr} --maxvegas"
+       elif [ ${genescoring} == "sum" ];then
+           commandStr="${commandStr} --analyticvegas"
+       else
+           echo 'ERROR: option genescoring not correctly specified, must be either sum or max' >&2
+           exit 1
+       fi
+       ;;
+       --genescoring=)         # Handle the case of an empty --genescoring=
+       echo 'ERROR: Must specify a non-empty "--genesetfile" argument.' >&2
+       exit 1
+       ;;
+
+
+#######option help#########      
+       --help)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               help=$2
+               commandStr="${commandStr} --help=${help}"
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--help" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --help=?*)
+       help=${1#*=} # Delete everything help to "=" and assign the remainder.
+       commandStr="${commandStr} --help=${help}"
+       ;;
+       --help=)         # Handle the case of an empty --help=
+       echo 'ERROR: Must specify a non-empty "--help" argument.' >&2
+       exit 1
+       ;;
+
+#######option custom#########      
+       --custom=?*)
+       outsuffix=${1#*=} # Delete everything outsuffix to "=" and assign the remainder.
+	       commandStr="${commandStr} --popformat=tped.gz"
+       commandStr="${commandStr} --pop=${outsuffix}"
+       ;;
+       --custom=)         # Handle the case of an empty --custom=
+       echo 'ERROR: Must specify a non-empty "--custom" argument.' >&2
+       exit 1
+       ;;
+#######option customdir#########      
+       --customdir=?*)
+       outsuffix=${1#*=} # Delete everything outsuffix to "=" and assign the remainder.
+       
+       get_full_or_rel "${outsuffix}"
+       commandStr="${commandStr} --refpopdir=${add_path}${outsuffix}"
+       ;;
+       --customdir=)         # Handle the case of an empty --custom=
+       echo 'ERROR: Must specify a non-empty "--customdir" argument.' >&2
+       exit 1
+       ;;
+
+#######option genescorefile #########      
+       --genescorefile=?*)
+       genescorefile=${1#*=} # Delete everything outsuffix to "=" and assign the remainder.
+       get_full_or_rel "${genescorefile}"
+       commandStr="${commandStr} --scores=${add_path}${genescorefile} --loadsinglescores"
+       ;;
+       --genescorefile=)         # Handle the case of an empty --custom=
+       echo 'ERROR: Must specify a non-empty "--genescorefile" argument.' >&2
+       exit 1
+       ;;
+#######option genescorefile #########      
+       --backgroundannotation=?*)
+       backgroundannotation=${1#*=} # Delete everything outsuffix to "=" and assign the remainder.
+       get_full_or_rel "${backgroundannotation}"
+       commandStr="${commandStr} --backgroundannotation=${backgroundannotation} --loadsinglescores"
+       ;;
+       --backgroundannotation=)         # Handle the case of an empty --custom=
+       echo 'ERROR: Must specify a non-empty "--backgroundannotation" argument.' >&2
+       exit 1
+       ;;
+
+#######option mafcutoff#########      
+       --mafcutoff)       # Takes an option argument, ensuring it has been specified.
+           if [ "$#" -gt 1 ]; then
+               mafcutoff=$2
+               commandStr="${commandStr} --mafcutoff=${mafcutoff}"
+               shift 2
+               continue
+           else
+               echo 'ERROR: Must specify a non-empty "--mafcutoff" argument.' >&2
+               exit 1
+           fi
+           ;;
+       --mafcutoff=?*)
+       mafcutoff=${1#*=} # Delete everything mafcutoff to "=" and assign the remainder.
+       commandStr="${commandStr} --mafcutoff=${mafcutoff}"
+       ;;
+       --mafcutoff=)         # Handle the case of an empty --mafcutoff=
+       echo 'ERROR: Must specify a non-empty "--mafcutoff" argument.' >&2
+       exit 1
+       ;;
+
+       --)              # End of all options.
+           shift
+           break
+           ;;
+       -?*)
+           printf 'WARN: Unknown option (ignored): %s\n' "$1" >&2
+           ;;
+       *)               # Default case: If no more options then break out of the loop.
+           break
+   esac
+   
+   shift
+done
+
+# Suppose --pval is a required option. Check that it has been set.
+if [ ! "$pval" ]; then
+    echo 'ERROR: option "--pval PVAL" not given. See --mafcutoff.' >&2
+    exit 1
+fi
+
+if [ "$genescoringSet" -eq 0 ]; then
+    echo genescoring not set. set to sum as default.
+    commandStr="${commandStr} --analyticvegas"
+fi
+
+#######################################################
+#######################################################
+### END COMMAND-LINE ARGUMENT PARSING
+#######################################################
+#######################################################
+
+export DYLD_LIBRARY_PATH=lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=lib:${LD_LIBRARY_PATH}
+
+
+export OPENBLAS_NUM_THREADS=1
+date +%x_%H:%M:%S:%N
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+pathToLibrary="${DIR}/lib/openBLASlib/lib"
+export LD_LIBRARY_PATH="${pathToLibrary}:${LD_LIBRARY_PATH}"
+pathToLibrary="${DIR}/lib/fortranlibs/"
+export LD_LIBRARY_PATH="${pathToLibrary}:${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH
+export OPENBLAS_NUM_THREADS=1
+
+
+cd $scriptdir
+if [ `java -version 2>&1| grep "64\-Bit" | wc -l` -eq 0 ];then
+    echo "java 32-Bit called instead of 64-Bit. You might run into memory problems."
+    echo "Consider installing the 64-Bit java VM."
+    java -ea -Xmx2g -jar jars/pascalDeployed.jar ${commandStr}
+else 
+    java -ea -Xmx32g -jar jars/pascalDeployed.jar ${commandStr}
+fi
+cd $workdir
